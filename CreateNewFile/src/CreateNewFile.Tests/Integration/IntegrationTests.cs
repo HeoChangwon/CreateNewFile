@@ -116,9 +116,9 @@ public class IntegrationTests : IDisposable
     {
         // Arrange
         var settings = new AppSettings();
-        settings.Abbreviations.Add(new PresetItem { Value = "CNF", Description = "CreateNewFile" });
-        settings.Titles.Add(new PresetItem { Value = "Test Document", Description = "Test description" });
-        settings.Extensions.Add(new PresetItem { Value = "txt", Description = "Text file" });
+        settings.Abbreviations.Add(new PresetItem { Value = "CNF" });
+        settings.Titles.Add(new PresetItem { Value = "Test Document" });
+        settings.Extensions.Add(new PresetItem { Value = "txt" });
 
         // Act - Save (uses default file path)
         var saveResult = await _settingsService.SaveSettingsAsync(settings);
@@ -188,21 +188,6 @@ public class IntegrationTests : IDisposable
         Assert.NotEmpty(fileResult.ErrorMessage);
     }
 
-    [Fact]
-    public void PresetUsageTracking_Integration_Success()
-    {
-        // Arrange
-        var preset = new PresetItem { Value = "CNF", Description = "CreateNewFile" };
-        Assert.Equal(0, preset.UsageCount);
-
-        // Act - Simulate usage
-        preset.MarkAsUsed();
-        preset.MarkAsUsed();
-
-        // Assert
-        Assert.Equal(2, preset.UsageCount);
-        Assert.True(preset.LastUsed > DateTime.Now.AddMinutes(-1));
-    }
 
     [Fact]
     public async Task FileNameGeneration_SpecialCharacters_CleanedCorrectly()

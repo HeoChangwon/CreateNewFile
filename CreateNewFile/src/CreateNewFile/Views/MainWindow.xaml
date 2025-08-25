@@ -118,17 +118,41 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <!-- 상단 제목 -->
-        <TextBlock Grid.Row="0" Text="CreateNewFile - 파일 생성기" 
-                   FontSize="24" FontWeight="Bold" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,0,0,20"/>
+        <!-- 상단 헤더 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" 
+                    Margin="0,0,0,20">
+            <Image Source="pack://application:,,,/Resources/CreateNewFile.png"
+                   Width="48" Height="48"
+                   Margin="0,0,15,0"
+                   VerticalAlignment="Center"/>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="CreateNewFile" 
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="#FF007ACC"/>
+                <TextBlock Text="파일 생성 도구" 
+                           FontSize="14" 
+                           Foreground="Gray"
+                           Margin="0,-2,0,0"/>
+            </StackPanel>
+        </StackPanel>
         
         <!-- 메인 입력 영역 -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!-- 파일 정보 입력 그룹 -->
-                <GroupBox Header="파일 정보">
+                <GroupBox>
+                    <GroupBox.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/Resources/CreateNewFile.png"
+                                   Width="18" Height="18"
+                                   Margin="0,0,8,0"
+                                   VerticalAlignment="Center"/>
+                            <TextBlock Text="파일 정보" 
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </GroupBox.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -357,19 +381,50 @@
         </StackPanel>
         
         <!-- 상태 표시줄 -->
-        <Border Grid.Row="3" Background="LightGray" Padding="10,5">
+        <Border Grid.Row="3" Background="#FFF5F5F5" 
+                BorderBrush="#FFDDDDDD" BorderThickness="0,1,0,0" 
+                Padding="10,5">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" 
-                          VerticalAlignment="Center"/>
-                <ProgressBar Grid.Column="1" 
+                <!-- 작은 아이콘 -->
+                <Image Grid.Column="0" 
+                       Source="pack://application:,,,/Resources/CreateNewFile.png"
+                       Width="16" Height="16"
+                       Margin="0,0,8,0"
+                       VerticalAlignment="Center"/>
+                
+                <!-- 상태 메시지 -->
+                <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" 
+                          VerticalAlignment="Center"
+                          FontSize="12"/>
+                
+                <!-- 진행률 표시기 -->
+                <ProgressBar Grid.Column="2" 
                             IsIndeterminate="{Binding IsWorking}"
                             Visibility="{Binding IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Width="100" Height="16"/>
+                            Width="100" Height="16"
+                            Margin="10,0"/>
+                
+                <!-- 버전 및 개발자 정보 -->
+                <StackPanel Grid.Column="3" 
+                           Orientation="Vertical"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0">
+                    <TextBlock Text="v1.0.001"
+                              FontSize="11"
+                              Foreground="Gray"
+                              HorizontalAlignment="Right"/>
+                    <TextBlock Text="© 2025 허창원 (Green Power)"
+                              FontSize="9"
+                              Foreground="LightGray"
+                              HorizontalAlignment="Right"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

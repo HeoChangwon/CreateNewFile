@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using CreateNewFile.ViewModels;
 using CreateNewFile.Views;
 using CreateNewFile.Services;
+using CreateNewFile.Utils;
 
 namespace CreateNewFile;
 
@@ -20,6 +21,14 @@ public partial class App : System.Windows.Application
     /// <param name="e">시작 이벤트 인수</param>
     protected override void OnStartup(StartupEventArgs e)
     {
+        // .NET 8 런타임 설치 여부 확인
+        if (!RuntimeChecker.IsNet8RuntimeInstalled())
+        {
+            RuntimeChecker.ShowRuntimeInstallGuide();
+            Shutdown(1);
+            return;
+        }
+
         // 의존성 주입 컨테이너 설정
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
@@ -86,8 +95,7 @@ public partial class App : System.Windows.Application
         }
         catch (Exception ex)
         {
-            // 종료 시에는 오류를 표시하지 않고 로그만 기록
-            System.Diagnostics.Debug.WriteLine($"애플리케이션 종료 시 설정 저장 오류: {ex.Message}");
+            // 종료 시에는 오류를 표시하지 않음
         }
         
         _host?.Dispose();

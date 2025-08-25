@@ -71,8 +71,12 @@ namespace CreateNewFile.Services
         /// 파일을 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>생성 결과</returns>
-        public async Task<FileCreationResult> CreateFileAsync(FileCreationRequest request)
+        public async Task<FileCreationResult> CreateFileAsync(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true)
         {
             try
             {
@@ -83,8 +87,8 @@ namespace CreateNewFile.Services
                     return FileCreationResult.Failure($"유효성 검사 실패: {validationResult}");
                 }
 
-                var fileName = GenerateFileName(request);
-                var fullPath = GetFullFilePath(request);
+                var fileName = GenerateFileName(request, isDateTimeEnabled, isAbbreviationEnabled, isTitleEnabled, isSuffixEnabled);
+                var fullPath = GetFullFilePath(request, isDateTimeEnabled, isAbbreviationEnabled, isTitleEnabled, isSuffixEnabled);
 
                 // 파일 존재 확인
                 if (File.Exists(fullPath))
@@ -177,7 +181,7 @@ namespace CreateNewFile.Services
             catch (Exception ex)
             {
                 // 로깅이 구현되면 여기에 로그 추가
-                System.Diagnostics.Debug.WriteLine($"빈 파일 생성 실패: {ex.Message}");
+                // 빈 파일 생성 실패 로그 제거
                 return false;
             }
         }
@@ -209,7 +213,7 @@ namespace CreateNewFile.Services
             catch (Exception ex)
             {
                 // 로깅이 구현되면 여기에 로그 추가
-                System.Diagnostics.Debug.WriteLine($"템플릿 파일 복사 실패: {ex.Message}");
+                // 템플릿 파일 복사 실패 로그 제거
                 return false;
             }
         }

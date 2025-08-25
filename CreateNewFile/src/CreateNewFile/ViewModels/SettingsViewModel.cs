@@ -285,10 +285,7 @@ namespace CreateNewFile.ViewModels
                 var newItem = new PresetItem
                 {
                     Value = NewItemValue.Trim(),
-                    Description = string.Empty,
-                    CreatedAt = DateTime.Now,
-                    IsEnabled = true,
-                    IsFavorite = false
+                    IsEnabled = true
                 };
 
                 var success = await _settingsService.AddPresetItemAsync(SelectedPresetType, newItem);

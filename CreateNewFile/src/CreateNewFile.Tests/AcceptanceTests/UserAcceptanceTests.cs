@@ -286,7 +286,7 @@ public class UserAcceptanceTests : IDisposable
         
         // 1. 설정 생성 및 저장
         var settings = new AppSettings();
-        settings.Abbreviations.Add(new PresetItem { Value = "UAT", Description = "User Acceptance Test" });
+        settings.Abbreviations.Add(new PresetItem { Value = "UAT" });
         
         var saveResult = await _settingsService.SaveSettingsAsync(settings);
         Assert.True(saveResult);

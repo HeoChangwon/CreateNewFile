@@ -9,6 +9,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Resources\CreateNewFile.ico</ApplicationIcon>
     
+    <!-- Framework-dependent 배포 설정 -->
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    
     <!-- 버전 정보 -->
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
@@ -39,6 +45,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\CreateNewFile.ico" />
+    <Resource Include="Resources\CreateNewFile.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,9 +60,13 @@
     </Compile>
   </ItemGroup>
 
+  <!-- 설정 파일 관리 -->
   <ItemGroup>
     <None Update="config\appsettings.default.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <!-- 배포 시에도 포함 -->
+      <Pack>true</Pack>
+      <PackagePath>config\</PackagePath>
     </None>
   </ItemGroup>
 

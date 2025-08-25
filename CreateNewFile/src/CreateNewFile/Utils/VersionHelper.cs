@@ -123,5 +123,49 @@ namespace CreateNewFile.Utils
                 return $"v{Version}";
             }
         }
+
+        /// <summary>
+        /// 개발자 정보를 가져옵니다.
+        /// </summary>
+        public static string DeveloperInfo
+        {
+            get
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var companyAttribute = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+                var copyrightAttribute = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+                
+                if (companyAttribute != null && !string.IsNullOrEmpty(companyAttribute.Company))
+                {
+                    return companyAttribute.Company;
+                }
+                
+                if (copyrightAttribute != null && !string.IsNullOrEmpty(copyrightAttribute.Copyright))
+                {
+                    // "Copyright © 2025 HeoChangwon" -> "2025 HeoChangwon"
+                    var copyright = copyrightAttribute.Copyright;
+                    var match = System.Text.RegularExpressions.Regex.Match(copyright, @"©\s*(\d{4})\s*(.+)");
+                    if (match.Success)
+                    {
+                        return $"{match.Groups[1].Value} {match.Groups[2].Value}";
+                    }
+                    return copyright;
+                }
+                
+                return "허창원 (Green Power)";
+            }
+        }
+
+        /// <summary>
+        /// 개발자 정보를 포함한 전체 버전 문자열을 가져옵니다.
+        /// 예: "CreateNewFile v1.0.001 (Build: 2025-08-25 11:48) - 허창원 (Green Power)"
+        /// </summary>
+        public static string FullVersionStringWithDeveloper
+        {
+            get
+            {
+                return $"{ProductName} v{Version} (Build: {BuildDate}) - {DeveloperInfo}";
+            }
+        }
     }
 }

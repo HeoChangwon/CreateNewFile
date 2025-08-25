@@ -124,50 +124,50 @@ namespace CreateNewFile.Models
             Abbreviations.Clear();
             Abbreviations.AddRange(new[]
             {
-                new PresetItem { Value = "CNF", Description = "CreateNewFile" },
-                new PresetItem { Value = "DOC", Description = "Document" },
-                new PresetItem { Value = "LOG", Description = "Log File" },
-                new PresetItem { Value = "TEST", Description = "Test File" },
-                new PresetItem { Value = "TEMP", Description = "Temporary File" }
+                new PresetItem { Value = "CNF" },
+                new PresetItem { Value = "DOC" },
+                new PresetItem { Value = "LOG" },
+                new PresetItem { Value = "TEST" },
+                new PresetItem { Value = "TEMP" }
             });
 
             // 기본 제목
             Titles.Clear();
             Titles.AddRange(new[]
             {
-                new PresetItem { Value = "Development_note", Description = "개발 노트" },
-                new PresetItem { Value = "User_manual", Description = "사용자 매뉴얼" },
-                new PresetItem { Value = "Technical_spec", Description = "기술 명세서" },
-                new PresetItem { Value = "Meeting_notes", Description = "회의록" },
-                new PresetItem { Value = "Project_plan", Description = "프로젝트 계획서" }
+                new PresetItem { Value = "Development_note" },
+                new PresetItem { Value = "User_manual" },
+                new PresetItem { Value = "Technical_spec" },
+                new PresetItem { Value = "Meeting_notes" },
+                new PresetItem { Value = "Project_plan" }
             });
 
             // 기본 접미어
             Suffixes.Clear();
             Suffixes.AddRange(new[]
             {
-                new PresetItem { Value = "v1.0", Description = "버전 1.0" },
-                new PresetItem { Value = "draft", Description = "초안" },
-                new PresetItem { Value = "final", Description = "최종" },
-                new PresetItem { Value = "review", Description = "검토" },
-                new PresetItem { Value = "backup", Description = "백업" }
+                new PresetItem { Value = "v1.0" },
+                new PresetItem { Value = "draft" },
+                new PresetItem { Value = "final" },
+                new PresetItem { Value = "review" },
+                new PresetItem { Value = "backup" }
             });
 
             // 기본 확장자
             Extensions.Clear();
             Extensions.AddRange(new[]
             {
-                new PresetItem { Value = ".txt", Description = "텍스트 파일" },
-                new PresetItem { Value = ".md", Description = "마크다운 파일" },
-                new PresetItem { Value = ".docx", Description = "워드 문서" },
-                new PresetItem { Value = ".pdf", Description = "PDF 문서" },
-                new PresetItem { Value = ".xlsx", Description = "엑셀 파일" },
-                new PresetItem { Value = ".log", Description = "로그 파일" }
+                new PresetItem { Value = ".txt" },
+                new PresetItem { Value = ".md" },
+                new PresetItem { Value = ".docx" },
+                new PresetItem { Value = ".pdf" },
+                new PresetItem { Value = ".xlsx" },
+                new PresetItem { Value = ".log" }
             });
 
             // 기본 출력 경로
             OutputPaths.Clear();
-            OutputPaths.Add(new PresetItem { Value = DefaultOutputPath, Description = "기본 출력 폴더" });
+            OutputPaths.Add(new PresetItem { Value = DefaultOutputPath });
 
             // 체크박스 기본값 설정 (모든 항목 활성화)
             IsDateTimeEnabled = true;

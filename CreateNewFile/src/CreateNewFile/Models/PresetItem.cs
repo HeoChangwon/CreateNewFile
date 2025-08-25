@@ -16,25 +16,9 @@ namespace CreateNewFile.Models
         public string Value { get; set; } = string.Empty;
 
         /// <summary>
-        /// 항목 설명
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 생성 일시
-        /// </summary>
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-
-        /// <summary>
         /// 항목이 활성화되어 있는지 여부
         /// </summary>
         public bool IsEnabled { get; set; } = true;
-
-        /// <summary>
-        /// 항목이 즐겨찾기에 추가되어 있는지 여부
-        /// </summary>
-        public bool IsFavorite { get; set; } = false;
 
         /// <summary>
         /// 항목의 유효성을 검사합니다.
@@ -56,10 +40,7 @@ namespace CreateNewFile.Models
             {
                 Id = this.Id,
                 Value = this.Value,
-                Description = this.Description,
-                CreatedAt = this.CreatedAt,
-                IsEnabled = this.IsEnabled,
-                IsFavorite = this.IsFavorite
+                IsEnabled = this.IsEnabled
             };
         }
 
@@ -89,18 +70,11 @@ namespace CreateNewFile.Models
         /// <summary>
         /// 객체의 문자열 표현을 반환합니다.
         /// </summary>
-        /// <returns>값과 설명</returns>
+        /// <returns>값</returns>
         public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(Description))
-                return $"{Value} - {Description}";
             return Value;
         }
-
-        /// <summary>
-        /// 표시용 문자열을 반환합니다.
-        /// </summary>
-        public string DisplayText => ToString();
 
     }
 }

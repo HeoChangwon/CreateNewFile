@@ -61,7 +61,10 @@ CreateNewFile (CNF)
         
   Claude Code 새 Chat Session 시작시 프롬프트:
       
-    CreateNewFile 프로젝트의 문제점을 수정하려고 합니다.
+    CreateNewFile 프로젝트의 Work list는 Documents 폴더 내의 20250825_1328_CNF_Work_list_total.md 파일에 정리되어 있습니다.
+    
+    배포판 설치파일을 실행하여 설치하면,
+    C:\GreenPower\CreateNewFile 폴더에 설치됩니다.
     
     
     

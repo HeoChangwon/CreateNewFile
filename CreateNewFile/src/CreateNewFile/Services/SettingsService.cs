@@ -232,11 +232,6 @@ namespace CreateNewFile.Services
                     item.Id = Guid.NewGuid().ToString();
                 }
 
-                // 생성 시간 설정 (없는 경우)
-                if (item.CreatedAt == default)
-                {
-                    item.CreatedAt = DateTime.Now;
-                }
 
                 targetList.Add(item);
                 return await SaveSettingsAsync(settings);
@@ -270,8 +265,6 @@ namespace CreateNewFile.Services
 
                 // 값 업데이트
                 existingItem.Value = item.Value;
-                existingItem.Description = item.Description;
-                existingItem.IsFavorite = item.IsFavorite;
                 existingItem.IsEnabled = item.IsEnabled;
 
                 return await SaveSettingsAsync(settings);

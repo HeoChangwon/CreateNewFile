@@ -42,8 +42,12 @@ namespace CreateNewFile.Services
         /// 파일을 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>생성 성공 여부</returns>
-        Task<FileCreationResult> CreateFileAsync(FileCreationRequest request);
+        Task<FileCreationResult> CreateFileAsync(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true);
 
         /// <summary>
         /// 파일이 이미 존재하는지 확인합니다.

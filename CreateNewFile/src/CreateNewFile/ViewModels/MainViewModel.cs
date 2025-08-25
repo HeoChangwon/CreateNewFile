@@ -373,16 +373,12 @@ namespace CreateNewFile.ViewModels
         /// </summary>
         public async Task InitializeAsync()
         {
-            System.Diagnostics.Debug.WriteLine("InitializeAsync 시작");
             try
             {
                 await LoadDataAsync();
-                System.Diagnostics.Debug.WriteLine("InitializeAsync 완료");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"InitializeAsync 오류: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"스택 트레이스: {ex.StackTrace}");
                 throw;
             }
         }
@@ -394,7 +390,6 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("콤보박스 갱신 시작");
                 
                 // 현재 선택된 값들 임시 저장
                 var selectedAbbreviation = SelectedAbbreviation;
@@ -418,11 +413,9 @@ namespace CreateNewFile.ViewModels
                 RestoreOrSetFirstSelection(Extensions, selectedExtension, value => SelectedExtension = value);
                 // OutputPath와 TemplatePath는 복원하지 않음 (현재 값 유지)
                 
-                System.Diagnostics.Debug.WriteLine("콤보박스 갱신 완료");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"콤보박스 갱신 오류: {ex.Message}");
                 StatusMessage = $"콤보박스 갱신 오류: {ex.Message}";
             }
         }
@@ -473,7 +466,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"필수 설정 로드 오류: {ex.Message}");
                 StatusMessage = "기본 설정으로 시작";
             }
         }
@@ -526,36 +518,23 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("LoadDataAsync 시작");
                 IsWorking = true;
                 StatusMessage = "설정을 로드하는 중...";
 
-                System.Diagnostics.Debug.WriteLine("설정 파일 로드 중...");
                 var settings = await _settingsService.LoadSettingsAsync();
-                System.Diagnostics.Debug.WriteLine($"설정 로드 완료: IsDateTimeEnabled={settings.IsDateTimeEnabled}, IsAbbreviationEnabled={settings.IsAbbreviationEnabled}, IsTitleEnabled={settings.IsTitleEnabled}, IsSuffixEnabled={settings.IsSuffixEnabled}");
 
                 // 컬렉션 업데이트
-                System.Diagnostics.Debug.WriteLine("프리셋 아이템 로드 시작");
                 await LoadPresetItems(PresetType.Abbreviation, Abbreviations);
-                System.Diagnostics.Debug.WriteLine($"Abbreviations 로드 완료: {Abbreviations.Count}개 항목");
                 await LoadPresetItems(PresetType.Title, Titles);
-                System.Diagnostics.Debug.WriteLine($"Titles 로드 완료: {Titles.Count}개 항목");
                 await LoadPresetItems(PresetType.Suffix, Suffixes);
-                System.Diagnostics.Debug.WriteLine($"Suffixes 로드 완료: {Suffixes.Count}개 항목");
                 await LoadPresetItems(PresetType.Extension, Extensions);
-                System.Diagnostics.Debug.WriteLine($"Extensions 로드 완료: {Extensions.Count}개 항목");
                 await LoadPresetItems(PresetType.OutputPath, OutputPaths);
-                System.Diagnostics.Debug.WriteLine($"OutputPaths 로드 완료: {OutputPaths.Count}개 항목");
                 await LoadPresetItems(PresetType.TemplatePath, TemplatePaths);
-                System.Diagnostics.Debug.WriteLine($"TemplatePaths 로드 완료: {TemplatePaths.Count}개 항목");
 
                 // 기본값 설정
-                System.Diagnostics.Debug.WriteLine("기본값 설정 시작");
                 await SetDefaultValues(settings);
-                System.Diagnostics.Debug.WriteLine("기본값 설정 완료");
 
                 StatusMessage = "준비 완료";
-                System.Diagnostics.Debug.WriteLine("LoadDataAsync 모든 작업 완료");
             }
             catch (Exception ex)
             {
@@ -576,14 +555,13 @@ namespace CreateNewFile.ViewModels
             {
                 var items = await _settingsService.GetPresetItemsAsync(type);
                 collection.Clear();
-                foreach (var item in items.Where(i => i.IsEnabled).OrderByDescending(i => i.IsFavorite).ThenBy(i => i.Value))
+                foreach (var item in items.Where(i => i.IsEnabled).OrderBy(i => i.Value))
                 {
                     collection.Add(item);
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to load preset items for {type}: {ex.Message}");
             }
         }
 
@@ -652,7 +630,6 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"체크박스 상태 저장: DateTime={IsDateTimeEnabled}, Abbreviation={IsAbbreviationEnabled}, Title={IsTitleEnabled}, Suffix={IsSuffixEnabled}");
                 await _settingsService.SaveCheckboxStatesAsync(
                     IsDateTimeEnabled, 
                     IsAbbreviationEnabled, 
@@ -661,7 +638,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"체크박스 상태 저장 실패: {ex.Message}");
             }
         }
 
@@ -676,7 +652,6 @@ namespace CreateNewFile.ViewModels
                 
                 var (isDateTime, isAbbreviation, isTitle, isSuffix) = await _settingsService.LoadCheckboxStatesAsync();
                 
-                System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드: DateTime={isDateTime}, Abbreviation={isAbbreviation}, Title={isTitle}, Suffix={isSuffix}");
                 
                 // 속성을 통해 설정 (UI 업데이트를 위해)
                 IsDateTimeEnabled = isDateTime;
@@ -689,7 +664,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드 실패: {ex.Message}");
             }
             finally
             {
@@ -827,12 +801,13 @@ namespace CreateNewFile.ViewModels
                     return;
                 }
 
-                // 파일 덮어쓰기 확인
-                if (System.IO.File.Exists(request.GetFullPath()))
+                // 파일 덮어쓰기 확인 (체크박스 상태를 고려한 경로 사용)
+                var fullPath = _fileGeneratorService.GetFullFilePath(request, IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled);
+                if (System.IO.File.Exists(fullPath))
                 {
                     var overwriteConfirmed = await DialogHelper.ShowFileOverwriteConfirmAsync(
-                        System.IO.Path.GetFileName(request.GetFullPath()),
-                        request.GetFullPath());
+                        System.IO.Path.GetFileName(fullPath),
+                        fullPath);
                     
                     if (!overwriteConfirmed)
                     {
@@ -841,7 +816,7 @@ namespace CreateNewFile.ViewModels
                     }
                 }
 
-                var result = await _fileGeneratorService.CreateFileAsync(request);
+                var result = await _fileGeneratorService.CreateFileAsync(request, IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled);
                 if (result.Success)
                 {
                     StatusMessage = $"파일 생성 완료: {result.FileName}";
@@ -918,7 +893,6 @@ namespace CreateNewFile.ViewModels
                 
                 // 설정 창이 닫혔으므로 콤보박스를 갱신 (OK/Cancel 상관없이 변경사항이 있을 수 있음)
                 _ = RefreshComboBoxesAsync();
-                System.Diagnostics.Debug.WriteLine($"설정 창 닫힘 (결과: {result}): 콤보박스 갱신 요청됨");
             }
             catch (Exception ex)
             {
@@ -990,7 +964,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error creating file request: {ex.Message}");
                 return null;
             }
         }
@@ -1107,7 +1080,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error updating usage statistics: {ex.Message}");
             }
         }
 
@@ -1133,7 +1105,6 @@ namespace CreateNewFile.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error saving last selected items: {ex.Message}");
             }
         }
 

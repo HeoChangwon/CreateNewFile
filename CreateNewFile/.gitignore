@@ -320,3 +320,26 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database 
 healthchecksdb
+
+# Windows device files that should not be committed
+nul
+NUL
+aux
+AUX
+con
+CON
+prn
+PRN
+com[1-9]
+COM[1-9]
+lpt[1-9]
+LPT[1-9]
+
+# User-specific appsettings (keep default template only)
+src/CreateNewFile/bin/**/config/appsettings.json
+src/CreateNewFile.Tests/bin/**/config/appsettings.json
+
+# Temporary Windows files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/

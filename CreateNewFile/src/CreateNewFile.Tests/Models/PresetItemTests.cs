@@ -12,9 +12,8 @@ public class PresetItemTests
 
         // Assert
         Assert.True(item.IsEnabled);
-        Assert.False(item.IsFavorite);
-        Assert.Equal(0, item.UsageCount);
-        Assert.True(item.LastUsed > DateTime.MinValue);
+        Assert.NotNull(item.Id);
+        Assert.Equal(string.Empty, item.Value);
     }
 
     [Fact]
@@ -22,57 +21,21 @@ public class PresetItemTests
     {
         // Arrange
         var value = "CNF";
-        var description = "CreateNewFile";
 
         // Act
-        var item = new PresetItem { Value = value, Description = description };
+        var item = new PresetItem { Value = value };
 
         // Assert
         Assert.Equal(value, item.Value);
-        Assert.Equal(description, item.Description);
         Assert.True(item.IsEnabled);
-        Assert.False(item.IsFavorite);
     }
 
     [Fact]
-    public void MarkAsUsed_IncrementsCountAndUpdatesTime()
+    public void Equals_SameId_ReturnsTrue()
     {
         // Arrange
-        var item = new PresetItem { Value = "CNF", Description = "Test" };
-        var initialCount = item.UsageCount;
-        var beforeTime = DateTime.Now.AddSeconds(-1);
-
-        // Act
-        item.MarkAsUsed();
-        var afterTime = DateTime.Now.AddSeconds(1);
-
-        // Assert
-        Assert.Equal(initialCount + 1, item.UsageCount);
-        Assert.True(item.LastUsed >= beforeTime);
-        Assert.True(item.LastUsed <= afterTime);
-    }
-
-    [Fact]
-    public void MarkAsUsed_MultipleTimesCalls_IncrementsCorrectly()
-    {
-        // Arrange
-        var item = new PresetItem { Value = "CNF", Description = "Test" };
-
-        // Act
-        item.MarkAsUsed();
-        item.MarkAsUsed();
-        item.MarkAsUsed();
-
-        // Assert
-        Assert.Equal(3, item.UsageCount);
-    }
-
-    [Fact]
-    public void Equals_SameValues_ReturnsTrue()
-    {
-        // Arrange
-        var item1 = new PresetItem { Value = "CNF", Description = "Test" };
-        var item2 = new PresetItem { Value = "CNF", Description = "Test", Id = item1.Id };
+        var item1 = new PresetItem { Value = "CNF" };
+        var item2 = new PresetItem { Value = "CNF", Id = item1.Id };
 
         // Act & Assert
         Assert.Equal(item1, item2);
@@ -80,11 +43,11 @@ public class PresetItemTests
     }
 
     [Fact]
-    public void Equals_DifferentValues_ReturnsFalse()
+    public void Equals_DifferentId_ReturnsFalse()
     {
         // Arrange
-        var item1 = new PresetItem { Value = "CNF", Description = "Test" };
-        var item2 = new PresetItem { Value = "DOC", Description = "Document" };
+        var item1 = new PresetItem { Value = "CNF" };
+        var item2 = new PresetItem { Value = "DOC" };
 
         // Act & Assert
         Assert.NotEqual(item1, item2);
@@ -95,8 +58,8 @@ public class PresetItemTests
     public void GetHashCode_SameId_ReturnsSameHash()
     {
         // Arrange
-        var item1 = new PresetItem { Value = "CNF", Description = "Test" };
-        var item2 = new PresetItem { Value = "CNF", Description = "Test", Id = item1.Id };
+        var item1 = new PresetItem { Value = "CNF" };
+        var item2 = new PresetItem { Value = "CNF", Id = item1.Id };
 
         // Act
         var hash1 = item1.GetHashCode();
@@ -107,17 +70,16 @@ public class PresetItemTests
     }
 
     [Fact]
-    public void ToString_ReturnsValueAndDescription()
+    public void ToString_ReturnsValue()
     {
         // Arrange
-        var item = new PresetItem { Value = "CNF", Description = "CreateNewFile" };
+        var item = new PresetItem { Value = "CNF" };
 
         // Act
         var result = item.ToString();
 
         // Assert
-        Assert.Contains("CNF", result);
-        Assert.Contains("CreateNewFile", result);
+        Assert.Equal("CNF", result);
     }
 
     [Fact]
@@ -128,15 +90,11 @@ public class PresetItemTests
 
         // Act
         item.Value = "TEST";
-        item.Description = "Test Description";
         item.IsEnabled = false;
-        item.IsFavorite = true;
 
         // Assert
         Assert.Equal("TEST", item.Value);
-        Assert.Equal("Test Description", item.Description);
         Assert.False(item.IsEnabled);
-        Assert.True(item.IsFavorite);
     }
 
     [Fact]
@@ -163,5 +121,25 @@ public class PresetItemTests
 
         // Assert
         Assert.False(result);
+    }
+
+    [Fact]
+    public void Clone_CreatesNewInstance()
+    {
+        // Arrange
+        var original = new PresetItem 
+        { 
+            Value = "CNF",
+            IsEnabled = false
+        };
+
+        // Act
+        var cloned = original.Clone();
+
+        // Assert
+        Assert.NotSame(original, cloned);
+        Assert.Equal(original.Id, cloned.Id);
+        Assert.Equal(original.Value, cloned.Value);
+        Assert.Equal(original.IsEnabled, cloned.IsEnabled);
     }
 }

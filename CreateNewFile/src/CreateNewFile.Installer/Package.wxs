@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- 제품 정보 -->
+  <Package Name="CreateNewFile"
+           Language="1042"
+           Codepage="949"
+           Version="1.0.1"
+           Manufacturer="GreenPower Co., Ltd."
+           UpgradeCode="12345678-1234-5678-9ABC-123456789ABC">
+
+    <!-- .NET 8 런타임 필수 조건 확인 -->
+    <Launch Condition="NETFRAMEWORK8 OR Installed"
+            Message="이 프로그램을 실행하려면 .NET 8 Desktop Runtime이 필요합니다. Microsoft 다운로드 페이지에서 설치해주세요: https://dotnet.microsoft.com/ko-kr/download/dotnet/8.0" />
+
+    <!-- .NET 8 런타임 설치 여부 확인 -->
+    <Property Id="NETFRAMEWORK8">
+      <RegistrySearch Id="NetFramework8Registry"
+                      Root="HKLM"
+                      Key="SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost"
+                      Name="Version"
+                      Type="raw" />
+    </Property>
+
+    <!-- 설치 디렉토리 설정 -->
+    <Property Id="INSTALLFOLDER" Value="C:\GreenPower\CreateNewFile" />
+
+    <!-- 미디어 설정 -->
+    <Media Id="1" Cabinet="CreateNewFile.cab" EmbedCab="yes" />
+
+    <!-- 디렉토리 구조 -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="GreenPowerFolder" Name="GreenPower">
+        <Directory Id="INSTALLFOLDER" Name="CreateNewFile">
+          <Directory Id="ConfigFolder" Name="config" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="GreenPowerMenuFolder" Name="GreenPower">
+        <Directory Id="CreateNewFileMenuFolder" Name="CreateNewFile" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- 구성 요소 -->
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- 메인 실행 파일 -->
+      <Component Id="CreateNewFileExecutable">
+        <File Id="CreateNewFileExe"
+              Source="..\CreateNewFile\bin\Release\Publish\CreateNewFile.exe"
+              KeyPath="yes" />
+        
+        <!-- 시작 메뉴 바로가기 -->
+        <Shortcut Id="StartMenuShortcut"
+                  Directory="CreateNewFileMenuFolder"
+                  Name="CreateNewFile"
+                  Description="템플릿 기반 파일 생성 도구"
+                  Icon="ProductIcon"
+                  WorkingDirectory="INSTALLFOLDER" />
+                  
+        <!-- 바탕화면 바로가기 -->
+        <Shortcut Id="DesktopShortcut"
+                  Directory="DesktopFolder"
+                  Name="CreateNewFile"
+                  Description="템플릿 기반 파일 생성 도구"
+                  Icon="ProductIcon"
+                  WorkingDirectory="INSTALLFOLDER" />
+      </Component>
+
+      <!-- PDB 파일 -->
+      <Component Id="CreateNewFilePdb">
+        <File Id="CreateNewFilePdb"
+              Source="..\CreateNewFile\bin\Release\Publish\CreateNewFile.pdb"
+              KeyPath="yes" />
+      </Component>
+
+      <!-- 설정 파일 -->
+      <Component Id="ConfigFiles" Directory="ConfigFolder">
+        <File Id="AppSettingsDefault"
+              Source="..\CreateNewFile\bin\Release\Publish\config\appsettings.default.json"
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- 아이콘 설정 -->
+    <Icon Id="ProductIcon" SourceFile="..\CreateNewFile\Resources\CreateNewFile.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+
+    <!-- 제품 정보 -->
+    <Property Id="ARPHELPLINK" Value="https://github.com/greenpower-co/CreateNewFile" />
+    <Property Id="ARPURLINFOABOUT" Value="https://greenpower.co.kr" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <!-- 기능 설정 -->
+    <Feature Id="ProductFeature" Title="CreateNewFile" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      
+      <!-- 시작 메뉴 폴더 제거를 위한 컴포넌트 -->
+      <Component Id="StartMenuFolder" Directory="CreateNewFileMenuFolder">
+        <RemoveFolder Id="RemoveCreateNewFileMenuFolder" On="uninstall" />
+        <RemoveFolder Id="RemoveGreenPowerMenuFolder" Directory="GreenPowerMenuFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\GreenPower\CreateNewFile" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+    <!-- 사용자 인터페이스 -->
+    <!-- UI는 향후 추가 예정 -->
+    
+    <!-- 라이선스 파일 (선택사항) -->
+    <!-- <WixVariable Id="WixUILicenseRtf" Value="license.rtf" /> -->
+
+  </Package>
+</Wix>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="ko-KR" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+  
+  <!-- 일반 텍스트 -->
+  <String Id="ApplicationName" Value="CreateNewFile" />
+  <String Id="ManufacturerName" Value="GreenPower Co., Ltd." />
+  <String Id="ApplicationDescription" Value="템플릿 기반 파일 생성 도구" />
+  
+  <!-- 버튼 텍스트 -->
+  <String Id="InstallButton" Value="설치(&amp;I)" />
+  <String Id="UninstallButton" Value="제거(&amp;U)" />
+  <String Id="RepairButton" Value="복구(&amp;R)" />
+  <String Id="CancelButton" Value="취소(&amp;C)" />
+  <String Id="FinishButton" Value="마침(&amp;F)" />
+  <String Id="NextButton" Value="다음(&amp;N)" />
+  <String Id="BackButton" Value="이전(&amp;B)" />
+  <String Id="BrowseButton" Value="찾아보기(&amp;B)" />
+  <String Id="CloseButton" Value="닫기(&amp;C)" />
+  <String Id="OkButton" Value="확인(&amp;O)" />
+  
+  <!-- 설치 메시지 -->
+  <String Id="WelcomeTitle" Value="CreateNewFile 설치 마법사에 오신 것을 환영합니다" />
+  <String Id="WelcomeMessage" Value="이 마법사가 CreateNewFile을(를) 컴퓨터에 설치하는 과정을 안내해 드립니다." />
+  <String Id="InstallDirDlgTitle" Value="설치 위치" />
+  <String Id="InstallDirDlgDescription" Value="CreateNewFile을(를) 설치할 위치를 선택하십시오." />
+  <String Id="InstallLocation" Value="설치 위치:" />
+  <String Id="ProgressTitle" Value="CreateNewFile 설치 중..." />
+  <String Id="ProgressMessage" Value="잠시만 기다려 주십시오. CreateNewFile을(를) 설치하고 있습니다." />
+  
+  <!-- 완료 메시지 -->
+  <String Id="InstallCompleteTitle" Value="설치 완료" />
+  <String Id="InstallCompleteMessage" Value="CreateNewFile이(가) 성공적으로 설치되었습니다." />
+  <String Id="LaunchApplication" Value="CreateNewFile 실행(&amp;L)" />
+  
+  <!-- 오류 메시지 -->
+  <String Id="ErrorTitle" Value="오류" />
+  <String Id="NetFrameworkRequired" Value="이 프로그램을 실행하려면 .NET 8 Desktop Runtime이 필요합니다. Microsoft 다운로드 페이지에서 설치해주세요: https://dotnet.microsoft.com/ko-kr/download/dotnet/8.0" />
+  
+  <!-- 제거 메시지 -->
+  <String Id="UninstallTitle" Value="CreateNewFile 제거" />
+  <String Id="UninstallMessage" Value="CreateNewFile을(를) 컴퓨터에서 제거하시겠습니까?" />
+  <String Id="UninstallCompleteMessage" Value="CreateNewFile이(가) 성공적으로 제거되었습니다." />
+  
+  <!-- 시작 메뉴 -->
+  <String Id="StartMenuShortcut" Value="CreateNewFile" />
+  <String Id="DesktopShortcut" Value="CreateNewFile" />
+  
+</WixLocalization>
