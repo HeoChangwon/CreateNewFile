@@ -38,6 +38,16 @@ namespace CreateNewFile.Services
         }
 
         /// <summary>
+        /// 기본 템플릿 파일 경로를 가져옵니다.
+        /// </summary>
+        /// <returns>기본 템플릿 파일 경로</returns>
+        private static string GetDefaultTemplateFilePath()
+        {
+            var configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            return Path.Combine(configDirectory, "appsettings.default.json");
+        }
+
+        /// <summary>
         /// 애플리케이션 설정을 로드합니다.
         /// </summary>
         /// <returns>애플리케이션 설정</returns>
@@ -139,6 +149,37 @@ namespace CreateNewFile.Services
         /// <returns>초기화된 설정</returns>
         public async Task<AppSettings> InitializeDefaultSettingsAsync()
         {
+            try
+            {
+                // 기본 템플릿 파일에서 설정을 로드 시도
+                var defaultSettingsPath = GetDefaultTemplateFilePath();
+                if (File.Exists(defaultSettingsPath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"기본 템플릿 파일에서 설정 로드: {defaultSettingsPath}");
+                    var defaultJson = await File.ReadAllTextAsync(defaultSettingsPath);
+                    var defaultSettings = JsonConvert.DeserializeObject<AppSettings>(defaultJson);
+                    
+                    if (defaultSettings != null)
+                    {
+                        // 기본 출력 경로를 사용자 문서 폴더로 설정
+                        if (string.IsNullOrEmpty(defaultSettings.DefaultOutputPath))
+                        {
+                            defaultSettings.DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        }
+
+                        await SaveSettingsAsync(defaultSettings);
+                        System.Diagnostics.Debug.WriteLine("기본 템플릿에서 설정을 성공적으로 로드했습니다.");
+                        return defaultSettings;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"기본 템플릿 파일 로드 실패: {ex.Message}");
+            }
+
+            // 기본 템플릿 파일 로드에 실패한 경우 코드에서 기본값 생성
+            System.Diagnostics.Debug.WriteLine("코드에서 기본 설정 생성");
             var settings = new AppSettings();
             settings.LoadDefaults();
 
@@ -161,8 +202,6 @@ namespace CreateNewFile.Services
                 PresetType.Title => settings.Titles,
                 PresetType.Suffix => settings.Suffixes,
                 PresetType.Extension => settings.Extensions,
-                PresetType.OutputPath => settings.OutputPaths,
-                PresetType.TemplatePath => settings.TemplatePaths,
                 _ => new List<PresetItem>()
             };
         }
@@ -294,7 +333,6 @@ namespace CreateNewFile.Services
                 if (item == null)
                     return false;
 
-                item.MarkAsUsed();
                 return await SaveSettingsAsync(settings);
             }
             catch (Exception ex)
@@ -475,8 +513,6 @@ namespace CreateNewFile.Services
                 PresetType.Title => settings.Titles,
                 PresetType.Suffix => settings.Suffixes,
                 PresetType.Extension => settings.Extensions,
-                PresetType.OutputPath => settings.OutputPaths,
-                PresetType.TemplatePath => settings.TemplatePaths,
                 _ => throw new ArgumentException($"지원하지 않는 미리 정의된 항목 타입: {type}")
             };
         }
@@ -497,6 +533,52 @@ namespace CreateNewFile.Services
             settings.Extensions ??= defaultSettings.Extensions;
             settings.OutputPaths ??= defaultSettings.OutputPaths;
             settings.TemplatePaths ??= defaultSettings.TemplatePaths;
+        }
+
+        /// <summary>
+        /// 체크박스 활성화 상태를 저장합니다.
+        /// </summary>
+        /// <param name="isDateTimeEnabled">날짜/시간 활성화 상태</param>
+        /// <param name="isAbbreviationEnabled">약어 활성화 상태</param>
+        /// <param name="isTitleEnabled">제목 활성화 상태</param>
+        /// <param name="isSuffixEnabled">접미어 활성화 상태</param>
+        /// <returns>저장 성공 여부</returns>
+        public async Task<bool> SaveCheckboxStatesAsync(bool isDateTimeEnabled, bool isAbbreviationEnabled, bool isTitleEnabled, bool isSuffixEnabled)
+        {
+            try
+            {
+                var settings = await LoadSettingsAsync();
+                settings.IsDateTimeEnabled = isDateTimeEnabled;
+                settings.IsAbbreviationEnabled = isAbbreviationEnabled;
+                settings.IsTitleEnabled = isTitleEnabled;
+                settings.IsSuffixEnabled = isSuffixEnabled;
+
+                return await SaveSettingsAsync(settings);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 저장 실패: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 체크박스 활성화 상태를 로드합니다.
+        /// </summary>
+        /// <returns>체크박스 상태 튜플</returns>
+        public async Task<(bool isDateTime, bool isAbbreviation, bool isTitle, bool isSuffix)> LoadCheckboxStatesAsync()
+        {
+            try
+            {
+                var settings = await LoadSettingsAsync();
+                return (settings.IsDateTimeEnabled, settings.IsAbbreviationEnabled, settings.IsTitleEnabled, settings.IsSuffixEnabled);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드 실패: {ex.Message}");
+                // 기본값 반환
+                return (true, true, true, true);
+            }
         }
     }
 }

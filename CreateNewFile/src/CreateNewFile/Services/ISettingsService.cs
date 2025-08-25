@@ -94,6 +94,22 @@ namespace CreateNewFile.Services
         /// <param name="settings">검사할 설정</param>
         /// <returns>유효성 검사 결과</returns>
         ValidationResult ValidateSettings(AppSettings settings);
+
+        /// <summary>
+        /// 체크박스 활성화 상태를 저장합니다.
+        /// </summary>
+        /// <param name="isDateTimeEnabled">날짜/시간 활성화 상태</param>
+        /// <param name="isAbbreviationEnabled">약어 활성화 상태</param>
+        /// <param name="isTitleEnabled">제목 활성화 상태</param>
+        /// <param name="isSuffixEnabled">접미어 활성화 상태</param>
+        /// <returns>저장 성공 여부</returns>
+        Task<bool> SaveCheckboxStatesAsync(bool isDateTimeEnabled, bool isAbbreviationEnabled, bool isTitleEnabled, bool isSuffixEnabled);
+
+        /// <summary>
+        /// 체크박스 활성화 상태를 로드합니다.
+        /// </summary>
+        /// <returns>체크박스 상태 튜플</returns>
+        Task<(bool isDateTime, bool isAbbreviation, bool isTitle, bool isSuffix)> LoadCheckboxStatesAsync();
     }
 
     /// <summary>

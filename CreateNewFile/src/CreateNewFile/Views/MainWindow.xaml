@@ -4,12 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CreateNewFile"
+        xmlns:converters="clr-namespace:CreateNewFile.Utils"
         mc:Ignorable="d"
-        Title="CreateNewFile - 파일 생성기" Height="700" Width="1000"
-        WindowStartupLocation="CenterScreen"
-        MinHeight="600" MinWidth="800">
+        Height="1065" Width="600"
+        WindowStartupLocation="Manual"
+        MinHeight="600" MinWidth="500"
+        ShowInTaskbar="True"
+        Icon="pack://application:,,,/Resources/CreateNewFile.ico">
     
     <Window.Resources>
+        <!-- 컨버터 -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+        <converters:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
+        
         <!-- 공통 스타일 -->
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -78,7 +86,11 @@
         <Style TargetType="DatePicker">
             <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="FontSize" Value="12"/>
         </Style>
         
         <!-- 드롭 영역 스타일 -->
@@ -119,6 +131,7 @@
                 <GroupBox Header="파일 정보">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="120"/>
@@ -132,52 +145,75 @@
                         </Grid.RowDefinitions>
                         
                         <!-- 날짜/시간 -->
-                        <Label Grid.Row="0" Grid.Column="0" Content="날짜/시간:"/>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsDateTimeEnabled}" 
+                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="날짜/시간:"
+                               Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal"
+                                   Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}">
                             <DatePicker x:Name="DatePicker" 
                                        SelectedDate="{Binding SelectedDateTime, Mode=TwoWay}"
+                                       IsEnabled="{Binding IsDateTimeEnabled}"
                                        Width="120" Margin="0,0,10,0"/>
                             <TextBox x:Name="TimeTextBox" 
                                     Text="{Binding SelectedDateTime, StringFormat='HH:mm', Mode=TwoWay}"
+                                    IsEnabled="{Binding IsDateTimeEnabled}"
                                     Width="60" Margin="0,0,10,0"/>
                         </StackPanel>
-                        <Button Grid.Row="0" Grid.Column="2" Content="현재시간" 
+                        <Button Grid.Row="0" Grid.Column="3" Content="현재 일시" 
                                Command="{Binding SetCurrentDateTimeCommand}"
+                               IsEnabled="{Binding IsDateTimeEnabled}"
+                               Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
                                Style="{StaticResource SecondaryButton}"/>
                         
                         <!-- 약어 -->
-                        <Label Grid.Row="1" Grid.Column="0" Content="약어:"/>
-                        <ComboBox Grid.Row="1" Grid.Column="1" 
+                        <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsAbbreviationEnabled}" 
+                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Label Grid.Row="1" Grid.Column="1" Content="약어:"
+                               Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                        <ComboBox Grid.Row="1" Grid.Column="2" 
                                  ItemsSource="{Binding Abbreviations}"
                                  DisplayMemberPath="Value"
                                  SelectedValuePath="Value"
                                  SelectedValue="{Binding SelectedAbbreviation, Mode=TwoWay}"
+                                 IsEnabled="{Binding IsAbbreviationEnabled}"
+                                 Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
                                  IsEditable="True"
                                  Text="{Binding SelectedAbbreviation, Mode=TwoWay}"/>
                         
                         <!-- 제목 -->
-                        <Label Grid.Row="2" Grid.Column="0" Content="제목:"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" 
+                        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsTitleEnabled}" 
+                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Label Grid.Row="2" Grid.Column="1" Content="제목:"
+                               Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                        <ComboBox Grid.Row="2" Grid.Column="2" 
                                  ItemsSource="{Binding Titles}"
                                  DisplayMemberPath="Value"
                                  SelectedValuePath="Value"
                                  SelectedValue="{Binding SelectedTitle, Mode=TwoWay}"
+                                 IsEnabled="{Binding IsTitleEnabled}"
+                                 Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
                                  IsEditable="True"
                                  Text="{Binding SelectedTitle, Mode=TwoWay}"/>
                         
                         <!-- 접미어 -->
-                        <Label Grid.Row="3" Grid.Column="0" Content="접미어:"/>
-                        <ComboBox Grid.Row="3" Grid.Column="1" 
+                        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsSuffixEnabled}" 
+                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="접미어:"
+                               Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                        <ComboBox Grid.Row="3" Grid.Column="2" 
                                  ItemsSource="{Binding Suffixes}"
                                  DisplayMemberPath="Value"
                                  SelectedValuePath="Value"
                                  SelectedValue="{Binding SelectedSuffix, Mode=TwoWay}"
+                                 IsEnabled="{Binding IsSuffixEnabled}"
+                                 Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
                                  IsEditable="True"
                                  Text="{Binding SelectedSuffix, Mode=TwoWay}"/>
                         
                         <!-- 확장자 -->
-                        <Label Grid.Row="4" Grid.Column="0" Content="확장자:"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1" 
+                        <Label Grid.Row="4" Grid.Column="1" Content="확장자:"/>
+                        <ComboBox Grid.Row="4" Grid.Column="2" 
                                  ItemsSource="{Binding Extensions}"
                                  DisplayMemberPath="Value"
                                  SelectedValuePath="Value"
@@ -274,7 +310,10 @@
                             Background="LightBlue"
                             FontFamily="Consolas"
                             FontSize="12"
-                            TextWrapping="Wrap"/>
+                            TextWrapping="Wrap"
+                            Height="55"
+                            VerticalScrollBarVisibility="Auto"
+                            AcceptsReturn="True"/>
                 </GroupBox>
                 
                 <!-- 유효성 검사 에러 그룹 -->

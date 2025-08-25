@@ -33,6 +33,12 @@ namespace CreateNewFile.ViewModels
         private string _statusMessage = string.Empty;
         private string _validationError = string.Empty;
         private bool _hasValidationErrors = false;
+        
+        private bool _isDateTimeEnabled = true;
+        private bool _isAbbreviationEnabled = true;
+        private bool _isTitleEnabled = true;
+        private bool _isSuffixEnabled = true;
+        private bool _isLoadingCheckboxStates = false;
         #endregion
 
         #region Properties
@@ -235,6 +241,82 @@ namespace CreateNewFile.ViewModels
         /// 템플릿 경로 목록
         /// </summary>
         public ObservableCollection<PresetItem> TemplatePaths { get; } = new();
+        
+        /// <summary>
+        /// 날짜/시간 항목 활성화 여부
+        /// </summary>
+        public bool IsDateTimeEnabled
+        {
+            get => _isDateTimeEnabled;
+            set
+            {
+                if (SetProperty(ref _isDateTimeEnabled, value))
+                {
+                    UpdateGeneratedFileName();
+                    if (!_isLoadingCheckboxStates)
+                    {
+                        _ = SaveCheckboxStatesAsync();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 약어 항목 활성화 여부
+        /// </summary>
+        public bool IsAbbreviationEnabled
+        {
+            get => _isAbbreviationEnabled;
+            set
+            {
+                if (SetProperty(ref _isAbbreviationEnabled, value))
+                {
+                    UpdateGeneratedFileName();
+                    if (!_isLoadingCheckboxStates)
+                    {
+                        _ = SaveCheckboxStatesAsync();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 제목 항목 활성화 여부
+        /// </summary>
+        public bool IsTitleEnabled
+        {
+            get => _isTitleEnabled;
+            set
+            {
+                if (SetProperty(ref _isTitleEnabled, value))
+                {
+                    UpdateGeneratedFileName();
+                    if (!_isLoadingCheckboxStates)
+                    {
+                        _ = SaveCheckboxStatesAsync();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 접미어 항목 활성화 여부
+        /// </summary>
+        public bool IsSuffixEnabled
+        {
+            get => _isSuffixEnabled;
+            set
+            {
+                if (SetProperty(ref _isSuffixEnabled, value))
+                {
+                    UpdateGeneratedFileName();
+                    if (!_isLoadingCheckboxStates)
+                    {
+                        _ = SaveCheckboxStatesAsync();
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Commands
@@ -273,8 +355,7 @@ namespace CreateNewFile.ViewModels
             _fileGeneratorService = fileGeneratorService ?? throw new ArgumentNullException(nameof(fileGeneratorService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
-            // 기본값 설정
-            SelectedDateTime = DateTime.Now;
+            // 기본값 설정 (날짜/시간은 설정 로드 후 적용)
             StatusMessage = "준비";
 
             // 명령 초기화
@@ -284,8 +365,117 @@ namespace CreateNewFile.ViewModels
             BrowseOutputPathCommand = new RelayCommand(BrowseOutputPath);
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
 
-            // 데이터 로드
-            _ = LoadDataAsync();
+            // 데이터 로드는 별도로 호출하도록 변경 (화면 표시 전에 완료하기 위해)
+        }
+
+        /// <summary>
+        /// 초기 데이터를 로드합니다 (화면 표시 전에 호출).
+        /// </summary>
+        public async Task InitializeAsync()
+        {
+            System.Diagnostics.Debug.WriteLine("InitializeAsync 시작");
+            try
+            {
+                await LoadDataAsync();
+                System.Diagnostics.Debug.WriteLine("InitializeAsync 완료");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"InitializeAsync 오류: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"스택 트레이스: {ex.StackTrace}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 설정 창에서 변경된 내용을 반영하여 콤보박스만 갱신합니다.
+        /// </summary>
+        public async Task RefreshComboBoxesAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("콤보박스 갱신 시작");
+                
+                // 현재 선택된 값들 임시 저장
+                var selectedAbbreviation = SelectedAbbreviation;
+                var selectedTitle = SelectedTitle;
+                var selectedSuffix = SelectedSuffix;
+                var selectedExtension = SelectedExtension;
+                var selectedOutputPath = SelectedOutputPath;
+                var selectedTemplatePath = SelectedTemplatePath;
+                
+                // 콤보박스 아이템 갱신 (출력 폴더와 템플릿 파일은 제외)
+                await LoadPresetItems(PresetType.Abbreviation, Abbreviations);
+                await LoadPresetItems(PresetType.Title, Titles);
+                await LoadPresetItems(PresetType.Suffix, Suffixes);
+                await LoadPresetItems(PresetType.Extension, Extensions);
+                // OutputPath와 TemplatePath는 갱신하지 않음 (현재 선택된 경로 유지)
+                
+                // 이전에 선택되었던 값들이 여전히 존재하면 복원, 없으면 첫 번째 항목 선택
+                RestoreOrSetFirstSelection(Abbreviations, selectedAbbreviation, value => SelectedAbbreviation = value);
+                RestoreOrSetFirstSelection(Titles, selectedTitle, value => SelectedTitle = value);
+                RestoreOrSetFirstSelection(Suffixes, selectedSuffix, value => SelectedSuffix = value);
+                RestoreOrSetFirstSelection(Extensions, selectedExtension, value => SelectedExtension = value);
+                // OutputPath와 TemplatePath는 복원하지 않음 (현재 값 유지)
+                
+                System.Diagnostics.Debug.WriteLine("콤보박스 갱신 완료");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"콤보박스 갱신 오류: {ex.Message}");
+                StatusMessage = $"콤보박스 갱신 오류: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// 선택된 값을 복원하거나 첫 번째 항목을 선택합니다.
+        /// </summary>
+        private void RestoreOrSetFirstSelection<T>(ObservableCollection<T> collection, string previousValue, Action<string> setSelection) 
+            where T : PresetItem
+        {
+            if (collection.Count == 0)
+            {
+                setSelection("");
+                return;
+            }
+
+            // 이전 선택값이 여전히 존재하는지 확인
+            if (!string.IsNullOrEmpty(previousValue) && collection.Any(item => item.Value == previousValue))
+            {
+                setSelection(previousValue);
+            }
+            else
+            {
+                // 없으면 첫 번째 항목 선택
+                setSelection(collection[0].Value);
+            }
+        }
+
+        /// <summary>
+        /// 필수 설정만 동기적으로 빠르게 로드합니다 (윈도우 표시 전용)
+        /// </summary>
+        public void InitializeEssentialSync()
+        {
+            try
+            {
+                // 동기적으로 기본 설정값만 로드
+                var settings = _settingsService.LoadSettingsAsync().GetAwaiter().GetResult();
+                
+                // 체크박스 상태 설정
+                IsDateTimeEnabled = settings.IsDateTimeEnabled;
+                IsAbbreviationEnabled = settings.IsAbbreviationEnabled;
+                IsTitleEnabled = settings.IsTitleEnabled;
+                IsSuffixEnabled = settings.IsSuffixEnabled;
+                
+                // 체크박스 상태만 빠르게 설정 (선택된 값들은 백그라운드에서 로드)
+                
+                StatusMessage = "준비 완료";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"필수 설정 로드 오류: {ex.Message}");
+                StatusMessage = "기본 설정으로 시작";
+            }
         }
         #endregion
 
@@ -300,7 +490,7 @@ namespace CreateNewFile.ViewModels
                 var request = CreateFileRequest();
                 if (request != null)
                 {
-                    GeneratedFileName = _fileGeneratorService.GenerateFileName(request);
+                    GeneratedFileName = _fileGeneratorService.GenerateFileName(request, IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled);
                 }
                 else
                 {
@@ -336,23 +526,36 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("LoadDataAsync 시작");
                 IsWorking = true;
                 StatusMessage = "설정을 로드하는 중...";
 
+                System.Diagnostics.Debug.WriteLine("설정 파일 로드 중...");
                 var settings = await _settingsService.LoadSettingsAsync();
+                System.Diagnostics.Debug.WriteLine($"설정 로드 완료: IsDateTimeEnabled={settings.IsDateTimeEnabled}, IsAbbreviationEnabled={settings.IsAbbreviationEnabled}, IsTitleEnabled={settings.IsTitleEnabled}, IsSuffixEnabled={settings.IsSuffixEnabled}");
 
                 // 컬렉션 업데이트
+                System.Diagnostics.Debug.WriteLine("프리셋 아이템 로드 시작");
                 await LoadPresetItems(PresetType.Abbreviation, Abbreviations);
+                System.Diagnostics.Debug.WriteLine($"Abbreviations 로드 완료: {Abbreviations.Count}개 항목");
                 await LoadPresetItems(PresetType.Title, Titles);
+                System.Diagnostics.Debug.WriteLine($"Titles 로드 완료: {Titles.Count}개 항목");
                 await LoadPresetItems(PresetType.Suffix, Suffixes);
+                System.Diagnostics.Debug.WriteLine($"Suffixes 로드 완료: {Suffixes.Count}개 항목");
                 await LoadPresetItems(PresetType.Extension, Extensions);
+                System.Diagnostics.Debug.WriteLine($"Extensions 로드 완료: {Extensions.Count}개 항목");
                 await LoadPresetItems(PresetType.OutputPath, OutputPaths);
+                System.Diagnostics.Debug.WriteLine($"OutputPaths 로드 완료: {OutputPaths.Count}개 항목");
                 await LoadPresetItems(PresetType.TemplatePath, TemplatePaths);
+                System.Diagnostics.Debug.WriteLine($"TemplatePaths 로드 완료: {TemplatePaths.Count}개 항목");
 
                 // 기본값 설정
-                SetDefaultValues(settings);
+                System.Diagnostics.Debug.WriteLine("기본값 설정 시작");
+                await SetDefaultValues(settings);
+                System.Diagnostics.Debug.WriteLine("기본값 설정 완료");
 
                 StatusMessage = "준비 완료";
+                System.Diagnostics.Debug.WriteLine("LoadDataAsync 모든 작업 완료");
             }
             catch (Exception ex)
             {
@@ -373,7 +576,7 @@ namespace CreateNewFile.ViewModels
             {
                 var items = await _settingsService.GetPresetItemsAsync(type);
                 collection.Clear();
-                foreach (var item in items.Where(i => i.IsEnabled).OrderByDescending(i => i.IsFavorite).ThenByDescending(i => i.UsageCount))
+                foreach (var item in items.Where(i => i.IsEnabled).OrderByDescending(i => i.IsFavorite).ThenBy(i => i.Value))
                 {
                     collection.Add(item);
                 }
@@ -387,10 +590,22 @@ namespace CreateNewFile.ViewModels
         /// <summary>
         /// 기본값을 설정합니다.
         /// </summary>
-        private void SetDefaultValues(AppSettings settings)
+        private async Task SetDefaultValues(AppSettings settings)
         {
-            // 기본 출력 경로
-            if (!string.IsNullOrWhiteSpace(settings.DefaultOutputPath))
+            // 마지막 설정 정보 로드 우선, 없으면 기본값
+            
+            // 날짜/시간 (마지막 설정값 적용, 없으면 현재 시간)
+            if (settings.LastSelectedDateTime != default(DateTime))
+                SelectedDateTime = settings.LastSelectedDateTime;
+            else
+                SelectedDateTime = DateTime.Now;
+            
+            // 출력 경로 (마지막 설정 -> 기본 -> 첫 번째 항목)
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedOutputPath))
+            {
+                SelectedOutputPath = settings.LastSelectedOutputPath;
+            }
+            else if (!string.IsNullOrWhiteSpace(settings.DefaultOutputPath))
             {
                 SelectedOutputPath = settings.DefaultOutputPath;
             }
@@ -399,15 +614,87 @@ namespace CreateNewFile.ViewModels
                 SelectedOutputPath = OutputPaths[0].Value;
             }
 
-            // 기본 템플릿 경로
-            if (!string.IsNullOrWhiteSpace(settings.DefaultTemplatePath))
+            // 템플릿 경로 (마지막 설정 -> 기본)
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedTemplatePath))
+            {
+                SelectedTemplatePath = settings.LastSelectedTemplatePath;
+            }
+            else if (!string.IsNullOrWhiteSpace(settings.DefaultTemplatePath))
             {
                 SelectedTemplatePath = settings.DefaultTemplatePath;
             }
 
-            // 기본 선택값
-            if (Abbreviations.Count > 0) SelectedAbbreviation = Abbreviations[0].Value;
-            if (Extensions.Count > 0) SelectedExtension = Extensions[0].Value;
+            // 각 항목별 마지막 설정값 적용
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedAbbreviation))
+                SelectedAbbreviation = settings.LastSelectedAbbreviation;
+            else if (Abbreviations.Count > 0) 
+                SelectedAbbreviation = Abbreviations[0].Value;
+
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedTitle))
+                SelectedTitle = settings.LastSelectedTitle;
+
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedSuffix))
+                SelectedSuffix = settings.LastSelectedSuffix;
+
+            if (!string.IsNullOrWhiteSpace(settings.LastSelectedExtension))
+                SelectedExtension = settings.LastSelectedExtension;
+            else if (Extensions.Count > 0) 
+                SelectedExtension = Extensions[0].Value;
+
+            // 체크박스 상태 복원
+            await LoadCheckboxStatesAsync();
+        }
+
+        /// <summary>
+        /// 체크박스 상태를 저장합니다.
+        /// </summary>
+        private async Task SaveCheckboxStatesAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 저장: DateTime={IsDateTimeEnabled}, Abbreviation={IsAbbreviationEnabled}, Title={IsTitleEnabled}, Suffix={IsSuffixEnabled}");
+                await _settingsService.SaveCheckboxStatesAsync(
+                    IsDateTimeEnabled, 
+                    IsAbbreviationEnabled, 
+                    IsTitleEnabled, 
+                    IsSuffixEnabled);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 저장 실패: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 체크박스 상태를 로드합니다.
+        /// </summary>
+        private async Task LoadCheckboxStatesAsync()
+        {
+            try
+            {
+                _isLoadingCheckboxStates = true;
+                
+                var (isDateTime, isAbbreviation, isTitle, isSuffix) = await _settingsService.LoadCheckboxStatesAsync();
+                
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드: DateTime={isDateTime}, Abbreviation={isAbbreviation}, Title={isTitle}, Suffix={isSuffix}");
+                
+                // 속성을 통해 설정 (UI 업데이트를 위해)
+                IsDateTimeEnabled = isDateTime;
+                IsAbbreviationEnabled = isAbbreviation;
+                IsTitleEnabled = isTitle;
+                IsSuffixEnabled = isSuffix;
+                
+                // 파일명 업데이트
+                UpdateGeneratedFileName();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드 실패: {ex.Message}");
+            }
+            finally
+            {
+                _isLoadingCheckboxStates = false;
+            }
         }
         #endregion
 
@@ -600,12 +887,38 @@ namespace CreateNewFile.ViewModels
                 var settingsViewModel = new SettingsViewModel(_settingsService);
                 settingsWindow.DataContext = settingsViewModel;
                 
-                var result = settingsWindow.ShowDialog();
-                if (result == true)
+                // 메인 윈도우 중앙에 위치시키기
+                var mainWindow = System.Windows.Application.Current.MainWindow;
+                if (mainWindow != null)
                 {
-                    // 설정이 변경되었으므로 데이터를 다시 로드
-                    _ = LoadDataAsync();
+                    settingsWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+                    
+                    // 메인 윈도우 중앙에 설정 윈도우 배치
+                    var mainLeft = mainWindow.Left;
+                    var mainTop = mainWindow.Top;
+                    var mainWidth = mainWindow.ActualWidth;
+                    var mainHeight = mainWindow.ActualHeight;
+                    
+                    settingsWindow.Left = mainLeft + (mainWidth - settingsWindow.Width) / 2;
+                    settingsWindow.Top = mainTop + (mainHeight - settingsWindow.Height) / 2;
+                    
+                    // 설정 윈도우가 화면을 벗어나지 않도록 조정
+                    var screenWidth = SystemParameters.PrimaryScreenWidth;
+                    var screenHeight = SystemParameters.PrimaryScreenHeight;
+                    
+                    if (settingsWindow.Left < 0) settingsWindow.Left = 0;
+                    if (settingsWindow.Top < 0) settingsWindow.Top = 0;
+                    if (settingsWindow.Left + settingsWindow.Width > screenWidth)
+                        settingsWindow.Left = screenWidth - settingsWindow.Width;
+                    if (settingsWindow.Top + settingsWindow.Height > screenHeight)
+                        settingsWindow.Top = screenHeight - settingsWindow.Height;
                 }
+                
+                var result = settingsWindow.ShowDialog();
+                
+                // 설정 창이 닫혔으므로 콤보박스를 갱신 (OK/Cancel 상관없이 변경사항이 있을 수 있음)
+                _ = RefreshComboBoxesAsync();
+                System.Diagnostics.Debug.WriteLine($"설정 창 닫힘 (결과: {result}): 콤보박스 갱신 요청됨");
             }
             catch (Exception ex)
             {
@@ -788,11 +1101,48 @@ namespace CreateNewFile.ViewModels
                 }
 
                 await Task.WhenAll(tasks);
+                
+                // 마지막 선택 항목들 저장
+                await SaveLastSelectedItemsAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error updating usage statistics: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 마지막 선택된 항목들을 저장합니다.
+        /// </summary>
+        private async Task SaveLastSelectedItemsAsync()
+        {
+            try
+            {
+                var settings = await _settingsService.LoadSettingsAsync();
+                
+                // 마지막 선택 정보 업데이트
+                settings.LastSelectedDateTime = SelectedDateTime;
+                settings.LastSelectedAbbreviation = SelectedAbbreviation;
+                settings.LastSelectedTitle = SelectedTitle;
+                settings.LastSelectedSuffix = SelectedSuffix;
+                settings.LastSelectedExtension = SelectedExtension;
+                settings.LastSelectedOutputPath = SelectedOutputPath;
+                settings.LastSelectedTemplatePath = SelectedTemplatePath;
+
+                await _settingsService.SaveSettingsAsync(settings);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving last selected items: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 애플리케이션 종료 시 현재 설정을 저장합니다.
+        /// </summary>
+        public async Task SaveCurrentStateAsync()
+        {
+            await SaveLastSelectedItemsAsync();
         }
         #endregion
     }

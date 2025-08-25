@@ -25,15 +25,6 @@ namespace CreateNewFile.Models
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// 마지막 사용 일시
-        /// </summary>
-        public DateTime LastUsed { get; set; } = DateTime.Now;
-
-        /// <summary>
-        /// 사용 횟수
-        /// </summary>
-        public int UsageCount { get; set; } = 0;
 
         /// <summary>
         /// 항목이 활성화되어 있는지 여부
@@ -54,14 +45,6 @@ namespace CreateNewFile.Models
             return !string.IsNullOrWhiteSpace(Value);
         }
 
-        /// <summary>
-        /// 항목 사용 시 호출하여 사용 정보를 업데이트합니다.
-        /// </summary>
-        public void MarkAsUsed()
-        {
-            LastUsed = DateTime.Now;
-            UsageCount++;
-        }
 
         /// <summary>
         /// 항목을 복사하여 새 인스턴스를 생성합니다.
@@ -75,8 +58,6 @@ namespace CreateNewFile.Models
                 Value = this.Value,
                 Description = this.Description,
                 CreatedAt = this.CreatedAt,
-                LastUsed = this.LastUsed,
-                UsageCount = this.UsageCount,
                 IsEnabled = this.IsEnabled,
                 IsFavorite = this.IsFavorite
             };
@@ -121,9 +102,5 @@ namespace CreateNewFile.Models
         /// </summary>
         public string DisplayText => ToString();
 
-        /// <summary>
-        /// 사용 통계 정보를 반환합니다.
-        /// </summary>
-        public string UsageInfo => $"사용 {UsageCount}회, 최근 사용: {LastUsed:yyyy-MM-dd}";
     }
 }

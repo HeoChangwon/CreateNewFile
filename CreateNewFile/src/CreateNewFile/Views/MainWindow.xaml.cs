@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CreateNewFile.ViewModels;
+using CreateNewFile.Services;
 
 namespace CreateNewFile.Views;
 
@@ -18,18 +19,194 @@ namespace CreateNewFile.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly ISettingsService _settingsService;
+
     public MainWindow()
     {
         InitializeComponent();
         
-        // 드래그앤드롭 이벤트 핸들러 등록
+        // 윈도우 제목에 버전 정보 설정
+        Title = CreateNewFile.Utils.VersionHelper.FullVersionString;
+        
+        // SettingsService 인스턴스 생성
+        _settingsService = new SettingsService();
+        
+        // Settings 업그레이드 (버전이 변경된 경우)
+        if (Properties.Settings.Default.CallUpgrade)
+        {
+            Properties.Settings.Default.Upgrade();
+            Properties.Settings.Default.CallUpgrade = false;
+            Properties.Settings.Default.Save();
+        }
+        
+        // 이벤트 핸들러 등록
+        this.SourceInitialized += MainWindow_SourceInitialized;
         this.Loaded += MainWindow_Loaded;
+        this.Closing += MainWindow_Closing;
+    }
+
+    private void MainWindow_SourceInitialized(object sender, EventArgs e)
+    {
+        // 윈도우 위치 및 크기 복원 (화면 표시 전에 실행)
+        RestoreWindowPosition();
     }
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         // 드래그앤드롭 영역 찾기 및 이벤트 핸들러 등록
         RegisterDragDropHandlers();
+    }
+
+    private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        // 윈도우 위치 및 크기 저장
+        SaveWindowPosition();
+        
+        // MainViewModel의 현재 상태 저장
+        if (DataContext is MainViewModel viewModel)
+        {
+            await viewModel.SaveCurrentStateAsync();
+        }
+    }
+
+
+    /// <summary>
+    /// Properties.Settings을 사용하여 윈도우 위치 및 크기를 복원합니다.
+    /// </summary>
+    private void RestoreWindowPosition()
+    {
+        try
+        {
+            var settings = Properties.Settings.Default;
+            
+            System.Diagnostics.Debug.WriteLine($"Properties.Settings 로드: Left={settings.WindowLeft}, Top={settings.WindowTop}, Width={settings.WindowWidth}, Height={settings.WindowHeight}, State={settings.WindowState}");
+
+            // 화면 경계 확인 (안전한 기본값 설정)
+            var screenWidth = Math.Max(SystemParameters.PrimaryScreenWidth, 1024);
+            var screenHeight = Math.Max(SystemParameters.PrimaryScreenHeight, 768);
+
+            // 저장된 설정이 유효한지 확인 (-1은 초기값)
+            bool hasValidSavedSettings = settings.WindowLeft != -1 && settings.WindowTop != -1;
+
+            System.Diagnostics.Debug.WriteLine($"유효한 저장된 설정 존재: {hasValidSavedSettings}");
+            System.Diagnostics.Debug.WriteLine($"화면 크기: {screenWidth}x{screenHeight}");
+
+            if (hasValidSavedSettings)
+            {
+                // 저장된 설정이 있는 경우
+                // 유효한 위치인지 확인
+                bool isValidPosition = settings.WindowLeft >= 0 && settings.WindowTop >= 0 &&
+                                     settings.WindowLeft < screenWidth && settings.WindowTop < screenHeight;
+
+                if (isValidPosition)
+                {
+                    Left = settings.WindowLeft;
+                    Top = settings.WindowTop;
+                    System.Diagnostics.Debug.WriteLine($"저장된 위치 적용: {Left}, {Top}");
+                }
+                else
+                {
+                    // 유효하지 않은 위치인 경우 화면 중앙에 배치
+                    Left = (screenWidth - settings.WindowWidth) / 2;
+                    Top = (screenHeight - settings.WindowHeight) / 2;
+                    System.Diagnostics.Debug.WriteLine($"유효하지 않은 위치 - 중앙 배치: {Left}, {Top}");
+                }
+
+                // 유효한 크기인지 확인하고 적용
+                if (settings.WindowWidth >= MinWidth && settings.WindowHeight >= MinHeight &&
+                    settings.WindowWidth <= screenWidth + 100 && settings.WindowHeight <= screenHeight + 100)
+                {
+                    Width = settings.WindowWidth;
+                    Height = settings.WindowHeight;
+                    System.Diagnostics.Debug.WriteLine($"저장된 크기 적용: {Width}x{Height}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"유효하지 않은 크기 - XAML 기본값 유지: {Width}x{Height}");
+                }
+
+                // 윈도우 상태 복원
+                if (Enum.TryParse<WindowState>(settings.WindowState, out var windowState) && 
+                    windowState != WindowState.Minimized)
+                {
+                    WindowState = windowState;
+                    System.Diagnostics.Debug.WriteLine($"윈도우 상태 복원: {WindowState}");
+                }
+            }
+            else
+            {
+                // 처음 실행인 경우 - 화면 중앙에 배치
+                Left = (screenWidth - Width) / 2;
+                Top = (screenHeight - Height) / 2;
+                System.Diagnostics.Debug.WriteLine($"처음 실행 - 중앙 배치: {Left}, {Top}, 크기: {Width}x{Height}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"윈도우 위치 복원 실패: {ex.Message}");
+            // 실패한 경우 화면 중앙에 배치 (안전한 기본값 사용)
+            var screenWidth = Math.Max(SystemParameters.PrimaryScreenWidth, 1024);
+            var screenHeight = Math.Max(SystemParameters.PrimaryScreenHeight, 768);
+            Left = (screenWidth - Width) / 2;
+            Top = (screenHeight - Height) / 2;
+        }
+    }
+
+    /// <summary>
+    /// Properties.Settings을 사용하여 윈도우 위치 및 크기를 저장합니다.
+    /// </summary>
+    private void SaveWindowPosition()
+    {
+        try
+        {
+            // 최소화 상태일 때는 저장하지 않음
+            if (WindowState == WindowState.Minimized)
+            {
+                System.Diagnostics.Debug.WriteLine("최소화 상태 - 저장 생략");
+                return;
+            }
+
+            // 유효하지 않은 값들 확인
+            if (double.IsNaN(Left) || double.IsNaN(Top) || 
+                double.IsNaN(ActualWidth) || double.IsNaN(ActualHeight) ||
+                ActualWidth <= 0 || ActualHeight <= 0)
+            {
+                System.Diagnostics.Debug.WriteLine("유효하지 않은 윈도우 값 - 저장 생략");
+                return;
+            }
+
+            var settings = Properties.Settings.Default;
+
+            // 현재 윈도우 정보 저장
+            if (WindowState == WindowState.Maximized && RestoreBounds != Rect.Empty)
+            {
+                // 최대화 상태일 때는 복원될 때의 크기와 위치 저장
+                settings.WindowLeft = RestoreBounds.Left;
+                settings.WindowTop = RestoreBounds.Top;
+                settings.WindowWidth = RestoreBounds.Width;
+                settings.WindowHeight = RestoreBounds.Height;
+                settings.WindowState = "Normal"; // 다음 실행 시 일반 상태로 시작
+                System.Diagnostics.Debug.WriteLine($"최대화 상태 - RestoreBounds 저장: {settings.WindowLeft}, {settings.WindowTop}, {settings.WindowWidth}x{settings.WindowHeight}");
+            }
+            else
+            {
+                // 일반 상태일 때는 현재 크기와 위치 저장
+                settings.WindowLeft = Left;
+                settings.WindowTop = Top;
+                settings.WindowWidth = ActualWidth;
+                settings.WindowHeight = ActualHeight;
+                settings.WindowState = WindowState.ToString();
+                System.Diagnostics.Debug.WriteLine($"일반 상태 - 현재 위치/크기 저장: {settings.WindowLeft}, {settings.WindowTop}, {settings.WindowWidth}x{settings.WindowHeight}");
+            }
+
+            // Properties.Settings 저장
+            settings.Save();
+            System.Diagnostics.Debug.WriteLine("Properties.Settings 저장 완료");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"윈도우 위치 저장 실패: {ex.Message}");
+        }
     }
 
     private void RegisterDragDropHandlers()

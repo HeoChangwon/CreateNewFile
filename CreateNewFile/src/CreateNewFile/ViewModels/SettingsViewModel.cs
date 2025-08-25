@@ -16,12 +16,13 @@ namespace CreateNewFile.ViewModels
         #region Private Fields
         private readonly ISettingsService _settingsService;
         private string _newItemValue = string.Empty;
-        private string _newItemDescription = string.Empty;
         private PresetItem? _selectedItem;
         private PresetType _selectedPresetType = PresetType.Abbreviation;
+        private PresetTypeInfo? _selectedPresetTypeInfo;
         private bool _isWorking = false;
         private string _statusMessage = string.Empty;
         private AppSettings? _originalSettings;
+        private List<PresetItem> _selectedItems = new List<PresetItem>();
         #endregion
 
         #region Properties
@@ -34,14 +35,6 @@ namespace CreateNewFile.ViewModels
             set => SetProperty(ref _newItemValue, value);
         }
 
-        /// <summary>
-        /// 새 항목 설명
-        /// </summary>
-        public string NewItemDescription
-        {
-            get => _newItemDescription;
-            set => SetProperty(ref _newItemDescription, value);
-        }
 
         /// <summary>
         /// 선택된 항목
@@ -49,7 +42,17 @@ namespace CreateNewFile.ViewModels
         public PresetItem? SelectedItem
         {
             get => _selectedItem;
-            set => SetProperty(ref _selectedItem, value);
+            set
+            {
+                if (SetProperty(ref _selectedItem, value))
+                {
+                    // 선택된 항목의 값을 텍스트박스에 표시
+                    if (value != null)
+                    {
+                        NewItemValue = value.Value;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -62,10 +65,37 @@ namespace CreateNewFile.ViewModels
             {
                 if (SetProperty(ref _selectedPresetType, value))
                 {
+                    OnPropertyChanged(nameof(SelectedPresetTypeDisplayName));
                     _ = LoadCurrentTypeItemsAsync();
                 }
             }
         }
+
+        /// <summary>
+        /// 선택된 미리 정의된 항목 타입 정보
+        /// </summary>
+        public PresetTypeInfo? SelectedPresetTypeInfo
+        {
+            get => _selectedPresetTypeInfo;
+            set
+            {
+                if (SetProperty(ref _selectedPresetTypeInfo, value))
+                {
+                    if (value != null)
+                    {
+                        _selectedPresetType = value.Type;
+                        OnPropertyChanged(nameof(SelectedPresetType));
+                        OnPropertyChanged(nameof(SelectedPresetTypeDisplayName));
+                        _ = LoadCurrentTypeItemsAsync();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 선택된 미리 정의된 항목 타입의 표시 이름
+        /// </summary>
+        public string SelectedPresetTypeDisplayName => GetPresetTypeDisplayName(SelectedPresetType);
 
         /// <summary>
         /// 작업 중 여부
@@ -113,24 +143,15 @@ namespace CreateNewFile.ViewModels
         public ICommand DeleteItemCommand { get; }
 
         /// <summary>
-        /// 설정 저장 명령
+        /// 선택된 여러 항목 삭제 명령
         /// </summary>
-        public ICommand SaveSettingsCommand { get; }
+        public ICommand DeleteSelectedItemsCommand { get; }
 
         /// <summary>
-        /// 설정 취소 명령
+        /// 설정 창 닫기 명령
         /// </summary>
         public ICommand CancelSettingsCommand { get; }
 
-        /// <summary>
-        /// 즐겨찾기 토글 명령
-        /// </summary>
-        public ICommand ToggleFavoriteCommand { get; }
-
-        /// <summary>
-        /// 항목 활성화 토글 명령
-        /// </summary>
-        public ICommand ToggleEnabledCommand { get; }
         #endregion
 
         #region Constructor
@@ -145,13 +166,20 @@ namespace CreateNewFile.ViewModels
             AddItemCommand = new RelayCommand(async () => await AddItemAsync(), CanAddItem);
             EditItemCommand = new RelayCommand(async () => await EditItemAsync(), CanEditItem);
             DeleteItemCommand = new RelayCommand(async () => await DeleteItemAsync(), CanDeleteItem);
-            SaveSettingsCommand = new RelayCommand(async () => await SaveSettingsAsync());
+            DeleteSelectedItemsCommand = new RelayCommand(async () => await DeleteSelectedItemsAsync());
             CancelSettingsCommand = new RelayCommand(CancelSettings);
-            ToggleFavoriteCommand = new RelayCommand<PresetItem>(async item => await ToggleFavoriteAsync(item!));
-            ToggleEnabledCommand = new RelayCommand<PresetItem>(async item => await ToggleEnabledAsync(item!));
 
             // 미리 정의된 항목 타입 초기화
             InitializePresetTypes();
+            
+            // 첫 번째 항목을 기본 선택
+            if (PresetTypes.Count > 0)
+            {
+                _selectedPresetTypeInfo = PresetTypes[0];
+                OnPropertyChanged(nameof(SelectedPresetTypeInfo));
+            }
+            
+            StatusMessage = "설정 관리 초기화됨";
 
             // 설정 로드
             _ = LoadSettingsAsync();
@@ -168,8 +196,6 @@ namespace CreateNewFile.ViewModels
             PresetTypes.Add(new PresetTypeInfo(PresetType.Title, "제목", "파일명에 사용할 제목 목록"));
             PresetTypes.Add(new PresetTypeInfo(PresetType.Suffix, "접미어", "파일명에 사용할 접미어 목록"));
             PresetTypes.Add(new PresetTypeInfo(PresetType.Extension, "확장자", "파일 확장자 목록"));
-            PresetTypes.Add(new PresetTypeInfo(PresetType.OutputPath, "출력 경로", "파일을 생성할 경로 목록"));
-            PresetTypes.Add(new PresetTypeInfo(PresetType.TemplatePath, "템플릿 경로", "템플릿 파일 경로 목록"));
         }
 
         /// <summary>
@@ -183,9 +209,9 @@ namespace CreateNewFile.ViewModels
                 StatusMessage = "설정을 로드하는 중...";
 
                 _originalSettings = await _settingsService.LoadSettingsAsync();
+                StatusMessage = $"설정 로드됨. 약어: {_originalSettings.Abbreviations.Count}개, 제목: {_originalSettings.Titles.Count}개, 접미어: {_originalSettings.Suffixes.Count}개, 확장자: {_originalSettings.Extensions.Count}개";
+                
                 await LoadCurrentTypeItemsAsync();
-
-                StatusMessage = "설정 로드 완료";
             }
             catch (Exception ex)
             {
@@ -207,17 +233,34 @@ namespace CreateNewFile.ViewModels
                 var items = await _settingsService.GetPresetItemsAsync(SelectedPresetType);
                 
                 CurrentItems.Clear();
-                foreach (var item in items.OrderByDescending(i => i.IsFavorite)
-                                        .ThenByDescending(i => i.UsageCount)
-                                        .ThenBy(i => i.Value))
+                foreach (var item in items.OrderBy(i => i.Value))
                 {
                     CurrentItems.Add(item);
                 }
+                
+                StatusMessage = $"{items.Count}개의 {GetPresetTypeDisplayName(SelectedPresetType)} 항목을 로드했습니다.";
             }
             catch (Exception ex)
             {
                 StatusMessage = $"항목 로드 오류: {ex.Message}";
             }
+        }
+        
+        /// <summary>
+        /// 미리 정의된 항목 타입의 표시 이름을 가져옵니다.
+        /// </summary>
+        /// <param name="type">항목 타입</param>
+        /// <returns>표시 이름</returns>
+        private static string GetPresetTypeDisplayName(PresetType type)
+        {
+            return type switch
+            {
+                PresetType.Abbreviation => "약어",
+                PresetType.Title => "제목",
+                PresetType.Suffix => "접미어",
+                PresetType.Extension => "확장자",
+                _ => "항목"
+            };
         }
 
         /// <summary>
@@ -242,9 +285,8 @@ namespace CreateNewFile.ViewModels
                 var newItem = new PresetItem
                 {
                     Value = NewItemValue.Trim(),
-                    Description = NewItemDescription.Trim(),
+                    Description = string.Empty,
                     CreatedAt = DateTime.Now,
-                    LastUsed = DateTime.Now,
                     IsEnabled = true,
                     IsFavorite = false
                 };
@@ -254,7 +296,6 @@ namespace CreateNewFile.ViewModels
                 {
                     await LoadCurrentTypeItemsAsync();
                     NewItemValue = string.Empty;
-                    NewItemDescription = string.Empty;
                     StatusMessage = "항목이 추가되었습니다.";
                 }
                 else
@@ -278,7 +319,7 @@ namespace CreateNewFile.ViewModels
         /// <returns>수정 가능하면 true</returns>
         private bool CanEditItem()
         {
-            return SelectedItem != null && !IsWorking;
+            return SelectedItem != null && !IsWorking && !string.IsNullOrWhiteSpace(NewItemValue);
         }
 
         /// <summary>
@@ -286,32 +327,27 @@ namespace CreateNewFile.ViewModels
         /// </summary>
         private async Task EditItemAsync()
         {
-            if (SelectedItem == null) return;
+            if (SelectedItem == null || string.IsNullOrWhiteSpace(NewItemValue)) return;
 
             try
             {
                 IsWorking = true;
                 StatusMessage = "항목을 수정하는 중...";
 
-                // 간단한 편집 다이얼로그 (실제 구현에서는 별도 윈도우 사용)
-                var result = System.Windows.MessageBox.Show(
-                    $"항목을 수정하시겠습니까?\n\n현재 값: {SelectedItem.Value}\n현재 설명: {SelectedItem.Description}",
-                    "항목 수정",
-                    System.Windows.MessageBoxButton.YesNo,
-                    System.Windows.MessageBoxImage.Question);
-
-                if (result == System.Windows.MessageBoxResult.Yes)
+                // 선택된 항목의 값을 새 값으로 변경
+                SelectedItem.Value = NewItemValue.Trim();
+                
+                var success = await _settingsService.UpdatePresetItemAsync(SelectedPresetType, SelectedItem);
+                if (success)
                 {
-                    var success = await _settingsService.UpdatePresetItemAsync(SelectedPresetType, SelectedItem);
-                    if (success)
-                    {
-                        await LoadCurrentTypeItemsAsync();
-                        StatusMessage = "항목이 수정되었습니다.";
-                    }
-                    else
-                    {
-                        StatusMessage = "항목 수정에 실패했습니다.";
-                    }
+                    await LoadCurrentTypeItemsAsync();
+                    NewItemValue = string.Empty;
+                    SelectedItem = null;
+                    StatusMessage = "항목이 수정되었습니다.";
+                }
+                else
+                {
+                    StatusMessage = "항목 수정에 실패했습니다.";
                 }
             }
             catch (Exception ex)
@@ -342,28 +378,19 @@ namespace CreateNewFile.ViewModels
 
             try
             {
-                var result = System.Windows.MessageBox.Show(
-                    $"다음 항목을 삭제하시겠습니까?\n\n값: {SelectedItem.Value}\n설명: {SelectedItem.Description}",
-                    "항목 삭제 확인",
-                    System.Windows.MessageBoxButton.YesNo,
-                    System.Windows.MessageBoxImage.Warning);
+                IsWorking = true;
+                StatusMessage = "항목을 삭제하는 중...";
 
-                if (result == System.Windows.MessageBoxResult.Yes)
+                var success = await _settingsService.DeletePresetItemAsync(SelectedPresetType, SelectedItem.Id);
+                if (success)
                 {
-                    IsWorking = true;
-                    StatusMessage = "항목을 삭제하는 중...";
-
-                    var success = await _settingsService.DeletePresetItemAsync(SelectedPresetType, SelectedItem.Id);
-                    if (success)
-                    {
-                        await LoadCurrentTypeItemsAsync();
-                        SelectedItem = null;
-                        StatusMessage = "항목이 삭제되었습니다.";
-                    }
-                    else
-                    {
-                        StatusMessage = "항목 삭제에 실패했습니다.";
-                    }
+                    await LoadCurrentTypeItemsAsync();
+                    SelectedItem = null;
+                    StatusMessage = "항목이 삭제되었습니다.";
+                }
+                else
+                {
+                    StatusMessage = "항목 삭제에 실패했습니다.";
                 }
             }
             catch (Exception ex)
@@ -377,71 +404,44 @@ namespace CreateNewFile.ViewModels
         }
 
         /// <summary>
-        /// 즐겨찾기 상태를 토글합니다.
+        /// 선택된 여러 항목을 삭제합니다.
         /// </summary>
-        private async Task ToggleFavoriteAsync(PresetItem item)
+        private async Task DeleteSelectedItemsAsync()
         {
-            if (item == null) return;
-
-            try
+            if (_selectedItems.Count == 0) 
             {
-                item.IsFavorite = !item.IsFavorite;
-                await _settingsService.UpdatePresetItemAsync(SelectedPresetType, item);
-                await LoadCurrentTypeItemsAsync();
+                StatusMessage = "삭제할 항목을 선택해주세요.";
+                return;
             }
-            catch (Exception ex)
-            {
-                StatusMessage = $"즐겨찾기 설정 오류: {ex.Message}";
-            }
-        }
 
-        /// <summary>
-        /// 활성화 상태를 토글합니다.
-        /// </summary>
-        private async Task ToggleEnabledAsync(PresetItem item)
-        {
-            if (item == null) return;
-
-            try
-            {
-                item.IsEnabled = !item.IsEnabled;
-                await _settingsService.UpdatePresetItemAsync(SelectedPresetType, item);
-                await LoadCurrentTypeItemsAsync();
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"활성화 설정 오류: {ex.Message}";
-            }
-        }
-
-        /// <summary>
-        /// 설정을 저장합니다.
-        /// </summary>
-        private async Task SaveSettingsAsync()
-        {
             try
             {
                 IsWorking = true;
-                StatusMessage = "설정을 저장하는 중...";
+                StatusMessage = $"{_selectedItems.Count}개 항목을 삭제하는 중...";
 
-                // 현재 설정이 이미 서비스를 통해 개별적으로 저장되므로
-                // 여기서는 추가적인 저장 작업 없이 완료 메시지만 표시
-                StatusMessage = "모든 설정이 저장되었습니다.";
-                
-                System.Windows.MessageBox.Show(
-                    "설정이 저장되었습니다.",
-                    "저장 완료",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Information);
+                var deletedCount = 0;
+                foreach (var item in _selectedItems.ToList())
+                {
+                    var success = await _settingsService.DeletePresetItemAsync(SelectedPresetType, item.Id);
+                    if (success)
+                        deletedCount++;
+                }
+
+                if (deletedCount > 0)
+                {
+                    await LoadCurrentTypeItemsAsync();
+                    SelectedItem = null;
+                    _selectedItems.Clear();
+                    StatusMessage = $"{deletedCount}개 항목이 삭제되었습니다.";
+                }
+                else
+                {
+                    StatusMessage = "항목 삭제에 실패했습니다.";
+                }
             }
             catch (Exception ex)
             {
-                StatusMessage = $"설정 저장 오류: {ex.Message}";
-                System.Windows.MessageBox.Show(
-                    $"설정 저장 중 오류가 발생했습니다.\n\n{ex.Message}",
-                    "저장 오류",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Error);
+                StatusMessage = $"항목 삭제 오류: {ex.Message}";
             }
             finally
             {
@@ -450,21 +450,25 @@ namespace CreateNewFile.ViewModels
         }
 
         /// <summary>
-        /// 설정을 취소합니다.
+        /// 선택된 여러 항목 목록을 설정합니다.
+        /// </summary>
+        /// <param name="selectedItems">선택된 항목 목록</param>
+        public void SetSelectedItems(IEnumerable<PresetItem> selectedItems)
+        {
+            _selectedItems = selectedItems?.ToList() ?? new List<PresetItem>();
+        }
+
+        /// <summary>
+        /// 창 닫기 요청 이벤트
+        /// </summary>
+        public event EventHandler? CloseRequested;
+
+        /// <summary>
+        /// 설정 창을 닫습니다.
         /// </summary>
         private void CancelSettings()
         {
-            var result = System.Windows.MessageBox.Show(
-                "변경사항을 취소하고 창을 닫으시겠습니까?",
-                "취소 확인",
-                System.Windows.MessageBoxButton.YesNo,
-                System.Windows.MessageBoxImage.Question);
-
-            if (result == System.Windows.MessageBoxResult.Yes)
-            {
-                // 원본 설정으로 복원하는 로직은 실제 UI에서 창을 닫는 처리와 함께 구현
-                StatusMessage = "설정이 취소되었습니다.";
-            }
+            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }

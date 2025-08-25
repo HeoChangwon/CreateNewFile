@@ -1,0 +1,113 @@
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+  
+  
+MMDD_HHMM : Development note
+MMDD_HHM1 : Chat
+MMDD_HHM2 : Work list
+
+요약 및 프롬프트 양식 샘플 ------------------------------
+CreateNewFile (CNF)
+
+  Claude 실행위치
+    D:\Work_Claude\CreateNewFile
+
+  CNF Documents 폴더
+    D:\Work_Claude\CreateNewFile\Documents
+
+  본 문서(Documents 폴더)
+    2025MMDD_HHMM_CNF_Development_note_with_AI.txt
+    
+  chat export하여 저장할 파일명(Documents 폴더)
+    /export .\Documents\2025MMDD_HHM1_CNF_Chat.txt
+        
+  Requirements 문서(CNF Documents 폴더 내)
+    20250822_0944_CNF_Requirements.md
+    
+  Design 문서(CNF Documents 폴더 내)
+    20250822_0945_CNF_Design.md
+    
+  Task list 문서(CNF Documents 폴더 내)
+    20250822_0946_CNF_Task_list.md
+    
+  Work list 문서(CNF Documents 폴더 내)
+    20250822_1354_CNF_Work_list.md
+    20250822_1754_CNF_Work_list.md
+    20250824_2357_CNF_Work_list.md
+    20250825_0915_CNF_Work_list.md
+    
+  프롬프트 샘플
+    20250822_0948_CNF_Template_Development_note_with_AI.txt
+        
+  Claude Code 새 Chat Session 시작시 프롬프트:
+      
+    CreateNewFile 프로젝트의 문제점을 수정하려고 합니다.
+    
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+      Requirements 문서(Documents 폴더 내)
+        20250822_0944_CNF_Requirements.md
+        
+      Design 문서(Documents 폴더 내)
+        20250822_0945_CNF_Design.md
+        
+      Task list 문서(Documents 폴더 내)
+        20250822_0946_CNF_Task_list.md
+        
+      Work list 문서(Documents 폴더 내)
+        20250822_1354_CNF_Work_list.md
+        20250822_1754_CNF_Work_list.md
+        20250824_2357_CNF_Work_list.md
+        20250825_0915_CNF_Work_list.md
+    
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+    ```
+
+  Claude Code Chat 마무리 프롬프트:
+    이번 Chat에서 작업한 내용을 Documents 폴더에 2025MMDD_HHM2_CNF_Work_list.md 파일로 정리해 주세요.
+    
+    
+------------------------------------------------
+
+

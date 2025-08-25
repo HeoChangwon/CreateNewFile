@@ -42,7 +42,27 @@ public partial class App : System.Windows.Application
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
         mainWindow.DataContext = mainViewModel;
+        
+        // 윈도우를 먼저 표시
         mainWindow.Show();
+        
+        // 윈도우가 표시된 후 잠시 대기 후 초기화
+        var timer = new System.Windows.Threading.DispatcherTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(100); // 100ms 후 실행
+        timer.Tick += async (sender, e) =>
+        {
+            timer.Stop();
+            try
+            {
+                await mainViewModel.InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                // 오류가 발생해도 사용자가 알 수 있도록 상태 메시지 표시
+                mainViewModel.StatusMessage = $"초기화 오류: {ex.Message}";
+            }
+        };
+        timer.Start();
 
         base.OnStartup(e);
     }
@@ -53,6 +73,23 @@ public partial class App : System.Windows.Application
     /// <param name="e">종료 이벤트 인수</param>
     protected override void OnExit(ExitEventArgs e)
     {
+        // 프로그램 종료 시 마지막 설정 자동 저장
+        try
+        {
+            var mainViewModel = _host?.Services.GetService<MainViewModel>();
+            if (mainViewModel != null)
+            {
+                // 현재 설정 저장 (동기식으로 처리)
+                var saveTask = mainViewModel.SaveCurrentStateAsync();
+                saveTask.Wait(5000); // 최대 5초 대기
+            }
+        }
+        catch (Exception ex)
+        {
+            // 종료 시에는 오류를 표시하지 않고 로그만 기록
+            System.Diagnostics.Debug.WriteLine($"애플리케이션 종료 시 설정 저장 오류: {ex.Message}");
+        }
+        
         _host?.Dispose();
         base.OnExit(e);
     }

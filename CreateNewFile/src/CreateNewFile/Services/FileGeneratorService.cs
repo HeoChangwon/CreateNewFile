@@ -15,20 +15,28 @@ namespace CreateNewFile.Services
         /// 파일명을 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>생성된 파일명</returns>
-        public string GenerateFileName(FileCreationRequest request)
+        public string GenerateFileName(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true)
         {
-            return FileNameBuilder.GenerateFileName(request);
+            return FileNameBuilder.GenerateFileName(request, isDateTimeEnabled, isAbbreviationEnabled, isTitleEnabled, isSuffixEnabled);
         }
 
         /// <summary>
         /// 전체 파일 경로를 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>전체 파일 경로</returns>
-        public string GetFullFilePath(FileCreationRequest request)
+        public string GetFullFilePath(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true)
         {
-            return FileNameBuilder.GenerateFullPath(request);
+            return FileNameBuilder.GenerateFullPath(request, isDateTimeEnabled, isAbbreviationEnabled, isTitleEnabled, isSuffixEnabled);
         }
 
         /// <summary>

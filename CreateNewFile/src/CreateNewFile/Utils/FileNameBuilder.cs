@@ -36,10 +36,14 @@ namespace CreateNewFile.Utils
         /// FileCreationRequest를 기반으로 파일명을 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청 정보</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>생성된 파일명</returns>
         /// <exception cref="ArgumentNullException">request가 null인 경우</exception>
         /// <exception cref="ArgumentException">필수 값이 누락된 경우</exception>
-        public static string GenerateFileName(FileCreationRequest request)
+        public static string GenerateFileName(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -47,11 +51,14 @@ namespace CreateNewFile.Utils
             var components = new List<string>();
 
             // 1. 날짜/시간 (YYYYMMDD_HHMM)
-            var dateTimeStr = request.DateTime.ToString("yyyyMMdd_HHmm");
-            components.Add(dateTimeStr);
+            if (isDateTimeEnabled)
+            {
+                var dateTimeStr = request.DateTime.ToString("yyyyMMdd_HHmm");
+                components.Add(dateTimeStr);
+            }
 
             // 2. 약어
-            if (!string.IsNullOrWhiteSpace(request.Abbreviation))
+            if (isAbbreviationEnabled && !string.IsNullOrWhiteSpace(request.Abbreviation))
             {
                 var cleanAbbreviation = CleanStringForFileName(request.Abbreviation.Trim());
                 if (!string.IsNullOrWhiteSpace(cleanAbbreviation))
@@ -59,7 +66,7 @@ namespace CreateNewFile.Utils
             }
 
             // 3. 제목
-            if (!string.IsNullOrWhiteSpace(request.Title))
+            if (isTitleEnabled && !string.IsNullOrWhiteSpace(request.Title))
             {
                 var cleanTitle = CleanStringForFileName(request.Title.Trim());
                 if (!string.IsNullOrWhiteSpace(cleanTitle))
@@ -67,7 +74,7 @@ namespace CreateNewFile.Utils
             }
 
             // 4. 접미어 (선택사항)
-            if (!string.IsNullOrWhiteSpace(request.Suffix))
+            if (isSuffixEnabled && !string.IsNullOrWhiteSpace(request.Suffix))
             {
                 var cleanSuffix = CleanStringForFileName(request.Suffix.Trim());
                 if (!string.IsNullOrWhiteSpace(cleanSuffix))
@@ -108,10 +115,14 @@ namespace CreateNewFile.Utils
         /// 전체 파일 경로를 생성합니다.
         /// </summary>
         /// <param name="request">파일 생성 요청 정보</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
         /// <returns>전체 파일 경로</returns>
         /// <exception cref="ArgumentNullException">request가 null인 경우</exception>
         /// <exception cref="ArgumentException">경로가 유효하지 않은 경우</exception>
-        public static string GenerateFullPath(FileCreationRequest request)
+        public static string GenerateFullPath(FileCreationRequest request, bool isDateTimeEnabled = true, bool isAbbreviationEnabled = true, bool isTitleEnabled = true, bool isSuffixEnabled = true)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -119,7 +130,7 @@ namespace CreateNewFile.Utils
             if (string.IsNullOrWhiteSpace(request.OutputPath))
                 throw new ArgumentException("출력 경로가 지정되지 않았습니다.", nameof(request));
 
-            var fileName = GenerateFileName(request);
+            var fileName = GenerateFileName(request, isDateTimeEnabled, isAbbreviationEnabled, isTitleEnabled, isSuffixEnabled);
             var fullPath = Path.Combine(request.OutputPath, fileName);
 
             // 경로 길이 검증 및 자동 조정

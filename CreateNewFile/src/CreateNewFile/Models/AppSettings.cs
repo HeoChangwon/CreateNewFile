@@ -58,6 +58,61 @@ namespace CreateNewFile.Models
         public AdvancedSettings Advanced { get; set; } = new();
 
         /// <summary>
+        /// 마지막 선택된 약어
+        /// </summary>
+        public string LastSelectedAbbreviation { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 제목
+        /// </summary>
+        public string LastSelectedTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 접미어
+        /// </summary>
+        public string LastSelectedSuffix { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 확장자
+        /// </summary>
+        public string LastSelectedExtension { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 출력 경로
+        /// </summary>
+        public string LastSelectedOutputPath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 템플릿 경로
+        /// </summary>
+        public string LastSelectedTemplatePath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 마지막 선택된 날짜/시간
+        /// </summary>
+        public DateTime LastSelectedDateTime { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 날짜/시간 항목 활성화 상태
+        /// </summary>
+        public bool IsDateTimeEnabled { get; set; } = true;
+
+        /// <summary>
+        /// 약어 항목 활성화 상태
+        /// </summary>
+        public bool IsAbbreviationEnabled { get; set; } = true;
+
+        /// <summary>
+        /// 제목 항목 활성화 상태
+        /// </summary>
+        public bool IsTitleEnabled { get; set; } = true;
+
+        /// <summary>
+        /// 접미어 항목 활성화 상태
+        /// </summary>
+        public bool IsSuffixEnabled { get; set; } = true;
+
+        /// <summary>
         /// 기본 설정값으로 초기화합니다.
         /// </summary>
         public void LoadDefaults()
@@ -113,6 +168,12 @@ namespace CreateNewFile.Models
             // 기본 출력 경로
             OutputPaths.Clear();
             OutputPaths.Add(new PresetItem { Value = DefaultOutputPath, Description = "기본 출력 폴더" });
+
+            // 체크박스 기본값 설정 (모든 항목 활성화)
+            IsDateTimeEnabled = true;
+            IsAbbreviationEnabled = true;
+            IsTitleEnabled = true;
+            IsSuffixEnabled = true;
         }
 
         /// <summary>
@@ -172,7 +233,18 @@ namespace CreateNewFile.Models
                 OutputPaths = this.OutputPaths.Select(x => x.Clone()).ToList(),
                 TemplatePaths = this.TemplatePaths.Select(x => x.Clone()).ToList(),
                 UI = this.UI.Clone(),
-                Advanced = this.Advanced.Clone()
+                Advanced = this.Advanced.Clone(),
+                LastSelectedAbbreviation = this.LastSelectedAbbreviation,
+                LastSelectedTitle = this.LastSelectedTitle,
+                LastSelectedSuffix = this.LastSelectedSuffix,
+                LastSelectedExtension = this.LastSelectedExtension,
+                LastSelectedOutputPath = this.LastSelectedOutputPath,
+                LastSelectedTemplatePath = this.LastSelectedTemplatePath,
+                LastSelectedDateTime = this.LastSelectedDateTime,
+                IsDateTimeEnabled = this.IsDateTimeEnabled,
+                IsAbbreviationEnabled = this.IsAbbreviationEnabled,
+                IsTitleEnabled = this.IsTitleEnabled,
+                IsSuffixEnabled = this.IsSuffixEnabled
             };
         }
     }
@@ -185,12 +257,12 @@ namespace CreateNewFile.Models
         /// <summary>
         /// 윈도우 너비
         /// </summary>
-        public double WindowWidth { get; set; } = 900;
+        public double WindowWidth { get; set; } = 600;
 
         /// <summary>
         /// 윈도우 높이
         /// </summary>
-        public double WindowHeight { get; set; } = 600;
+        public double WindowHeight { get; set; } = 1065;
 
         /// <summary>
         /// 윈도우 위치 X

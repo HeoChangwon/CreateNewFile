@@ -7,7 +7,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Resources\CreateNewFile.ico</ApplicationIcon>
+    
+    <!-- 버전 정보 -->
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyInformationalVersion>1.0.001</AssemblyInformationalVersion>
+    <Version>1.0.001</Version>
+    <!-- 확실한 버전 표시를 위한 추가 속성 -->
+    <Product>CreateNewFile</Product>
+    <AssemblyTitle>CreateNewFile - 파일 생성 도구</AssemblyTitle>
+    <AssemblyDescription>템플릿 기반 파일 생성 도구</AssemblyDescription>
+    <AssemblyCompany>HeoChangwon</AssemblyCompany>
+    <AssemblyCopyright>Copyright © 2025 HeoChangwon</AssemblyCopyright>
+    
+    <!-- 빌드 날짜 자동 생성 -->
+    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm"))</BuildDate>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="DisplayVersion" Value="1.0.001" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
@@ -15,6 +35,28 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\CreateNewFile.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config\appsettings.default.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
