@@ -34,20 +34,33 @@ echo Complete Build Process Finished!
 echo ========================================
 echo.
 
-:: Check if MSI file was actually created
-if exist "CreateNewFileSetup.msi" (
+:: Check if MSI file was actually created (using pattern matching for versioned filename)
+set "MSI_FOUND="
+for %%f in (CreateNewFileSetup_v*.msi) do (
+    set "MSI_FOUND=%%f"
+    goto :check_result
+)
+
+:check_result
+if defined MSI_FOUND (
     echo ✅ SUCCESS: All operations completed successfully!
     echo Your installer is ready for distribution.
     echo.
-    for %%A in ("CreateNewFileSetup.msi") do (
+    for %%A in ("%MSI_FOUND%") do (
         echo 📦 Final Result:
-        echo    File: CreateNewFileSetup.msi  
+        echo    File: %MSI_FOUND%
         echo    Size: %%~zA bytes
         echo    Created: %%~tA
     )
+    echo    Full Path: %CD%\%MSI_FOUND%
 ) else (
     echo ❌ ERROR: MSI file was not created
     echo Please check the build logs above for errors.
+    echo.
+    echo Checked for: CreateNewFileSetup_v*.msi
+    echo Current directory: %CD%
+    echo Directory contents:
+    dir CreateNewFile*.msi 2>nul
 )
 
 echo.

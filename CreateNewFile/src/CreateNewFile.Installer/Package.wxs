@@ -6,8 +6,7 @@
 
   <!-- 제품 정보 -->
   <Package Name="CreateNewFile"
-           Language="1042"
-           Codepage="949"
+           Language="1033"
            Version="1.0.1"
            Manufacturer="GreenPower Co., Ltd."
            UpgradeCode="12345678-1234-5678-9ABC-123456789ABC">
@@ -55,22 +54,6 @@
         <File Id="CreateNewFileExe"
               Source="..\CreateNewFile\bin\Release\Publish\CreateNewFile.exe"
               KeyPath="yes" />
-        
-        <!-- 시작 메뉴 바로가기 -->
-        <Shortcut Id="StartMenuShortcut"
-                  Directory="CreateNewFileMenuFolder"
-                  Name="CreateNewFile"
-                  Description="템플릿 기반 파일 생성 도구"
-                  Icon="ProductIcon"
-                  WorkingDirectory="INSTALLFOLDER" />
-                  
-        <!-- 바탕화면 바로가기 -->
-        <Shortcut Id="DesktopShortcut"
-                  Directory="DesktopFolder"
-                  Name="CreateNewFile"
-                  Description="템플릿 기반 파일 생성 도구"
-                  Icon="ProductIcon"
-                  WorkingDirectory="INSTALLFOLDER" />
       </Component>
 
       <!-- PDB 파일 -->
@@ -80,13 +63,38 @@
               KeyPath="yes" />
       </Component>
 
-      <!-- 설정 파일 -->
-      <Component Id="ConfigFiles" Directory="ConfigFolder">
-        <File Id="AppSettingsDefault"
-              Source="..\CreateNewFile\bin\Release\Publish\config\appsettings.default.json"
-              KeyPath="yes" />
+      <!-- 바로가기 컴포넌트 (레지스트리 키패스 사용) -->
+      <Component Id="ApplicationShortcuts">
+        <RegistryValue Root="HKCU" Key="Software\GreenPower\CreateNewFile" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        
+        <!-- 시작 메뉴 바로가기 -->
+        <Shortcut Id="StartMenuShortcut"
+                  Directory="CreateNewFileMenuFolder"
+                  Name="CreateNewFile"
+                  Description="템플릿 기반 파일 생성 도구"
+                  Target="[#CreateNewFileExe]"
+                  Icon="ProductIcon"
+                  WorkingDirectory="INSTALLFOLDER" />
+                  
+        <!-- 바탕화면 바로가기 -->
+        <Shortcut Id="DesktopShortcut"
+                  Directory="DesktopFolder"
+                  Name="CreateNewFile"
+                  Description="템플릿 기반 파일 생성 도구"
+                  Target="[#CreateNewFileExe]"
+                  Icon="ProductIcon"
+                  WorkingDirectory="INSTALLFOLDER" />
       </Component>
+
+      <!-- 설정 파일은 애플리케이션이 자동 생성 -->
     </ComponentGroup>
+
+    <!-- 설정 파일 컴포넌트 -->
+    <Component Id="ConfigFiles" Directory="ConfigFolder">
+      <File Id="AppSettingsDefault"
+            Source="..\CreateNewFile\bin\Release\Publish\config\appsettings.default.json"
+            KeyPath="yes" />
+    </Component>
 
     <!-- 아이콘 설정 -->
     <Icon Id="ProductIcon" SourceFile="..\CreateNewFile\Resources\CreateNewFile.ico" />
@@ -100,12 +108,13 @@
     <!-- 기능 설정 -->
     <Feature Id="ProductFeature" Title="CreateNewFile" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ConfigFiles" />
       
       <!-- 시작 메뉴 폴더 제거를 위한 컴포넌트 -->
       <Component Id="StartMenuFolder" Directory="CreateNewFileMenuFolder">
         <RemoveFolder Id="RemoveCreateNewFileMenuFolder" On="uninstall" />
         <RemoveFolder Id="RemoveGreenPowerMenuFolder" Directory="GreenPowerMenuFolder" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\GreenPower\CreateNewFile" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\GreenPower\CreateNewFile" Name="startmenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </Feature>
 

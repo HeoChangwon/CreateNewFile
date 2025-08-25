@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 chcp 65001 >nul 2>&1
 echo ========================================
 echo CreateNewFile Installer Build
@@ -10,8 +11,20 @@ color 0B
 
 :: Current directory (installer directory)
 set "INSTALLER_DIR=%CD%"
-set "MSI_FILE=CreateNewFileSetup.msi"
-set "PDB_FILE=CreateNewFileSetup.wixpdb"
+:: 동적 파일명 생성 (버전 + 타임스탬프)
+if "%2" neq "" (
+    set "BUILD_TIMESTAMP=%2"
+) else (
+    for /f "tokens=2 delims==" %%i in ('wmic OS Get localdatetime /value') do set "dt=%%i"
+    set "YYYY=%dt:~0,4%"
+    set "MM=%dt:~4,2%"
+    set "DD=%dt:~6,2%"
+    set "HH=%dt:~8,2%"
+    set "MIN=%dt:~10,2%"
+    set "BUILD_TIMESTAMP=%YYYY%%MM%%DD%_%HH%%MIN%"
+)
+set "MSI_FILE=CreateNewFileSetup_v1.0.001_Build_%BUILD_TIMESTAMP%.msi"
+set "PDB_FILE=CreateNewFileSetup_v1.0.001_Build_%BUILD_TIMESTAMP%.wixpdb"
 
 echo Working Directory: %INSTALLER_DIR%
 echo Output File: %MSI_FILE%
@@ -66,21 +79,19 @@ echo.
 
 :: Step 2: Clean previous MSI files
 echo [Step 2] Cleaning previous installer files...
-if exist "%MSI_FILE%" (
-    echo Removing previous MSI file: %MSI_FILE%
-    del "%MSI_FILE%" /f /q 2>nul
-    if exist "%MSI_FILE%" (
-        echo WARNING: %MSI_FILE% may be in use
-        echo    Close the file in File Explorer and try again
-        color
-        pause
-        exit /b 1
+:: 이전 버전의 MSI 파일들 정리 (패턴 매칭)
+for %%f in (CreateNewFileSetup*.msi) do (
+    if exist "%%f" (
+        echo Removing previous MSI file: %%f
+        del "%%f" /f /q 2>nul
     )
 )
 
-if exist "%PDB_FILE%" (
-    echo Removing previous PDB file: %PDB_FILE%
-    del "%PDB_FILE%" /f /q 2>nul
+for %%f in (CreateNewFileSetup*.wixpdb) do (
+    if exist "%%f" (
+        echo Removing previous PDB file: %%f
+        del "%%f" /f /q 2>nul
+    )
 )
 
 echo OK: Previous files cleaned
@@ -106,23 +117,87 @@ echo.
 
 :: Step 4: Build WiX MSI
 echo [Step 4] Building WiX MSI...
-echo Running: wix build -arch x64 -src Package.wxs -out %MSI_FILE%
+echo Running: dotnet build CreateNewFile.Installer.wixproj -c Release
 echo.
 
-wix build -arch x64 -src Package.wxs -out "%MSI_FILE%"
+dotnet build CreateNewFile.Installer.wixproj -c Release
 
 echo.
-:: Check if MSI file was actually created (more reliable than ERRORLEVEL)
-if exist "%MSI_FILE%" (
-    echo OK: MSI build completed
+:: WiX 프로젝트 빌드 시 실제 생성 위치 확인 (x64/Release/ko-KR 또는 다른 위치)
+set "BUILT_MSI_PATH1=bin\x64\Release\ko-KR\%MSI_FILE%"
+set "BUILT_MSI_PATH2=bin\Release\%MSI_FILE%"
+set "BUILT_MSI_PATH3=bin\x64\Release\%MSI_FILE%"
+
+:: 실제로 생성된 MSI 파일을 패턴으로 찾아서 복사
+set "FOUND_MSI="
+set "FOUND_PDB="
+
+:: bin\x64\Release\ko-KR\ 폴더에서 패턴 매칭으로 찾기
+for %%f in (bin\x64\Release\ko-KR\CreateNewFileSetup_v*.msi) do (
+    if exist "%%f" (
+        set "FOUND_MSI=%%f"
+        set "FOUND_PDB=%%~dpnf.wixpdb"
+        goto :copy_files
+    )
+)
+
+:: bin\Release\ 폴더에서 패턴 매칭으로 찾기
+for %%f in (bin\Release\CreateNewFileSetup_v*.msi) do (
+    if exist "%%f" (
+        set "FOUND_MSI=%%f"
+        set "FOUND_PDB=%%~dpnf.wixpdb"
+        goto :copy_files
+    )
+)
+
+:: bin\x64\Release\ 폴더에서 패턴 매칭으로 찾기
+for %%f in (bin\x64\Release\CreateNewFileSetup_v*.msi) do (
+    if exist "%%f" (
+        set "FOUND_MSI=%%f"
+        set "FOUND_PDB=%%~dpnf.wixpdb"
+        goto :copy_files
+    )
+)
+
+:copy_files
+if defined FOUND_MSI (
+    echo OK: MSI build completed - Found: !FOUND_MSI!
+    echo Copying MSI file to current directory...
+    :: 실제 파일명 추출
+    for %%f in ("!FOUND_MSI!") do set "ACTUAL_MSI_NAME=%%~nxf"
+    for %%f in ("!FOUND_PDB!") do set "ACTUAL_PDB_NAME=%%~nxf"
+    
+    copy "!FOUND_MSI!" "!ACTUAL_MSI_NAME!" >nul 2>&1
+    if exist "!FOUND_PDB!" (
+        copy "!FOUND_PDB!" "!ACTUAL_PDB_NAME!" >nul 2>&1
+    )
+    :: 복사 성공 확인
+    if exist "!ACTUAL_MSI_NAME!" (
+        echo Success: MSI file copied to !ACTUAL_MSI_NAME!
+        :: MSI_FILE 변수를 실제 파일명으로 업데이트
+        set "MSI_FILE=!ACTUAL_MSI_NAME!"
+        set "PDB_FILE=!ACTUAL_PDB_NAME!"
+    ) else (
+        echo Warning: MSI file copy may have failed
+    )
+) else if exist "%MSI_FILE%" (
+    echo OK: MSI build completed - Found in current directory
 ) else (
-    echo ERROR: MSI build failed - file not created
+    echo ERROR: MSI file not found in expected locations
+    echo.
+    echo Checked locations:
+    echo   - %BUILT_MSI_PATH1%
+    echo   - %BUILT_MSI_PATH2%
+    echo   - %BUILT_MSI_PATH3%
+    echo   - %MSI_FILE%
+    echo.
+    echo Directory contents in bin folder:
+    dir bin /s *.msi 2>nul
     echo.
     echo Troubleshooting:
     echo   1. Check Package.wxs file for XML syntax errors
     echo   2. Verify all referenced file paths are correct
-    echo   3. Build with verbose logging:
-    echo      wix build -arch x64 -src Package.wxs -out %MSI_FILE% -v
+    echo   3. Run with verbose logging: dotnet build -v detailed
     echo.
     pause
     exit /b 1
@@ -136,7 +211,7 @@ echo [Step 5] Verifying build results...
 if not exist "%MSI_FILE%" (
     echo ERROR: MSI file was not created
     echo Checking directory contents...
-    dir CreateNewFile*.msi 2>nul
+    dir CreateNewFileSetup*.msi 2>nul
     color
     pause
     exit /b 1
@@ -172,6 +247,7 @@ echo.
 if "%1"=="BATCH_AUTO" (
     echo.
     echo Build completed successfully for batch automation.
+    exit /b 0
 ) else (
     :: Interactive mode - show additional actions
     echo Additional Actions:

@@ -61,7 +61,7 @@ CreateNewFile (CNF)
         
   Claude Code 새 Chat Session 시작시 프롬프트:
       
-    CreateNewFile 프로젝트의 문제점을 수정하려고 합니다.
+    CreateNewFile 프로젝트의 Work list는 Documents 폴더 내의 20250825_1328_CNF_Work_list_total.md 파일에 정리되어 있습니다.
     
     
     
@@ -102,7 +102,7 @@ CreateNewFile (CNF)
 
   Claude Code Chat 마무리 프롬프트:
     이번 Chat에서 작업한 내용을 Documents 폴더에 2025MMDD_HHM2_CNF_Work_list.md 파일로 정리해 주세요.
-    
+    20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
     
 ------------------------------------------------
 
