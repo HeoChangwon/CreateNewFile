@@ -28,21 +28,49 @@ namespace CreateNewFile.Services
         }
 
         /// <summary>
-        /// 기본 설정 파일 경로를 가져옵니다.
+        /// 기본 설정 파일 경로를 가져옵니다 (사용자별 AppData 폴더).
         /// </summary>
         /// <returns>기본 설정 파일 경로</returns>
         private static string GetDefaultSettingsFilePath()
         {
-            var configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            // 사용자별 설정 폴더: %APPDATA%\CreateNewFile\config
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var configDirectory = Path.Combine(appDataPath, "CreateNewFile", "config");
+            
+            // 디렉토리가 없으면 생성
+            if (!Directory.Exists(configDirectory))
+            {
+                Directory.CreateDirectory(configDirectory);
+            }
+            
             return Path.Combine(configDirectory, "appsettings.json");
         }
 
         /// <summary>
-        /// 기본 템플릿 파일 경로를 가져옵니다.
+        /// 설정 폴더 경로를 가져옵니다.
+        /// </summary>
+        /// <returns>설정 폴더의 전체 경로</returns>
+        public string GetSettingsFolderPath()
+        {
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var configDirectory = Path.Combine(appDataPath, "CreateNewFile", "config");
+            
+            // 디렉토리가 없으면 생성
+            if (!Directory.Exists(configDirectory))
+            {
+                Directory.CreateDirectory(configDirectory);
+            }
+            
+            return configDirectory;
+        }
+
+        /// <summary>
+        /// 기본 템플릿 파일 경로를 가져옵니다 (설치 폴더의 기본 템플릿).
         /// </summary>
         /// <returns>기본 템플릿 파일 경로</returns>
         private static string GetDefaultTemplateFilePath()
         {
+            // 템플릿 파일은 설치 폴더에서 읽기 (읽기 전용)
             var configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
             return Path.Combine(configDirectory, "appsettings.default.json");
         }

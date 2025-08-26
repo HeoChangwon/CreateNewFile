@@ -158,7 +158,7 @@ namespace CreateNewFile.Utils
 
         /// <summary>
         /// 개발자 정보를 포함한 전체 버전 문자열을 가져옵니다.
-        /// 예: "CreateNewFile v1.0.001 (Build: 2025-08-25 11:48) - 허창원 (Green Power)"
+        /// 예: "CreateNewFile v1.0.001 (Build: 2025-08-25 11:48) - 허창원"
         /// </summary>
         public static string FullVersionStringWithDeveloper
         {

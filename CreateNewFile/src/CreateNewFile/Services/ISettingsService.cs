@@ -110,6 +110,12 @@ namespace CreateNewFile.Services
         /// </summary>
         /// <returns>체크박스 상태 튜플</returns>
         Task<(bool isDateTime, bool isAbbreviation, bool isTitle, bool isSuffix)> LoadCheckboxStatesAsync();
+
+        /// <summary>
+        /// 설정 폴더 경로를 가져옵니다.
+        /// </summary>
+        /// <returns>설정 폴더의 전체 경로</returns>
+        string GetSettingsFolderPath();
     }
 
     /// <summary>

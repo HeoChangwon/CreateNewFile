@@ -378,6 +378,11 @@
                    Style="{StaticResource SecondaryButton}"
                    Width="120" Height="40"
                    FontSize="14"/>
+            <Button Content="설정 폴더 열기" 
+                   Command="{Binding OpenSettingsFolderCommand}"
+                   Style="{StaticResource SecondaryButton}"
+                   Width="120" Height="40"
+                   FontSize="14"/>
         </StackPanel>
         
         <!-- 상태 표시줄 -->
@@ -420,7 +425,7 @@
                               FontSize="11"
                               Foreground="Gray"
                               HorizontalAlignment="Right"/>
-                    <TextBlock Text="© 2025 허창원 (Green Power)"
+                    <TextBlock Text="© 2025 Changwon Heo"
                               FontSize="9"
                               Foreground="LightGray"
                               HorizontalAlignment="Right"/>

@@ -101,10 +101,10 @@ When creating documentation files using Claude Code, use the following author at
 
 ### English Documents
 ```
-**Author**: Changwon Heo (Green Power Co., Ltd.) with Claude Code Assistant
+**Author**: Changwon Heo with Claude Code Assistant
 ```
 
 ### Korean Documents
 ```
-**문서 작성자**: 허창원 ((주)그린파워) with Claude Code Assistant
+**문서 작성자**: 허창원 with Claude Code Assistant
 ```

@@ -344,6 +344,11 @@ namespace CreateNewFile.ViewModels
         /// 템플릿 경로 찾아보기 명령
         /// </summary>
         public ICommand BrowseTemplatePathCommand { get; }
+
+        /// <summary>
+        /// 설정 폴더 열기 명령
+        /// </summary>
+        public ICommand OpenSettingsFolderCommand { get; }
         #endregion
 
         #region Constructor
@@ -364,6 +369,7 @@ namespace CreateNewFile.ViewModels
             OpenSettingsCommand = new RelayCommand(OpenSettings);
             BrowseOutputPathCommand = new RelayCommand(BrowseOutputPath);
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
+            OpenSettingsFolderCommand = new RelayCommand(OpenSettingsFolder);
 
             // 데이터 로드는 별도로 호출하도록 변경 (화면 표시 전에 완료하기 위해)
         }
@@ -944,6 +950,28 @@ namespace CreateNewFile.ViewModels
                 SelectedTemplatePath = dialog.FileName;
             }
         }
+
+        /// <summary>
+        /// 설정 폴더를 윈도우 탐색기로 엽니다.
+        /// </summary>
+        private void OpenSettingsFolder()
+        {
+            try
+            {
+                string settingsFolderPath = _settingsService.GetSettingsFolderPath();
+                
+                // Windows 탐색기로 폴더 열기
+                System.Diagnostics.Process.Start("explorer.exe", settingsFolderPath);
+                
+                StatusMessage = "설정 폴더를 열었습니다.";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"설정 폴더를 열 수 없습니다: {ex.Message}");
+                StatusMessage = "설정 폴더 열기 실패";
+            }
+        }
+
         /// <summary>
         /// FileCreationRequest 객체를 생성합니다.
         /// </summary>

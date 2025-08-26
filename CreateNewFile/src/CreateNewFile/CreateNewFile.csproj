@@ -9,11 +9,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Resources\CreateNewFile.ico</ApplicationIcon>
     
-    <!-- Framework-dependent 배포 설정 -->
+    <!-- Release x64 배포 설정 -->
     <SelfContained>false</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PlatformTarget>x64</PlatformTarget>
     
     <!-- 버전 정보 -->
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
@@ -27,8 +28,9 @@
     <AssemblyCompany>HeoChangwon</AssemblyCompany>
     <AssemblyCopyright>Copyright © 2025 HeoChangwon</AssemblyCopyright>
     
-    <!-- 빌드 날짜 자동 생성 -->
-    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm"))</BuildDate>
+    <!-- 빌드 날짜 수동 지정 -->
+    <BuildDate>2025-08-26 15:49</BuildDate>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

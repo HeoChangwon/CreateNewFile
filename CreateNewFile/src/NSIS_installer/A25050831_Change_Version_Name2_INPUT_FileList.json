@@ -1,0 +1,11 @@
+[
+  {
+    "base_directory": ".",
+    "files": [
+      "..\\CreateNewFile\\CreateNewFile.csproj",
+      "10_BuildAll.py",
+      "11_UpdateFromProject.py",
+      "12_BuildInstaller.py"
+    ]
+  }
+]
