@@ -25,8 +25,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         
-        // 윈도우 제목에 버전 및 개발자 정보 설정
-        Title = CreateNewFile.Utils.VersionHelper.FullVersionStringWithDeveloper;
+        // 윈도우 제목에 버전 및 빌드 날짜 설정
+        Title = CreateNewFile.Utils.VersionHelper.FullVersionString;
         
         // SettingsService 인스턴스 생성
         _settingsService = new SettingsService();

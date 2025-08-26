@@ -1,0 +1,193 @@
+
+2025-08-26(화) 16:36:05 허창원
+  Claude Code 프롬프트:
+    CreateNewFile 프로젝트의 Work list는 Documents 폴더 내의 20250825_1328_CNF_Work_list_total.md 파일에 정리되어 있습니다.
+
+    프로그램을 실행하면 제목표시줄에 표시되는 Build 일시가 실행할 때마다 갱신되는데,
+    이것은 CreateNewFile.csproj 의 "<BuildDate>2025-08-26 15:49</BuildDate>"에 있는 항목을 가져와서 사용하도록 해주세요.
+    버전명도 "<AssemblyInformationalVersion>1.0.001</AssemblyInformationalVersion>"에 있는 항목을 가져와서 사용하면 되겠습니다.
+
+
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+      Requirements 문서(Documents 폴더 내)
+        20250822_0944_CNF_Requirements.md
+        
+      Design 문서(Documents 폴더 내)
+        20250822_0945_CNF_Design.md
+        
+      Task list 문서(Documents 폴더 내)
+        20250822_0946_CNF_Task_list.md
+        
+      Work list 문서(Documents 폴더 내)
+        20250825_1328_CNF_Work_list_total.md
+        
+      User Manual
+        20250826_1600_CNF_User_manual.md
+        20250826_1600_CNF_Simple_user_manual.md
+
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+    ```
+
+  결과:
+    ● 프로젝트 파일의 BuildDate와 AssemblyInformationalVersion을 동적으로 읽어서 제목표시줄에 표시하도록 수정했습니다.
+
+      주요 변경사항:
+
+      1. VersionHelper.cs:
+        - BuildDate 속성에서 프로젝트 파일의 <BuildDate> 값을 직접 읽는 기능 추가
+        - 프로젝트 파일을 찾는 FindProjectFile() 메서드 추가
+        - AssemblyMetadata에서 BuildDate를 읽는 기능 추가
+      2. CreateNewFile.csproj:
+        - <AssemblyMetadata Include="BuildDate" Value="$(BuildDate)" /> 추가하여 BuildDate를 어셈블리 메타데이터에 포함
+
+      이제 프로그램을 실행할 때마다:
+      - .csproj 파일의 <BuildDate>2025-08-26 15:49</BuildDate> 값을 읽어서 표시
+      - <AssemblyInformationalVersion>1.0.001</AssemblyInformationalVersion> 값을 읽어서 버전으로 표시
+
+      제목표시줄에는 기존과 같이 VersionHelper.FullVersionStringWithDeveloper를 사용하지만, 이제 빌드 날짜가 프로젝트
+      파일에서 동적으로 읽어옵니다.
+
+2025-08-26(화) 16:40:02 허창원
+  Claude Code 프롬프트:
+    제목표시줄에 "CreateNewFile v1.0.001 (Build: 2025-08-26 15:49)" 이런 식으로 표시하고, 메인화면의 "파일 생성 도구" 문자열은 "새 파일 생성 도구"로 변경해 주세요.
+
+  결과:
+    ● 완료했습니다! 요청사항이 모두 적용되었습니다:
+
+      1. 제목표시줄 형식 변경:
+        - MainWindow.xaml.cs:29에서 VersionHelper.FullVersionStringWithDeveloper를 VersionHelper.FullVersionString으로
+      변경
+        - 이제 제목표시줄에 "CreateNewFile v1.0.001 (Build: 2025-08-26 15:49)" 형식으로 표시됩니다
+      2. 메인화면 텍스트 변경:
+        - MainWindow.xaml:133에서 "파일 생성 도구"를 "새 파일 생성 도구"로 변경
+
+      빌드도 성공적으로 완료되어 변경사항이 정상적으로 적용되었습니다.
+
+2025-08-26(화) 16:48:59 허창원
+  Claude Code 프롬프트:
+    이번 Chat에서 작업한 내용을 Documents 폴더에 20250826_1632_CNF_Work_list.md 파일로 정리해 주세요.
+    20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
+
+  결과:
+    ● 이번 채팅에서 작업한 내용을 문서화했습니다:
+
+      1. 새 작업 목록: 20250826_1632_CNF_Work_list.md 파일에 오늘의 작업 내용을 상세히 정리
+      2. 총 작업 목록 업데이트: 20250825_1328_CNF_Work_list_total.md 파일에 최신 세션 내용 추가
+
+      오늘 작업한 주요 내용:
+
+      - 동적 빌드 날짜 시스템 구현: VersionHelper.cs에 프로젝트 파일 직접 읽기 기능 추가
+      - 제목표시줄 개선: 개발자 정보 제거하고 버전+빌드날짜만 표시
+      - 메인화면 텍스트 변경: "파일 생성 도구" → "새 파일 생성 도구"
+      - 프로젝트 파일 설정: AssemblyMetadata에 BuildDate 포함
+
+      모든 변경사항이 성공적으로 빌드되고 정상 작동하는 것을 확인했습니다.
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+  
+  
+0826_1630 : Development note
+0826_1631 : Chat
+0826_1632 : Work list
+
+요약 및 프롬프트 양식 샘플 ------------------------------
+CreateNewFile (CNF)
+
+  Claude 실행위치
+    D:\Work_Claude\CreateNewFile
+
+  CNF Documents 폴더
+    D:\Work_Claude\CreateNewFile\Documents
+
+  본 문서(Documents 폴더)
+    20250826_1630_CNF_Development_note_with_AI.txt
+    
+  chat export하여 저장할 파일명(Documents 폴더)
+    /export .\Documents\20250826_1631_CNF_Chat.txt
+        
+  Requirements 문서(CNF Documents 폴더 내)
+    20250822_0944_CNF_Requirements.md
+    
+  Design 문서(CNF Documents 폴더 내)
+    20250822_0945_CNF_Design.md
+    
+  Task list 문서(CNF Documents 폴더 내)
+    20250822_0946_CNF_Task_list.md
+    
+  Work list 문서(CNF Documents 폴더 내)
+    20250825_1328_CNF_Work_list_total.md
+    
+  프롬프트 샘플
+    20250822_0948_CNF_Template_Development_note_with_AI.txt
+        
+  Claude Code 새 Chat Session 시작시 프롬프트:
+      
+    CreateNewFile 프로젝트의 Work list는 Documents 폴더 내의 20250825_1328_CNF_Work_list_total.md 파일에 정리되어 있습니다.
+    
+    
+    
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+      Requirements 문서(Documents 폴더 내)
+        20250822_0944_CNF_Requirements.md
+        
+      Design 문서(Documents 폴더 내)
+        20250822_0945_CNF_Design.md
+        
+      Task list 문서(Documents 폴더 내)
+        20250822_0946_CNF_Task_list.md
+        
+      Work list 문서(Documents 폴더 내)
+        20250825_1328_CNF_Work_list_total.md
+    
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+    ```
+
+  Claude Code Chat 마무리 프롬프트:
+    이번 Chat에서 작업한 내용을 Documents 폴더에 20250826_1632_CNF_Work_list.md 파일로 정리해 주세요.
+    20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
+    
+------------------------------------------------
+
+

@@ -80,6 +80,41 @@ namespace CreateNewFile.Utils
         {
             get
             {
+                // 프로젝트 파일에서 BuildDate 읽기 시도
+                try
+                {
+                    var assembly = Assembly.GetExecutingAssembly();
+                    
+                    // BuildDate 메타데이터 확인
+                    var metadataAttributes = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+                    var buildDateAttribute = metadataAttributes?.FirstOrDefault(x => x.Key == "BuildDate");
+                    if (buildDateAttribute != null && !string.IsNullOrEmpty(buildDateAttribute.Value))
+                    {
+                        return buildDateAttribute.Value;
+                    }
+
+                    // 프로젝트 파일에서 직접 읽기 시도
+                    var assemblyLocation = assembly.Location;
+                    if (!string.IsNullOrEmpty(assemblyLocation))
+                    {
+                        var projectPath = FindProjectFile(assemblyLocation);
+                        if (!string.IsNullOrEmpty(projectPath) && System.IO.File.Exists(projectPath))
+                        {
+                            var projectContent = System.IO.File.ReadAllText(projectPath);
+                            var buildDateMatch = System.Text.RegularExpressions.Regex.Match(
+                                projectContent, @"<BuildDate>(.+?)</BuildDate>");
+                            if (buildDateMatch.Success)
+                            {
+                                return buildDateMatch.Groups[1].Value;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 // fallback: 어셈블리 파일의 최종 수정 시간 사용
                 try
                 {
@@ -98,6 +133,46 @@ namespace CreateNewFile.Utils
 
                 return DateTime.Now.ToString("yyyy-MM-dd HH:mm");
             }
+        }
+
+        /// <summary>
+        /// 어셈블리 위치에서 프로젝트 파일 경로를 찾습니다.
+        /// </summary>
+        private static string FindProjectFile(string assemblyLocation)
+        {
+            try
+            {
+                var directory = new System.IO.DirectoryInfo(System.IO.Path.GetDirectoryName(assemblyLocation) ?? "");
+                
+                // bin 폴더에서 시작해서 src 폴더까지 올라가면서 .csproj 파일 찾기
+                while (directory != null && directory.Exists)
+                {
+                    var projectFiles = directory.GetFiles("*.csproj", System.IO.SearchOption.TopDirectoryOnly);
+                    if (projectFiles.Length > 0)
+                    {
+                        return projectFiles[0].FullName;
+                    }
+
+                    // CreateNewFile 폴더를 찾으면 그 안에서 .csproj 찾기
+                    var createNewFileDir = directory.GetDirectories("CreateNewFile").FirstOrDefault();
+                    if (createNewFileDir != null)
+                    {
+                        var projectFilesInSubdir = createNewFileDir.GetFiles("*.csproj", System.IO.SearchOption.TopDirectoryOnly);
+                        if (projectFilesInSubdir.Length > 0)
+                        {
+                            return projectFilesInSubdir[0].FullName;
+                        }
+                    }
+
+                    directory = directory.Parent;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

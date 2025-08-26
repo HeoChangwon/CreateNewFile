@@ -130,7 +130,7 @@
                 <TextBlock Text="CreateNewFile" 
                            FontSize="24" FontWeight="Bold"
                            Foreground="#FF007ACC"/>
-                <TextBlock Text="파일 생성 도구" 
+                <TextBlock Text="새 파일 생성 도구" 
                            FontSize="14" 
                            Foreground="Gray"
                            Margin="0,-2,0,0"/>
