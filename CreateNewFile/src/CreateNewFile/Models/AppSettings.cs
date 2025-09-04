@@ -113,6 +113,11 @@ namespace CreateNewFile.Models
         public bool IsSuffixEnabled { get; set; } = true;
 
         /// <summary>
+        /// 마지막으로 사용된 문자열 교체 규칙 목록
+        /// </summary>
+        public List<StringReplacementRule> LastStringReplacements { get; set; } = new();
+
+        /// <summary>
         /// 기본 설정값으로 초기화합니다.
         /// </summary>
         public void LoadDefaults()
@@ -244,7 +249,8 @@ namespace CreateNewFile.Models
                 IsDateTimeEnabled = this.IsDateTimeEnabled,
                 IsAbbreviationEnabled = this.IsAbbreviationEnabled,
                 IsTitleEnabled = this.IsTitleEnabled,
-                IsSuffixEnabled = this.IsSuffixEnabled
+                IsSuffixEnabled = this.IsSuffixEnabled,
+                LastStringReplacements = this.LastStringReplacements.Select(x => (StringReplacementRule)x.Clone()).ToList()
             };
         }
     }

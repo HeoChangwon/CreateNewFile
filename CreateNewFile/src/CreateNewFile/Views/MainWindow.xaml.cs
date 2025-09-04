@@ -55,6 +55,23 @@ public partial class MainWindow : Window
     {
         // 드래그앤드롭 영역 찾기 및 이벤트 핸들러 등록
         RegisterDragDropHandlers();
+        
+        // TabControl의 SelectionChanged 이벤트 핸들러 등록
+        var tabControl = FindName("MainTabControl") as System.Windows.Controls.TabControl;
+        if (tabControl != null)
+        {
+            tabControl.SelectionChanged += TabControl_SelectionChanged;
+        }
+    }
+
+    private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // 탭이 변경될 때 드래그 앤 드롭 핸들러를 재등록
+        // 새로 선택된 탭의 콘텐츠가 완전히 로드된 후에 실행
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            RegisterDragDropHandlers();
+        }), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -211,8 +228,12 @@ public partial class MainWindow : Window
 
     private void RegisterDragDropHandlers()
     {
-        // 모든 Border 컨트롤 중에서 AllowDrop이 true인 것들을 찾아서 이벤트 핸들러 등록
-        RegisterDragDropForElement(this);
+        // 탭 컨트롤이 로드된 후에 드래그 앤 드롭 핸들러를 등록하기 위해 지연 실행
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            // 모든 Border 컨트롤 중에서 AllowDrop이 true인 것들을 찾아서 이벤트 핸들러 등록
+            RegisterDragDropForElement(this);
+        }), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private void RegisterDragDropForElement(DependencyObject parent)
@@ -229,6 +250,11 @@ public partial class MainWindow : Window
                 if (textBlock != null)
                 {
                     var text = textBlock.Text;
+                    System.Diagnostics.Debug.WriteLine($"드래그 앤 드롭 영역 발견: '{text}'");
+                    
+                    // 기존 이벤트 핸들러 제거 (중복 등록 방지)
+                    RemoveDropHandlers(border);
+                    
                     if (text.Contains("폴더"))
                     {
                         // 폴더 드롭 영역
@@ -236,6 +262,7 @@ public partial class MainWindow : Window
                         border.DragOver += FolderDropArea_DragOver;
                         border.DragLeave += DropArea_DragLeave;
                         border.Drop += FolderDropArea_Drop;
+                        System.Diagnostics.Debug.WriteLine("폴더 드롭 이벤트 핸들러 등록됨");
                     }
                     else if (text.Contains("템플릿"))
                     {
@@ -244,12 +271,25 @@ public partial class MainWindow : Window
                         border.DragOver += FileDropArea_DragOver;
                         border.DragLeave += DropArea_DragLeave;
                         border.Drop += FileDropArea_Drop;
+                        System.Diagnostics.Debug.WriteLine("템플릿 파일 드롭 이벤트 핸들러 등록됨");
                     }
                 }
             }
             
             RegisterDragDropForElement(child);
         }
+    }
+
+    private void RemoveDropHandlers(Border border)
+    {
+        // 모든 드래그 앤 드롭 이벤트 핸들러 제거
+        border.DragEnter -= FolderDropArea_DragEnter;
+        border.DragOver -= FolderDropArea_DragOver;
+        border.DragLeave -= DropArea_DragLeave;
+        border.Drop -= FolderDropArea_Drop;
+        border.DragEnter -= FileDropArea_DragEnter;
+        border.DragOver -= FileDropArea_DragOver;
+        border.Drop -= FileDropArea_Drop;
     }
 
     private T? FindChild<T>(DependencyObject parent) where T : DependencyObject

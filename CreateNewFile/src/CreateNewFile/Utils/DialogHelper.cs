@@ -334,6 +334,131 @@ namespace CreateNewFile.Utils
 
         #endregion
 
+        #region 입력 대화상자
+
+        /// <summary>
+        /// 사용자 입력을 받는 대화상자를 표시합니다
+        /// </summary>
+        /// <param name="title">대화상자 제목</param>
+        /// <param name="message">입력 안내 메시지</param>
+        /// <param name="defaultValue">기본값</param>
+        /// <returns>입력 결과</returns>
+        public static InputDialogResult ShowInputDialog(string title, string message, string defaultValue = "")
+        {
+            var result = new InputDialogResult();
+            
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 간단한 구현 - 추후 전용 입력 대화상자로 교체 가능
+                var inputWindow = new System.Windows.Window
+                {
+                    Title = title,
+                    Width = 400,
+                    Height = 200,
+                    WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
+                    Owner = System.Windows.Application.Current.MainWindow,
+                    ResizeMode = System.Windows.ResizeMode.NoResize
+                };
+
+                var stackPanel = new System.Windows.Controls.StackPanel
+                {
+                    Margin = new System.Windows.Thickness(20)
+                };
+
+                var messageLabel = new System.Windows.Controls.Label
+                {
+                    Content = message,
+                    Margin = new System.Windows.Thickness(0, 0, 0, 10)
+                };
+
+                var inputTextBox = new System.Windows.Controls.TextBox
+                {
+                    Text = defaultValue,
+                    Margin = new System.Windows.Thickness(0, 0, 0, 20),
+                    Height = 25
+                };
+
+                var buttonPanel = new System.Windows.Controls.StackPanel
+                {
+                    Orientation = System.Windows.Controls.Orientation.Horizontal,
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Right
+                };
+
+                var okButton = new System.Windows.Controls.Button
+                {
+                    Content = "확인",
+                    Width = 80,
+                    Height = 30,
+                    Margin = new System.Windows.Thickness(0, 0, 10, 0),
+                    IsDefault = true
+                };
+
+                var cancelButton = new System.Windows.Controls.Button
+                {
+                    Content = "취소",
+                    Width = 80,
+                    Height = 30,
+                    IsCancel = true
+                };
+
+                okButton.Click += (s, e) =>
+                {
+                    result.IsConfirmed = true;
+                    result.InputText = inputTextBox.Text;
+                    inputWindow.DialogResult = true;
+                };
+
+                cancelButton.Click += (s, e) =>
+                {
+                    result.IsConfirmed = false;
+                    result.InputText = "";
+                    inputWindow.DialogResult = false;
+                };
+
+                inputTextBox.KeyDown += (s, e) =>
+                {
+                    if (e.Key == System.Windows.Input.Key.Enter)
+                    {
+                        okButton.RaiseEvent(new System.Windows.RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                    }
+                };
+
+                buttonPanel.Children.Add(okButton);
+                buttonPanel.Children.Add(cancelButton);
+
+                stackPanel.Children.Add(messageLabel);
+                stackPanel.Children.Add(inputTextBox);
+                stackPanel.Children.Add(buttonPanel);
+
+                inputWindow.Content = stackPanel;
+                
+                inputTextBox.Focus();
+                inputTextBox.SelectAll();
+
+                inputWindow.ShowDialog();
+            });
+            
+            return result;
+        }
+
+        /// <summary>
+        /// 입력 대화상자 결과를 나타내는 클래스
+        /// </summary>
+        public class InputDialogResult
+        {
+            /// <summary>
+            /// 사용자가 확인을 선택했는지 여부
+            /// </summary>
+            public bool IsConfirmed { get; set; } = false;
+
+            /// <summary>
+            /// 입력된 텍스트
+            /// </summary>
+            public string InputText { get; set; } = string.Empty;
+        }
+
+        #endregion
+
         #region 진행률 관련 (확장 가능)
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using CreateNewFile.Models;
 using CreateNewFile.Utils;
 
@@ -71,6 +72,40 @@ namespace CreateNewFile.Services
         /// <param name="destinationPath">대상 파일 경로</param>
         /// <returns>복사 성공 여부</returns>
         Task<bool> CopyTemplateFileAsync(string templatePath, string destinationPath);
+
+        /// <summary>
+        /// 문자열 교체를 적용하여 파일을 생성합니다.
+        /// </summary>
+        /// <param name="request">파일 생성 요청</param>
+        /// <param name="stringReplacements">문자열 교체 규칙 목록</param>
+        /// <param name="fileInfoDateTime">파일정보 날짜/시간 (동적 교체용)</param>
+        /// <param name="isDateTimeEnabled">날짜/시간 포함 여부</param>
+        /// <param name="isAbbreviationEnabled">약어 포함 여부</param>
+        /// <param name="isTitleEnabled">제목 포함 여부</param>
+        /// <param name="isSuffixEnabled">접미어 포함 여부</param>
+        /// <returns>생성 결과</returns>
+        Task<FileCreationResult> CreateFileWithStringReplacementAsync(
+            FileCreationRequest request, 
+            IList<StringReplacementRule> stringReplacements,
+            DateTime? fileInfoDateTime = null,
+            bool isDateTimeEnabled = true, 
+            bool isAbbreviationEnabled = true, 
+            bool isTitleEnabled = true, 
+            bool isSuffixEnabled = true);
+
+        /// <summary>
+        /// 템플릿 파일에 문자열 교체를 적용합니다.
+        /// </summary>
+        /// <param name="templatePath">템플릿 파일 경로</param>
+        /// <param name="destinationPath">대상 파일 경로</param>
+        /// <param name="stringReplacements">문자열 교체 규칙 목록</param>
+        /// <param name="fileInfoDateTime">파일정보 날짜/시간 (동적 교체용)</param>
+        /// <returns>복사 및 교체 성공 여부</returns>
+        Task<bool> CopyTemplateFileWithReplacementAsync(
+            string templatePath, 
+            string destinationPath, 
+            IList<StringReplacementRule> stringReplacements,
+            DateTime? fileInfoDateTime = null);
     }
 
     /// <summary>

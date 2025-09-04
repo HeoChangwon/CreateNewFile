@@ -44,6 +44,7 @@ public partial class App : System.Windows.Application
                 // Services 등록
                 services.AddSingleton<IFileGeneratorService, FileGeneratorService>();
                 services.AddSingleton<ISettingsService, SettingsService>();
+                services.AddSingleton<IFileInfoService, FileInfoService>();
             })
             .Build();
 

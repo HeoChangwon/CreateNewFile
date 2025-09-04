@@ -6,25 +6,25 @@
         xmlns:local="clr-namespace:CreateNewFile"
         xmlns:converters="clr-namespace:CreateNewFile.Utils"
         mc:Ignorable="d"
-        Height="1065" Width="600"
+        Height="1000" Width="620"
         WindowStartupLocation="Manual"
-        MinHeight="600" MinWidth="500"
+        MinHeight="953" MinWidth="586"
         ShowInTaskbar="True"
         Icon="pack://application:,,,/Resources/CreateNewFile.ico">
-    
+
     <Window.Resources>
         <!-- 컨버터 -->
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
         <converters:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
-        
+
         <!-- 공통 스타일 -->
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,5"/>
         </Style>
-        
+
         <Style TargetType="TextBox">
             <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -33,14 +33,14 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Gray"/>
         </Style>
-        
+
         <Style TargetType="ComboBox">
             <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Margin" Value="0,2"/>
         </Style>
-        
+
         <Style TargetType="Button">
             <Setter Property="Height" Value="32"/>
             <Setter Property="Padding" Value="12,4"/>
@@ -59,7 +59,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="SecondaryButton" TargetType="Button">
             <Setter Property="Height" Value="32"/>
             <Setter Property="Padding" Value="12,4"/>
@@ -75,13 +75,13 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
-        
+
         <!-- 날짜/시간 선택기 스타일 -->
         <Style TargetType="DatePicker">
             <Setter Property="Height" Value="32"/>
@@ -92,7 +92,7 @@
             <Setter Property="BorderBrush" Value="Gray"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
-        
+
         <!-- 드롭 영역 스타일 -->
         <Style x:Key="DropArea" TargetType="Border">
             <Setter Property="BorderThickness" Value="2"/>
@@ -109,19 +109,19 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto" MinHeight="420.497"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <!-- 상단 헤더 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" 
                     HorizontalAlignment="Center" 
-                    Margin="0,0,0,20">
+                    Margin="0,0,0,20" Width="226">
             <Image Source="pack://application:,,,/Resources/CreateNewFile.png"
                    Width="48" Height="48"
                    Margin="0,0,15,0"
@@ -136,259 +136,407 @@
                            Margin="0,-2,0,0"/>
             </StackPanel>
         </StackPanel>
-        
-        <!-- 메인 입력 영역 -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <!-- 파일 정보 입력 그룹 -->
-                <GroupBox>
-                    <GroupBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="pack://application:,,,/Resources/CreateNewFile.png"
-                                   Width="18" Height="18"
-                                   Margin="0,0,8,0"
-                                   VerticalAlignment="Center"/>
-                            <TextBlock Text="파일 정보" 
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </GroupBox.Header>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="120"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- 날짜/시간 -->
-                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsDateTimeEnabled}" 
-                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <Label Grid.Row="0" Grid.Column="1" Content="날짜/시간:"
-                               Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
-                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal"
-                                   Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}">
-                            <DatePicker x:Name="DatePicker" 
-                                       SelectedDate="{Binding SelectedDateTime, Mode=TwoWay}"
+
+        <!-- 탭 컨트롤 메인 영역 -->
+        <TabControl Grid.Row="1" Name="MainTabControl" 
+                    Background="White"
+                    BorderBrush="LightGray"
+                    BorderThickness="1" Margin="0,0,0,420" Grid.RowSpan="2">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Padding" Value="15,8"/>
+                    <Setter Property="Margin" Value="2,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Border" 
+                                       Background="LightGray" 
+                                       BorderBrush="Gray" 
+                                       BorderThickness="1" 
+                                       CornerRadius="4,4,0,0">
+                                    <ContentPresenter x:Name="ContentSite"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    ContentSource="Header"
+                                                    Margin="{TemplateBinding Padding}"
+                                                    RecognizesAccessKey="True"
+                                                    TextElement.Foreground="Black"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="DarkGray"/>
+                                        <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="White"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="White"/>
+                                        <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="Black"/>
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="LightGray"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- 파일정보 탭 -->
+            <TabItem Header="📄 파일정보" Name="FileInfoTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" Height="399">
+                    <StackPanel>
+                        <!-- 저장된 파일정보 선택 영역 -->
+                        <GroupBox Header="저장된 파일정보" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <ComboBox Grid.Row="0" Grid.Column="0"
+                                         ItemsSource="{Binding SavedFileInfos}"
+                                         DisplayMemberPath="Name"
+                                         SelectedItem="{Binding SelectedFileInfo, Mode=TwoWay}"
+                                         IsEditable="False"
+                                         Margin="0,0,10,0"/>
+
+                                <Button Grid.Row="0" Grid.Column="1" Content="불러오기"
+                                       Command="{Binding LoadFileInfoCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <Button Grid.Row="0" Grid.Column="2" Content="저장"
+                                       Command="{Binding SaveFileInfoCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <Button Grid.Row="0" Grid.Column="3" Content="관리"
+                                       Command="{Binding ManageFileInfosCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                        Text="{Binding FileInfoName, Mode=TwoWay}"
+                                        Margin="0,5,0,0"
+                                        Visibility="{Binding IsEditingFileInfoName, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        BorderBrush="#FF007ACC"
+                                        BorderThickness="2"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- 파일 정보 입력 그룹 -->
+                        <GroupBox Header="파일 정보 입력">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 날짜/시간 -->
+                                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsDateTimeEnabled}" 
+                                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Label Grid.Row="0" Grid.Column="1" Content="날짜/시간:"
+                                       Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal"
+                                           Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}">
+                                    <DatePicker x:Name="DatePicker" 
+                                               SelectedDate="{Binding SelectedDateTime, Mode=TwoWay}"
+                                               IsEnabled="{Binding IsDateTimeEnabled}"
+                                               Width="120" Margin="0,0,10,0"/>
+                                    <TextBox x:Name="TimeTextBox" 
+                                            Text="{Binding SelectedDateTime, StringFormat='HH:mm', Mode=TwoWay}"
+                                            IsEnabled="{Binding IsDateTimeEnabled}"
+                                            Width="60" Margin="0,0,10,0"/>
+                                </StackPanel>
+                                <Button Grid.Row="0" Grid.Column="3" Content="현재 일시" 
+                                       Command="{Binding SetCurrentDateTimeCommand}"
                                        IsEnabled="{Binding IsDateTimeEnabled}"
-                                       Width="120" Margin="0,0,10,0"/>
-                            <TextBox x:Name="TimeTextBox" 
-                                    Text="{Binding SelectedDateTime, StringFormat='HH:mm', Mode=TwoWay}"
-                                    IsEnabled="{Binding IsDateTimeEnabled}"
-                                    Width="60" Margin="0,0,10,0"/>
-                        </StackPanel>
-                        <Button Grid.Row="0" Grid.Column="3" Content="현재 일시" 
-                               Command="{Binding SetCurrentDateTimeCommand}"
-                               IsEnabled="{Binding IsDateTimeEnabled}"
-                               Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
-                               Style="{StaticResource SecondaryButton}"/>
-                        
-                        <!-- 약어 -->
-                        <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsAbbreviationEnabled}" 
-                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="약어:"
-                               Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
-                        <ComboBox Grid.Row="1" Grid.Column="2" 
-                                 ItemsSource="{Binding Abbreviations}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedAbbreviation, Mode=TwoWay}"
-                                 IsEnabled="{Binding IsAbbreviationEnabled}"
-                                 Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedAbbreviation, Mode=TwoWay}"/>
-                        
-                        <!-- 제목 -->
-                        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsTitleEnabled}" 
-                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="제목:"
-                               Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
-                        <ComboBox Grid.Row="2" Grid.Column="2" 
-                                 ItemsSource="{Binding Titles}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedTitle, Mode=TwoWay}"
-                                 IsEnabled="{Binding IsTitleEnabled}"
-                                 Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedTitle, Mode=TwoWay}"/>
-                        
-                        <!-- 접미어 -->
-                        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsSuffixEnabled}" 
-                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="접미어:"
-                               Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
-                        <ComboBox Grid.Row="3" Grid.Column="2" 
-                                 ItemsSource="{Binding Suffixes}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedSuffix, Mode=TwoWay}"
-                                 IsEnabled="{Binding IsSuffixEnabled}"
-                                 Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedSuffix, Mode=TwoWay}"/>
-                        
-                        <!-- 확장자 -->
-                        <Label Grid.Row="4" Grid.Column="1" Content="확장자:"/>
-                        <ComboBox Grid.Row="4" Grid.Column="2" 
-                                 ItemsSource="{Binding Extensions}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedExtension, Mode=TwoWay}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedExtension, Mode=TwoWay}"/>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- 경로 설정 그룹 -->
-                <GroupBox Header="경로 설정">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="120"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- 출력 폴더 -->
-                        <Label Grid.Row="0" Grid.Column="0" Content="출력 폴더:"/>
-                        <ComboBox Grid.Row="0" Grid.Column="1" 
-                                 ItemsSource="{Binding OutputPaths}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedOutputPath, Mode=TwoWay}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedOutputPath, Mode=TwoWay}"/>
-                        <Button Grid.Row="0" Grid.Column="2" Content="찾아보기"
-                               Command="{Binding BrowseOutputPathCommand}"
-                               Style="{StaticResource SecondaryButton}"/>
-                        
-                        <!-- 드래그앤드롭 영역 (출력 폴더) -->
-                        <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                               Style="{StaticResource DropArea}"
-                               AllowDrop="True">
-                            <TextBlock Text="폴더를 여기에 드래그하세요" 
-                                      FontStyle="Italic" 
-                                      Foreground="Gray"
-                                      HorizontalAlignment="Center"/>
-                        </Border>
-                        
-                        <!-- 템플릿 파일 -->
-                        <Label Grid.Row="2" Grid.Column="0" Content="템플릿 파일:"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" 
-                                 ItemsSource="{Binding TemplatePaths}"
-                                 DisplayMemberPath="Value"
-                                 SelectedValuePath="Value"
-                                 SelectedValue="{Binding SelectedTemplatePath, Mode=TwoWay}"
-                                 IsEditable="True"
-                                 Text="{Binding SelectedTemplatePath, Mode=TwoWay}"/>
-                        <Button Grid.Row="2" Grid.Column="2" Content="찾아보기"
-                               Command="{Binding BrowseTemplatePathCommand}"
-                               Style="{StaticResource SecondaryButton}"/>
-                        
-                        <!-- 드래그앤드롭 영역 (템플릿 파일) -->
-                        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
-                               Style="{StaticResource DropArea}"
-                               AllowDrop="True">
-                            <TextBlock Text="템플릿 파일을 여기에 드래그하세요" 
-                                      FontStyle="Italic" 
-                                      Foreground="Gray"
-                                      HorizontalAlignment="Center"/>
-                        </Border>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- 미리보기 그룹 -->
-                <GroupBox Header="파일명 미리보기">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        
-                        <TextBlock Grid.Row="0" Text="생성될 파일명:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <TextBox Grid.Row="1" Text="{Binding GeneratedFileName, Mode=OneWay}" 
-                                IsReadOnly="True" 
-                                Background="LightYellow"
-                                FontFamily="Consolas"
-                                FontSize="14"/>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- 전체 경로 그룹 -->
-                <GroupBox Header="전체 경로">
-                    <TextBox Text="{Binding FullFilePath, Mode=OneWay}" 
-                            IsReadOnly="True" 
-                            Background="LightBlue"
-                            FontFamily="Consolas"
-                            FontSize="12"
-                            TextWrapping="Wrap"
-                            Height="55"
-                            VerticalScrollBarVisibility="Auto"
-                            AcceptsReturn="True"/>
-                </GroupBox>
-                
-                <!-- 유효성 검사 에러 그룹 -->
-                <GroupBox Header="입력 검증" 
-                         Visibility="{Binding HasValidationErrors, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Border Background="#FFFFEAEA" 
-                           BorderBrush="#FFFF6B6B" 
-                           BorderThickness="1" 
-                           CornerRadius="4" 
-                           Padding="10">
-                        <StackPanel>
-                            <TextBlock Text="⚠️ 다음 문제를 해결해주세요:" 
-                                      FontWeight="Bold" 
-                                      Foreground="#FFCC0000"
-                                      Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding ValidationError}" 
-                                      TextWrapping="Wrap"
-                                      Foreground="#FFCC0000"
-                                      FontFamily="Segoe UI"
-                                      LineHeight="20"/>
-                        </StackPanel>
-                    </Border>
-                </GroupBox>
+                                       Opacity="{Binding IsDateTimeEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <!-- 약어 -->
+                                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsAbbreviationEnabled}" 
+                                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Label Grid.Row="1" Grid.Column="1" Content="약어:"
+                                       Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                                <ComboBox Grid.Row="1" Grid.Column="2" 
+                                         ItemsSource="{Binding Abbreviations}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedAbbreviation, Mode=TwoWay}"
+                                         IsEnabled="{Binding IsAbbreviationEnabled}"
+                                         Opacity="{Binding IsAbbreviationEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedAbbreviation, Mode=TwoWay}"/>
+
+                                <!-- 제목 -->
+                                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsTitleEnabled}" 
+                                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Label Grid.Row="2" Grid.Column="1" Content="제목:"
+                                       Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="2" 
+                                         ItemsSource="{Binding Titles}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedTitle, Mode=TwoWay}"
+                                         IsEnabled="{Binding IsTitleEnabled}"
+                                         Opacity="{Binding IsTitleEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedTitle, Mode=TwoWay}"/>
+
+                                <!-- 접미어 -->
+                                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsSuffixEnabled}" 
+                                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Label Grid.Row="3" Grid.Column="1" Content="접미어:"
+                                       Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="2" 
+                                         ItemsSource="{Binding Suffixes}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedSuffix, Mode=TwoWay}"
+                                         IsEnabled="{Binding IsSuffixEnabled}"
+                                         Opacity="{Binding IsSuffixEnabled, Converter={StaticResource BooleanToOpacityConverter}}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedSuffix, Mode=TwoWay}"/>
+
+                                <!-- 확장자 -->
+                                <Label Grid.Row="4" Grid.Column="1" Content="확장자:"/>
+                                <ComboBox Grid.Row="4" Grid.Column="2" 
+                                         ItemsSource="{Binding Extensions}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedExtension, Mode=TwoWay}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedExtension, Mode=TwoWay}"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- 경로설정 탭 -->
+            <TabItem Header="📁 경로설정" Name="PathSettingsTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+                    <StackPanel>
+                        <!-- 출력 경로 설정 -->
+                        <GroupBox Header="출력 폴더" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="출력 폴더:" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" 
+                                         ItemsSource="{Binding OutputPaths}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedOutputPath, Mode=TwoWay}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedOutputPath, Mode=TwoWay}"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="찾아보기"
+                                       Command="{Binding BrowseOutputPathCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <!-- 드래그앤드롭 영역 (출력 폴더) -->
+                                <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                       Style="{StaticResource DropArea}"
+                                       AllowDrop="True">
+                                    <TextBlock Text="출력 폴더를 여기에 드래그하세요" 
+                                              FontStyle="Italic" 
+                                              Foreground="Gray"
+                                              HorizontalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- 템플릿 파일 설정 -->
+                        <GroupBox Header="템플릿 파일">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="템플릿 파일:" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" 
+                                         ItemsSource="{Binding TemplatePaths}"
+                                         DisplayMemberPath="Value"
+                                         SelectedValuePath="Value"
+                                         SelectedValue="{Binding SelectedTemplatePath, Mode=TwoWay}"
+                                         IsEditable="True"
+                                         Text="{Binding SelectedTemplatePath, Mode=TwoWay}"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="찾아보기"
+                                       Command="{Binding BrowseTemplatePathCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
+                                <!-- 드래그앤드롭 영역 (템플릿 파일) -->
+                                <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                       Style="{StaticResource DropArea}"
+                                       AllowDrop="True">
+                                    <TextBlock Text="템플릿 파일을 여기에 드래그하세요" 
+                                              FontStyle="Italic" 
+                                              Foreground="Gray"
+                                              HorizontalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- 문자열 교체 탭 -->
+            <TabItem Header="🔄 문자열 교체" Name="StringReplacementTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+                    <StackPanel>
+                        <GroupBox Header="템플릿 문자열 교체 규칙" Height="326">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 컨트롤 버튼들 -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <Button Content="추가" Command="{Binding AddStringReplacementCommand}" 
+                                           Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="삭제" Command="{Binding RemoveStringReplacementCommand}" 
+                                           Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="위로" Command="{Binding MoveUpStringReplacementCommand}" 
+                                           Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="아래로" Command="{Binding MoveDownStringReplacementCommand}" 
+                                           Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
+
+                                <!-- 교체 규칙 테이블 -->
+                                <DataGrid Grid.Row="1" 
+                                         ItemsSource="{Binding StringReplacements}"
+                                         SelectedItem="{Binding SelectedStringReplacement, Mode=TwoWay}"
+                                         AutoGenerateColumns="False"
+                                         CanUserAddRows="False"
+                                         CanUserDeleteRows="False"
+                                         GridLinesVisibility="All"
+                                         HeadersVisibility="Column"
+                                         Height="200"
+                                         VerticalScrollBarVisibility="Auto">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="활성" Binding="{Binding IsEnabled}" Width="60"/>
+                                        <DataGridTextColumn Header="검색 문자열" Binding="{Binding SearchText}" Width="*" MinWidth="150"/>
+                                        <DataGridTextColumn Header="교체 문자열" Binding="{Binding ReplaceText}" Width="*" MinWidth="150"/>
+                                        <DataGridCheckBoxColumn Header="대소문자구분" Binding="{Binding IsCaseSensitive}" Width="100"/>
+                                        <DataGridCheckBoxColumn Header="정규식" Binding="{Binding UseRegex}" Width="60"/>
+                                        <DataGridCheckBoxColumn Header="동적교체" Binding="{Binding UseDynamicReplacement}" Width="70"/>
+                                        <DataGridTextColumn Header="설명" Binding="{Binding Description}" Width="200"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!-- 설명 -->
+                                <TextBlock Grid.Row="2" 
+                                          Text="💡 템플릿 파일 생성 시 위 규칙에 따라 문자열이 자동으로 교체됩니다. 순서가 중요하므로 위/아래 버튼으로 순서를 조정하세요."
+                                          TextWrapping="Wrap"
+                                          FontStyle="Italic"
+                                          Foreground="DarkGray"
+                                          Margin="0,10,0,0"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- 미리보기 및 전체 경로 -->
+        <StackPanel Grid.Row="2" Margin="20,10,20,10">
+            <!-- 미리보기 그룹 -->
+            <GroupBox Header="파일명 미리보기" Margin="0,0,0,10">
+                <TextBox Text="{Binding GeneratedFileName, Mode=OneWay}" 
+                        IsReadOnly="True" 
+                        Background="LightYellow"
+                        FontFamily="Consolas"
+                        FontSize="14"/>
+            </GroupBox>
+
+            <!-- 전체 경로 그룹 -->
+            <GroupBox Header="전체 경로" Margin="0,0,0,10">
+                <TextBox Text="{Binding FullFilePath, Mode=OneWay}" 
+                        IsReadOnly="True" 
+                        Background="LightBlue"
+                        FontFamily="Consolas"
+                        FontSize="12"
+                        TextWrapping="Wrap" Height="47"/>
+            </GroupBox>
+
+            <!-- 유효성 검사 에러 그룹 -->
+            <GroupBox Header="입력 검증" 
+                     Visibility="{Binding HasValidationErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     Margin="0,0,0,10">
+                <Border Background="#FFFFEAEA" 
+                       BorderBrush="#FFFF6B6B" 
+                       BorderThickness="1" 
+                       CornerRadius="4" 
+                       Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="⚠️ 다음 문제를 해결해주세요:" 
+                                  FontWeight="Bold" 
+                                  Foreground="#FFCC0000"
+                                  Margin="0,0,0,5"/>
+                        <TextBlock Text="{Binding ValidationError}" 
+                                  TextWrapping="Wrap"
+                                  Foreground="#FFCC0000"
+                                  FontFamily="Segoe UI"
+                                  LineHeight="20"/>
+                    </StackPanel>
+                </Border>
+            </GroupBox>
+
+            <!-- 액션 버튼 -->
+            <StackPanel Orientation="Horizontal" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,10,0,0">
+                <Button Content="파일 생성" 
+                       Command="{Binding CreateFileCommand}"
+                       IsEnabled="{Binding IsWorking, Converter={StaticResource InvertBooleanConverter}}"
+                       Width="120" Height="40"
+                       FontSize="14"/>
+                <Button Content="설정 관리" 
+                       Command="{Binding OpenSettingsCommand}"
+                       Style="{StaticResource SecondaryButton}"
+                       Width="120" Height="40"
+                       FontSize="14"/>
+                <Button Content="설정 폴더 열기" 
+                       Command="{Binding OpenSettingsFolderCommand}"
+                       Style="{StaticResource SecondaryButton}"
+                       Width="120" Height="40"
+                       FontSize="14"/>
             </StackPanel>
-        </ScrollViewer>
-        
-        <!-- 액션 버튼 -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,20,0,10">
-            <Button Content="파일 생성" 
-                   Command="{Binding CreateFileCommand}"
-                   IsEnabled="{Binding IsWorking, Converter={StaticResource InvertBooleanConverter}}"
-                   Width="120" Height="40"
-                   FontSize="14"/>
-            <Button Content="설정 관리" 
-                   Command="{Binding OpenSettingsCommand}"
-                   Style="{StaticResource SecondaryButton}"
-                   Width="120" Height="40"
-                   FontSize="14"/>
-            <Button Content="설정 폴더 열기" 
-                   Command="{Binding OpenSettingsFolderCommand}"
-                   Style="{StaticResource SecondaryButton}"
-                   Width="120" Height="40"
-                   FontSize="14"/>
         </StackPanel>
-        
+
         <!-- 상태 표시줄 -->
-        <Border Grid.Row="3" Background="#FFF5F5F5" 
+        <Border Grid.Row="2" Background="#FFF5F5F5" 
                 BorderBrush="#FFDDDDDD" BorderThickness="0,1,0,0" 
-                Padding="10,5">
+                Padding="10,5" Margin="0,373,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -396,26 +544,26 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- 작은 아이콘 -->
                 <Image Grid.Column="0" 
                        Source="pack://application:,,,/Resources/CreateNewFile.png"
                        Width="16" Height="16"
                        Margin="0,0,8,0"
                        VerticalAlignment="Center"/>
-                
+
                 <!-- 상태 메시지 -->
                 <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" 
                           VerticalAlignment="Center"
                           FontSize="12"/>
-                
+
                 <!-- 진행률 표시기 -->
                 <ProgressBar Grid.Column="2" 
                             IsIndeterminate="{Binding IsWorking}"
                             Visibility="{Binding IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Width="100" Height="16"
                             Margin="10,0"/>
-                
+
                 <!-- 버전 및 개발자 정보 -->
                 <StackPanel Grid.Column="3" 
                            Orientation="Vertical"

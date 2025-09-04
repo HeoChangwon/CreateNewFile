@@ -1,0 +1,116 @@
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+
+
+
+  Claude Code 프롬프트:
+
+
+  결과:
+  
+  
+
+
+요약 및 프롬프트 양식 샘플 ------------------------------
+CreateNewFile (CNF)
+
+20250904_2005 : Development note
+20250904_2006 : Chat
+20250904_2007 : Work list
+20250904_2008 : Next chat prompt
+
+  Claude 실행위치
+    D:\Work_Claude\CreateNewFile
+
+  CNF Documents 폴더
+    D:\Work_Claude\CreateNewFile\Documents
+
+  본 문서(Documents 폴더)
+    20250904_2005_CNF_Development_note_with_AI.txt
+    
+  chat export하여 저장할 파일명(Documents 폴더)
+    /export .\Documents\20250904_2006_CNF_Chat.txt
+        
+  Requirements 문서(CNF Documents 폴더 내)
+    20250822_0944_CNF_Requirements.md
+    
+  Design 문서(CNF Documents 폴더 내)
+    20250822_0945_CNF_Design.md
+    
+  Task list 문서(CNF Documents 폴더 내)
+    20250822_0946_CNF_Task_list.md
+    
+  Work list 문서(CNF Documents 폴더 내)
+    20250825_1328_CNF_Work_list_total.md
+    
+  프롬프트 샘플
+    20250822_0948_CNF_Template_Development_note_with_AI.txt
+        
+  Claude Code 새 Chat Session 시작시 프롬프트:
+      
+    CreateNewFile 프로젝트의 Work list는 Documents 폴더 내의 20250825_1328_CNF_Work_list_total.md 파일에 정리되어 있습니다.
+    
+    
+    
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+      Requirements 문서(Documents 폴더 내)
+        20250822_0944_CNF_Requirements.md
+        
+      Design 문서(Documents 폴더 내)
+        20250822_0945_CNF_Design.md
+        
+      Task list 문서(Documents 폴더 내)
+        20250822_0946_CNF_Task_list.md
+        
+      Work list 문서(Documents 폴더 내)
+        20250825_1328_CNF_Work_list_total.md
+    
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+    ```
+
+  Claude Code Chat 마무리 프롬프트:
+이번 Chat에서 작업한 내용을 Documents 폴더에 20250904_2007_CNF_Work_list.md 파일로 정리해 주세요.
+
+그리고, 작업 내용을 계속 누적해서 정리해 나가는 20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
+    
+또, 다음 Chat에서 이번 Chat의 맥락을 이어서 작업해 나가기 위한 프롬프트를 다음 Chat 시점을 기준으로 20250904_2008_CNF_Next_chat_prompt.md 파일로 작성해 주세요.
+그리고, 대기해 주세요.
+    
+------------------------------------------------
+
+

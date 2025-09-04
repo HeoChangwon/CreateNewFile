@@ -19,6 +19,7 @@ namespace CreateNewFile.ViewModels
         #region Private Fields
         private readonly IFileGeneratorService _fileGeneratorService;
         private readonly ISettingsService _settingsService;
+        private readonly IFileInfoService _fileInfoService;
         
         private DateTime _selectedDateTime;
         private string _selectedAbbreviation = string.Empty;
@@ -39,6 +40,12 @@ namespace CreateNewFile.ViewModels
         private bool _isTitleEnabled = true;
         private bool _isSuffixEnabled = true;
         private bool _isLoadingCheckboxStates = false;
+        
+        // 파일정보 관련 필드
+        private string _fileInfoName = string.Empty;
+        private bool _isEditingFileInfoName = false;
+        private FileInfoModel? _selectedFileInfoModel = null;
+        private StringReplacementRule? _selectedStringReplacement = null;
         #endregion
 
         #region Properties
@@ -241,6 +248,16 @@ namespace CreateNewFile.ViewModels
         /// 템플릿 경로 목록
         /// </summary>
         public ObservableCollection<PresetItem> TemplatePaths { get; } = new();
+
+        /// <summary>
+        /// 저장된 파일정보 목록
+        /// </summary>
+        public ObservableCollection<FileInfoModel> SavedFileInfos { get; } = new();
+
+        /// <summary>
+        /// 문자열 교체 규칙 목록
+        /// </summary>
+        public ObservableCollection<StringReplacementRule> StringReplacements { get; } = new();
         
         /// <summary>
         /// 날짜/시간 항목 활성화 여부
@@ -317,6 +334,42 @@ namespace CreateNewFile.ViewModels
                 }
             }
         }
+
+        /// <summary>
+        /// 파일정보 이름
+        /// </summary>
+        public string FileInfoName
+        {
+            get => _fileInfoName;
+            set => SetProperty(ref _fileInfoName, value);
+        }
+
+        /// <summary>
+        /// 파일정보 이름 편집 중 여부
+        /// </summary>
+        public bool IsEditingFileInfoName
+        {
+            get => _isEditingFileInfoName;
+            set => SetProperty(ref _isEditingFileInfoName, value);
+        }
+
+        /// <summary>
+        /// 선택된 파일정보
+        /// </summary>
+        public FileInfoModel? SelectedFileInfo
+        {
+            get => _selectedFileInfoModel;
+            set => SetProperty(ref _selectedFileInfoModel, value);
+        }
+
+        /// <summary>
+        /// 선택된 문자열 교체 규칙
+        /// </summary>
+        public StringReplacementRule? SelectedStringReplacement
+        {
+            get => _selectedStringReplacement;
+            set => SetProperty(ref _selectedStringReplacement, value);
+        }
         #endregion
 
         #region Commands
@@ -349,16 +402,54 @@ namespace CreateNewFile.ViewModels
         /// 설정 폴더 열기 명령
         /// </summary>
         public ICommand OpenSettingsFolderCommand { get; }
+
+        // 파일정보 관련 명령들
+        /// <summary>
+        /// 파일정보 불러오기 명령
+        /// </summary>
+        public ICommand LoadFileInfoCommand { get; }
+
+        /// <summary>
+        /// 파일정보 저장 명령
+        /// </summary>
+        public ICommand SaveFileInfoCommand { get; }
+
+        /// <summary>
+        /// 파일정보 관리 명령
+        /// </summary>
+        public ICommand ManageFileInfosCommand { get; }
+
+        // 문자열 교체 관련 명령들
+        /// <summary>
+        /// 문자열 교체 규칙 추가 명령
+        /// </summary>
+        public ICommand AddStringReplacementCommand { get; }
+
+        /// <summary>
+        /// 문자열 교체 규칙 제거 명령
+        /// </summary>
+        public ICommand RemoveStringReplacementCommand { get; }
+
+        /// <summary>
+        /// 문자열 교체 규칙 위로 이동 명령
+        /// </summary>
+        public ICommand MoveUpStringReplacementCommand { get; }
+
+        /// <summary>
+        /// 문자열 교체 규칙 아래로 이동 명령
+        /// </summary>
+        public ICommand MoveDownStringReplacementCommand { get; }
         #endregion
 
         #region Constructor
         /// <summary>
         /// MainViewModel의 새 인스턴스를 초기화합니다.
         /// </summary>
-        public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService settingsService)
+        public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService settingsService, IFileInfoService fileInfoService)
         {
             _fileGeneratorService = fileGeneratorService ?? throw new ArgumentNullException(nameof(fileGeneratorService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _fileInfoService = fileInfoService ?? throw new ArgumentNullException(nameof(fileInfoService));
 
             // 기본값 설정 (날짜/시간은 설정 로드 후 적용)
             StatusMessage = "준비";
@@ -370,6 +461,17 @@ namespace CreateNewFile.ViewModels
             BrowseOutputPathCommand = new RelayCommand(BrowseOutputPath);
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
             OpenSettingsFolderCommand = new RelayCommand(OpenSettingsFolder);
+
+            // 파일정보 관련 명령 초기화
+            LoadFileInfoCommand = new RelayCommand(async () => await LoadFileInfoAsync());
+            SaveFileInfoCommand = new RelayCommand(async () => await SaveFileInfoAsync());
+            ManageFileInfosCommand = new RelayCommand(ManageFileInfos);
+
+            // 문자열 교체 관련 명령 초기화
+            AddStringReplacementCommand = new RelayCommand(AddStringReplacement);
+            RemoveStringReplacementCommand = new RelayCommand(RemoveStringReplacement);
+            MoveUpStringReplacementCommand = new RelayCommand(MoveUpStringReplacement);
+            MoveDownStringReplacementCommand = new RelayCommand(MoveDownStringReplacement);
 
             // 데이터 로드는 별도로 호출하도록 변경 (화면 표시 전에 완료하기 위해)
         }
@@ -537,6 +639,9 @@ namespace CreateNewFile.ViewModels
                 await LoadPresetItems(PresetType.OutputPath, OutputPaths);
                 await LoadPresetItems(PresetType.TemplatePath, TemplatePaths);
 
+                // 파일정보 목록 로드
+                await RefreshSavedFileInfosAsync();
+
                 // 기본값 설정
                 await SetDefaultValues(settings);
 
@@ -624,6 +729,16 @@ namespace CreateNewFile.ViewModels
                 SelectedExtension = settings.LastSelectedExtension;
             else if (Extensions.Count > 0) 
                 SelectedExtension = Extensions[0].Value;
+
+            // 문자열 교체 규칙 복원
+            StringReplacements.Clear();
+            if (settings.LastStringReplacements != null && settings.LastStringReplacements.Count > 0)
+            {
+                foreach (var rule in settings.LastStringReplacements)
+                {
+                    StringReplacements.Add((StringReplacementRule)rule.Clone());
+                }
+            }
 
             // 체크박스 상태 복원
             await LoadCheckboxStatesAsync();
@@ -822,7 +937,13 @@ namespace CreateNewFile.ViewModels
                     }
                 }
 
-                var result = await _fileGeneratorService.CreateFileAsync(request, IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled);
+                // 문자열 교체 규칙이 있으면 교체 기능이 포함된 메서드 사용
+                var result = StringReplacements.Any(r => r.IsEnabled) 
+                    ? await _fileGeneratorService.CreateFileWithStringReplacementAsync(
+                        request, StringReplacements.ToList(), SelectedDateTime,
+                        IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled)
+                    : await _fileGeneratorService.CreateFileAsync(
+                        request, IsDateTimeEnabled, IsAbbreviationEnabled, IsTitleEnabled, IsSuffixEnabled);
                 if (result.Success)
                 {
                     StatusMessage = $"파일 생성 완료: {result.FileName}";
@@ -1128,6 +1249,11 @@ namespace CreateNewFile.ViewModels
                 settings.LastSelectedExtension = SelectedExtension;
                 settings.LastSelectedOutputPath = SelectedOutputPath;
                 settings.LastSelectedTemplatePath = SelectedTemplatePath;
+                
+                // 문자열 교체 규칙 저장
+                settings.LastStringReplacements.Clear();
+                settings.LastStringReplacements.AddRange(
+                    StringReplacements.Select(x => (StringReplacementRule)x.Clone()).ToList());
 
                 await _settingsService.SaveSettingsAsync(settings);
             }
@@ -1143,6 +1269,438 @@ namespace CreateNewFile.ViewModels
         {
             await SaveLastSelectedItemsAsync();
         }
+
+        #region 파일정보 관련 메서드
+
+        /// <summary>
+        /// 파일정보를 불러옵니다.
+        /// </summary>
+        private async Task LoadFileInfoAsync()
+        {
+            try
+            {
+                if (SelectedFileInfo == null)
+                {
+                    StatusMessage = "선택된 파일정보가 없습니다.";
+                    return;
+                }
+
+                var fileInfo = SelectedFileInfo;
+                
+                // 현재 UI에 파일정보 데이터 적용
+                SelectedDateTime = fileInfo.DateTime;
+                SelectedAbbreviation = fileInfo.Abbreviation;
+                SelectedTitle = fileInfo.Title;
+                SelectedSuffix = fileInfo.Suffix;
+                SelectedExtension = fileInfo.Extension;
+                SelectedOutputPath = fileInfo.OutputPath;
+                SelectedTemplatePath = fileInfo.TemplatePath;
+
+                // 체크박스 상태 적용
+                IsDateTimeEnabled = fileInfo.IsDateTimeEnabled;
+                IsAbbreviationEnabled = fileInfo.IsAbbreviationEnabled;
+                IsTitleEnabled = fileInfo.IsTitleEnabled;
+                IsSuffixEnabled = fileInfo.IsSuffixEnabled;
+
+                // 문자열 교체 규칙 적용
+                StringReplacements.Clear();
+                foreach (var rule in fileInfo.StringReplacements)
+                {
+                    StringReplacements.Add(rule);
+                }
+
+                // 사용 통계 업데이트
+                await _fileInfoService.MarkFileInfoModelAsUsedAsync(fileInfo.Id);
+
+                StatusMessage = $"파일정보 '{fileInfo.Name}' 불러오기 완료";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"파일정보 불러오기 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "파일정보를 불러올 수 없습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 현재 상태를 파일정보로 저장합니다.
+        /// </summary>
+        private async Task SaveFileInfoAsync()
+        {
+            try
+            {
+                // 파일명 미리보기에서 확장자를 제외한 이름을 기본값으로 사용
+                string defaultName;
+                if (!string.IsNullOrWhiteSpace(GeneratedFileName))
+                {
+                    // 확장자 제거
+                    defaultName = Path.GetFileNameWithoutExtension(GeneratedFileName);
+                }
+                else
+                {
+                    defaultName = GenerateDefaultFileInfoName();
+                }
+
+                IsEditingFileInfoName = true;
+                
+                // 사용자 입력 대기 후 실제 저장 수행
+                var result = DialogHelper.ShowInputDialog("파일정보 저장", "파일정보 이름을 입력하세요:", defaultName);
+                IsEditingFileInfoName = false;
+
+                if (result.IsConfirmed && !string.IsNullOrWhiteSpace(result.InputText))
+                {
+                    var fileInfo = new Models.FileInfoModel
+                    {
+                        Name = result.InputText.Trim(),
+                        DateTime = SelectedDateTime,
+                        Abbreviation = SelectedAbbreviation,
+                        Title = SelectedTitle,
+                        Suffix = SelectedSuffix,
+                        Extension = SelectedExtension,
+                        OutputPath = SelectedOutputPath,
+                        TemplatePath = SelectedTemplatePath,
+                        IsDateTimeEnabled = IsDateTimeEnabled,
+                        IsAbbreviationEnabled = IsAbbreviationEnabled,
+                        IsTitleEnabled = IsTitleEnabled,
+                        IsSuffixEnabled = IsSuffixEnabled,
+                        StringReplacements = StringReplacements.ToList()
+                    };
+
+                    var success = await _fileInfoService.SaveFileInfoAsync(fileInfo);
+                    if (success)
+                    {
+                        await RefreshSavedFileInfosAsync();
+                        StatusMessage = $"파일정보 '{fileInfo.Name}' 저장 완료";
+                    }
+                    else
+                    {
+                        StatusMessage = "파일정보 저장 실패";
+                        DialogHelper.ShowError("파일정보를 저장할 수 없습니다.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"파일정보 저장 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "파일정보를 저장할 수 없습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 파일정보 관리 창을 엽니다.
+        /// </summary>
+        private void ManageFileInfos()
+        {
+            try
+            {
+                var managerWindow = new CreateNewFile.Views.FileInfoManagerWindow();
+                var managerViewModel = new FileInfoManagerViewModel(_fileInfoService);
+                managerWindow.DataContext = managerViewModel;
+                
+                // 메인 윈도우 중앙에 위치시키기
+                var mainWindow = System.Windows.Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    managerWindow.Owner = mainWindow;
+                    managerWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+                }
+                
+                var result = managerWindow.ShowDialog();
+                
+                // 관리 창이 닫혔으므로 파일정보 목록을 갱신
+                _ = RefreshSavedFileInfosAsync();
+                
+                StatusMessage = "파일정보 관리가 완료되었습니다.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"파일정보 관리 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "파일정보 관리창을 열 수 없습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 기본 파일정보 이름을 생성합니다.
+        /// </summary>
+        private string GenerateDefaultFileInfoName()
+        {
+            var parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(SelectedAbbreviation))
+                parts.Add(SelectedAbbreviation);
+            if (!string.IsNullOrWhiteSpace(SelectedTitle))
+                parts.Add(SelectedTitle);
+            if (!string.IsNullOrWhiteSpace(SelectedSuffix))
+                parts.Add(SelectedSuffix);
+
+            var baseName = parts.Any() ? string.Join("_", parts) : "새파일정보";
+            return $"{baseName}_{DateTime.Now:yyyyMMdd_HHmm}";
+        }
+
+        /// <summary>
+        /// 저장된 파일정보 목록을 새로고침합니다.
+        /// </summary>
+        private async Task RefreshSavedFileInfosAsync()
+        {
+            try
+            {
+                var fileInfos = await _fileInfoService.GetAllFileInfosAsync();
+                SavedFileInfos.Clear();
+                foreach (var info in fileInfos.OrderBy(f => f.Name))
+                {
+                    SavedFileInfos.Add(info);
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"파일정보 목록 새로고침 오류: {ex.Message}";
+            }
+        }
+
+        #endregion
+
+        #region 문자열 교체 관련 메서드
+
+        /// <summary>
+        /// 새로운 문자열 교체 규칙을 추가합니다.
+        /// </summary>
+        private void AddStringReplacement()
+        {
+            try
+            {
+                var newRule = new StringReplacementRule
+                {
+                    SearchText = "",
+                    ReplaceText = "",
+                    Description = "새 규칙"
+                };
+
+                StringReplacements.Add(newRule);
+                SelectedStringReplacement = newRule;
+                StatusMessage = "새 문자열 교체 규칙이 추가되었습니다.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"규칙 추가 오류: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// 선택된 문자열 교체 규칙을 제거합니다.
+        /// </summary>
+        private void RemoveStringReplacement()
+        {
+            try
+            {
+                if (SelectedStringReplacement == null)
+                {
+                    StatusMessage = "제거할 규칙을 선택하세요.";
+                    return;
+                }
+
+                var result = System.Windows.MessageBox.Show(
+                    $"선택된 규칙을 제거하시겠습니까?\n\n'{SelectedStringReplacement.SearchText}' → '{SelectedStringReplacement.ReplaceText}'",
+                    "규칙 제거 확인",
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Question);
+
+                if (result == System.Windows.MessageBoxResult.Yes)
+                {
+                    StringReplacements.Remove(SelectedStringReplacement);
+                    SelectedStringReplacement = null;
+                    StatusMessage = "문자열 교체 규칙이 제거되었습니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"규칙 제거 오류: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// 선택된 문자열 교체 규칙을 위로 이동합니다.
+        /// </summary>
+        private void MoveUpStringReplacement()
+        {
+            try
+            {
+                if (SelectedStringReplacement == null)
+                {
+                    StatusMessage = "이동할 규칙을 선택하세요.";
+                    return;
+                }
+
+                var index = StringReplacements.IndexOf(SelectedStringReplacement);
+                if (index > 0)
+                {
+                    StringReplacements.Move(index, index - 1);
+                    StatusMessage = "규칙이 위로 이동되었습니다.";
+                }
+                else
+                {
+                    StatusMessage = "이미 첫 번째 규칙입니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"규칙 이동 오류: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// 선택된 문자열 교체 규칙을 아래로 이동합니다.
+        /// </summary>
+        private void MoveDownStringReplacement()
+        {
+            try
+            {
+                if (SelectedStringReplacement == null)
+                {
+                    StatusMessage = "이동할 규칙을 선택하세요.";
+                    return;
+                }
+
+                var index = StringReplacements.IndexOf(SelectedStringReplacement);
+                if (index < StringReplacements.Count - 1)
+                {
+                    StringReplacements.Move(index, index + 1);
+                    StatusMessage = "규칙이 아래로 이동되었습니다.";
+                }
+                else
+                {
+                    StatusMessage = "이미 마지막 규칙입니다.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"규칙 이동 오류: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// 문자열 교체를 수행합니다.
+        /// </summary>
+        /// <param name="content">원본 내용</param>
+        /// <param name="fileInfoDateTime">파일정보 날짜/시간 (동적 교체용)</param>
+        /// <returns>교체된 내용</returns>
+        public string ApplyStringReplacements(string content, DateTime? fileInfoDateTime = null)
+        {
+            if (string.IsNullOrEmpty(content) || !StringReplacements.Any())
+                return content;
+
+            var result = content;
+            var baseDateTime = fileInfoDateTime ?? SelectedDateTime;
+            
+            foreach (var rule in StringReplacements.Where(r => r.IsEnabled))
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(rule.SearchText))
+                        continue;
+
+                    if (rule.UseDynamicReplacement)
+                    {
+                        // 동적 플레이스홀더 처리
+                        result = ProcessDynamicPlaceholders(result, rule, baseDateTime);
+                    }
+                    else if (rule.UseRegex)
+                    {
+                        var options = rule.IsCaseSensitive 
+                            ? System.Text.RegularExpressions.RegexOptions.None
+                            : System.Text.RegularExpressions.RegexOptions.IgnoreCase;
+                        
+                        var regex = new System.Text.RegularExpressions.Regex(rule.SearchText, options);
+                        result = regex.Replace(result, rule.ReplaceText);
+                    }
+                    else
+                    {
+                        var comparison = rule.IsCaseSensitive 
+                            ? StringComparison.Ordinal
+                            : StringComparison.OrdinalIgnoreCase;
+                        
+                        result = result.Replace(rule.SearchText, rule.ReplaceText, comparison);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // 정규식 오류 등이 발생해도 계속 진행
+                    System.Diagnostics.Debug.WriteLine($"문자열 교체 규칙 적용 오류: {ex.Message}");
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 동적 플레이스홀더를 처리합니다.
+        /// </summary>
+        /// <param name="content">원본 내용</param>
+        /// <param name="rule">교체 규칙</param>
+        /// <param name="baseDateTime">기준 날짜/시간</param>
+        /// <returns>처리된 내용</returns>
+        private string ProcessDynamicPlaceholders(string content, StringReplacementRule rule, DateTime baseDateTime)
+        {
+            var searchText = rule.SearchText.Trim();
+            var replaceText = rule.ReplaceText.Trim();
+            
+            // 교체 문자열에서 동적 패턴을 찾아서 처리
+            var processedReplaceText = ProcessDynamicPatterns(replaceText, baseDateTime);
+            
+            // 일반적인 문자열 교체 수행
+            var comparison = rule.IsCaseSensitive 
+                ? StringComparison.Ordinal
+                : StringComparison.OrdinalIgnoreCase;
+            
+            return content.Replace(searchText, processedReplaceText, comparison);
+        }
+
+        /// <summary>
+        /// 문자열에서 동적 패턴을 찾아 처리합니다.
+        /// </summary>
+        /// <param name="text">처리할 텍스트</param>
+        /// <param name="baseDateTime">기준 날짜/시간</param>
+        /// <returns>동적 패턴이 처리된 텍스트</returns>
+        private string ProcessDynamicPatterns(string text, DateTime baseDateTime)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+            
+            var result = text;
+            
+            // YYYYMMDD_HHMMSS 패턴 처리
+            var pattern1 = @"YYYYMMDD_HHMMSS([+-]\d+)?";
+            result = System.Text.RegularExpressions.Regex.Replace(result, pattern1, match =>
+            {
+                var dateTime = baseDateTime;
+                var offsetText = match.Groups[1].Value;
+                
+                if (!string.IsNullOrEmpty(offsetText))
+                {
+                    var offset = int.Parse(offsetText);
+                    dateTime = dateTime.AddMinutes(offset);
+                }
+                
+                return dateTime.ToString("yyyyMMdd_HHmmss");
+            });
+            
+            // YYYYMMDD_HHMM 패턴 처리
+            var pattern2 = @"YYYYMMDD_HHMM([+-]\d+)?";
+            result = System.Text.RegularExpressions.Regex.Replace(result, pattern2, match =>
+            {
+                var dateTime = baseDateTime;
+                var offsetText = match.Groups[1].Value;
+                
+                if (!string.IsNullOrEmpty(offsetText))
+                {
+                    var offset = int.Parse(offsetText);
+                    dateTime = dateTime.AddMinutes(offset);
+                }
+                
+                return dateTime.ToString("yyyyMMdd_HHmm");
+            });
+            
+            return result;
+        }
+
+        #endregion
         #endregion
     }
 }
