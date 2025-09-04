@@ -1,0 +1,15 @@
+
+
+먼저 x64 형식으로 빌드
+
+- 설치 형식: Framework-dependent (.NET 8.0 Runtime 필요)
+- 설치 경로: C:\Program Files\CreateNewFile
+- 파일명 형식: CreateNewFile_v1.0.001_Build_20250826_1549_Setup.exe
+- 아키텍처: x64 최적화
+- 압축: LZMA 고압축 적용
+
+- NSIS 스크립트 명: CreateNewFile_Installer.nsi
+
+- 프로젝트 업데이트 Python 스크립트(11_UpdateFromProject.py)
+- installer 생성 Python 스크립트(12_BuildInstaller.py)
+- BuildAll Python 스크립트(10_BuildAll.py)
