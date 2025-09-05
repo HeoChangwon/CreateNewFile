@@ -393,6 +393,7 @@ namespace CreateNewFile.Models
         private bool _isEnabled = true;
         private bool _isCaseSensitive = false;
         private bool _useRegex = false;
+        private bool _useDynamicReplacement = false;
 
         /// <summary>
         /// 고유 식별자
@@ -427,6 +428,9 @@ namespace CreateNewFile.Models
                 {
                     _replaceText = value ?? string.Empty;
                     OnPropertyChanged();
+                    
+                    // 동적 패턴이 포함된 경우 자동으로 동적교체 활성화
+                    CheckAndEnableDynamicReplacement();
                 }
             }
         }
@@ -482,7 +486,18 @@ namespace CreateNewFile.Models
         /// <summary>
         /// 동적 교체 사용 여부 (파일정보 날짜/시간 기반)
         /// </summary>
-        public bool UseDynamicReplacement { get; set; } = false;
+        public bool UseDynamicReplacement
+        {
+            get => _useDynamicReplacement;
+            set
+            {
+                if (_useDynamicReplacement != value)
+                {
+                    _useDynamicReplacement = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 설명
@@ -493,6 +508,43 @@ namespace CreateNewFile.Models
         /// 생성 시간
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 교체 문자열에 동적 패턴이 포함되어 있는지 확인하고 자동으로 동적교체를 활성화합니다.
+        /// </summary>
+        private void CheckAndEnableDynamicReplacement()
+        {
+            if (string.IsNullOrEmpty(_replaceText))
+            {
+                // 교체 문자열이 비어있으면 동적교체 비활성화
+                UseDynamicReplacement = false;
+                return;
+            }
+
+            // 동적 패턴 감지 (YYYYMMDD_HHMMSS 또는 YYYYMMDD_HHMM 패턴)
+            var dynamicPatterns = new[]
+            {
+                @"YYYYMMDD_HHMMSS([+\-]\d+)?",
+                @"YYYYMMDD_HHMM([+\-]\d+)?"
+            };
+
+            bool hasDynamicPattern = false;
+            foreach (var pattern in dynamicPatterns)
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(_replaceText, pattern))
+                {
+                    hasDynamicPattern = true;
+                    break;
+                }
+            }
+
+            // 동적 패턴이 발견되면 자동으로 동적교체 활성화
+            if (hasDynamicPattern && !_useDynamicReplacement)
+            {
+                _useDynamicReplacement = true;
+                OnPropertyChanged(nameof(UseDynamicReplacement));
+            }
+        }
 
         /// <summary>
         /// 유효성을 검사합니다.

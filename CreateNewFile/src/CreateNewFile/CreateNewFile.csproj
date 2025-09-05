@@ -29,7 +29,7 @@
     <AssemblyCopyright>Copyright © 2025 HeoChangwon</AssemblyCopyright>
     
     <!-- 빌드 날짜 수동 지정 -->
-    <BuildDate>2025-09-04 20:58</BuildDate>
+    <BuildDate>2025-09-05 13:44</BuildDate>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
