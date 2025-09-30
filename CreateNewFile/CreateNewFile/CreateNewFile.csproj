@@ -29,12 +29,12 @@
     <AssemblyCopyright>Copyright © 2025 HeoChangwon</AssemblyCopyright>
     
     <!-- 빌드 날짜 수동 지정 -->
-    <BuildDate>2025-09-30 16:13</BuildDate>
+    <BuildDate>2025-09-30 18:07</BuildDate>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyMetadata Include="DisplayVersion" Value="1.0.001" />
+    <AssemblyMetadata Include="DisplayVersion" Value="1.0.002" />
     <AssemblyMetadata Include="BuildDate" Value="$(BuildDate)" />
   </ItemGroup>
 

@@ -3,6 +3,8 @@
     "base_directory": ".",
     "files": [
       "..\\CreateNewFile\\CreateNewFile.csproj",
+      "..\\CreateNewFile\\Views\\MainWindow.xaml",
+      
       "10_BuildAll.py",
       "11_UpdateFromProject.py",
       "12_BuildInstaller.py"

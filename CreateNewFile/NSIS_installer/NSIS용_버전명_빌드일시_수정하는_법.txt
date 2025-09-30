@@ -4,6 +4,10 @@
 1. 다음 파일 적절히 수정해서
   D:\Work_Claude\CreateNewFile\CreateNewFile\src\NSIS_installer\A25050831_Change_Version_Name2_INPUT_ReplaceStringList.json
   
+  MainWindow.xaml 의 
+  <TextBlock Text="v1.0.001"
+  
+  
 2. 스크립트 실행
   D:\Work_Claude\CreateNewFile\CreateNewFile\src\NSIS_installer\A25050831_Change_Version_Name2_07.py
 

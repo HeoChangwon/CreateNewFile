@@ -574,7 +574,7 @@
                            Orientation="Vertical"
                            VerticalAlignment="Center"
                            Margin="10,0,0,0">
-                    <TextBlock Text="v1.0.001"
+                    <TextBlock Text="v1.0.002"
                               FontSize="11"
                               Foreground="Gray"
                               HorizontalAlignment="Right"/>

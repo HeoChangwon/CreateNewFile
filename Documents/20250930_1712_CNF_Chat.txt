@@ -1,0 +1,154 @@
+
+ ▐▛███▜▌   Claude Code v2.0.1
+▝▜█████▛▘  Sonnet 4.5 · Claude Max
+  ▘▘ ▝▝    D:\Work_Claude\2025\08\CreateNewFile
+
+> CreateNewFile 에서 버전명을 수정하게 되면 어디어디를 변경해야하는지 알려주세요.
+
+개발관련 폴더와 문서는 다음과 같습니다.
+
+아래 Project_overview 폴더의 20250930_1557_CreateNewFile_Project_overview.md 파일을 참고하세요.
+
+프로젝트 폴더 구조는 다음과 같습니다.
+```
+D:\Work_Claude\2025\08\CreateNewFile\
+├── CreateNewFile/
+│   ├── .git/                    ✅ Git 저장소
+│   ├── .gitignore              ✅ Git 무시 파일
+│   ├── src/
+│   │   └── CreateNewFile/
+│   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+│   │       ├── App.xaml         ✅ 애플리케이션 정의
+│   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+│   │       ├── Views/           ✅ XAML 뷰 파일들
+│   │       ├── ViewModels/      ✅ ViewModel 클래스들
+│   │       ├── Models/          ✅ 모델 클래스들
+│   │       ├── Services/        ✅ 서비스 폴더 (예정)
+│   │       ├── Utils/           ✅ 유틸리티 클래스들
+│   │       └── Resources/       ✅ 리소스 폴더
+│   └── config/                  ✅ 설정 파일 폴더
+└── Documents/                   ✅ 문서 폴더
+    └── Project_overview/
+``` 
+
+● 프로젝트 개요 문서와 관련 파일들을 확인하여 버전명 변경 위치를 파악하겠습니다.
+
+● Read(Documents\Project_overview\20250930_1557_CreateNewFile_Project_overview.md)
+  ⎿  Read 411 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\src\CreateNewFile\CreateNewFile.csproj)
+  ⎿  Error reading file
+
+● Search(pattern: "**/AssemblyInfo.cs")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\AssemblyInfo.cs)
+  ⎿  Read 11 lines (ctrl+o to expand)
+
+● Search(pattern: "**/*.csproj")
+  ⎿  Found 2 files (ctrl+o to expand)
+
+● Search(pattern: "Version")
+  ⎿  Found 102 files (ctrl+o to expand)
+  ⎿  CreateNewFile\CreateNewFile\CLAUDE.md
+
+● Read(CreateNewFile\CreateNewFile\CreateNewFile.csproj)
+  ⎿  Read 77 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\Utils\VersionHelper.cs)
+  ⎿  Read 246 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\NSIS용_버전명_빌드일시_수정하는_법.txt)
+  ⎿  Read 24 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi)
+  ⎿  Read 143 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\10_BuildAll.py)
+  ⎿  Read 315 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\12_BuildInstaller.py)
+  ⎿  Read 202 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\A25050831_Change_Version_Name2_07.py)
+  ⎿  Read 220 lines (ctrl+o to expand)
+
+● Search(pattern: "**/A25050831_Change_Version_Name2_INPUT_*.json")
+  ⎿  Found 2 files (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\A25050831_Change_Version_Name2_INPUT_FileList.json)
+  ⎿  Read 11 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\A25050831_Change_Version_Name2_INPUT_ReplaceStringList.json)
+  ⎿  Read 7 lines (ctrl+o to expand)
+
+● CreateNewFile 버전명 변경 위치 정리
+
+  프로젝트를 분석한 결과, 버전명을 수정할 때 다음 파일들을 변경해야 합니다:
+
+  1. 프로젝트 파일 (메인 버전 정보)
+
+  📁 CreateNewFile\CreateNewFile\CreateNewFile.csproj
+  - Line 20-23: 버전 번호 4곳
+  <AssemblyVersion>1.0.2.0</AssemblyVersion>
+  <FileVersion>1.0.2.0</FileVersion>
+  <AssemblyInformationalVersion>1.0.002</AssemblyInformationalVersion>
+  <Version>1.0.002</Version>
+  - Line 32: 빌드 날짜
+  <BuildDate>2025-09-30 16:13</BuildDate>
+  - Line 37: DisplayVersion 메타데이터
+  <AssemblyMetadata Include="DisplayVersion" Value="1.0.001" />
+
+  2. NSIS 설치 스크립트
+
+  📁 CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi
+  - Line 6: NSIS 제품 버전
+  !define PRODUCT_VERSION "1.0.001"
+
+  3. Python 빌드 스크립트 (3개 파일)
+
+  📁 CreateNewFile\NSIS_installer\
+  - 10_BuildAll.py (Line 18-19)
+  - 12_BuildInstaller.py (Line 18-19)
+  PRODUCT_VERSION = "1.0.002"
+  BUILD_DATE = "20250930_1613"
+
+  4. 자동 버전 변경 시스템 (권장 방법)
+
+  📁 CreateNewFile\NSIS_installer\
+
+  변경 파일:
+
+  A25050831_Change_Version_Name2_INPUT_ReplaceStringList.json
+  [
+    {"from": "<BuildDate>2025-09-30 16:13</BuildDate>", "to": "<BuildDate>새로운 날짜</BuildDate>"},
+    {"from": "PRODUCT_VERSION = \"1.0.002\"", "to": "PRODUCT_VERSION = \"새버전\""},
+    {"from": "BUILD_DATE = \"20250930_1613\"", "to": "BUILD_DATE = \"새날짜\""},
+    {"from": ">1.0.2.0<", "to": ">새버전.0<"},
+    {"from": ">1.0.002<", "to": ">새버전<"}
+  ]
+
+  실행 스크립트:
+
+  A25050831_Change_Version_Name2_07.py
+
+  이 스크립트는 위의 1~3번 파일들을 자동으로 일괄 변경합니다.
+
+  ---
+  버전 형식 규칙
+
+  - AssemblyVersion: 1.0.2.0 (4자리)
+  - ProductVersion: 1.0.002 (3자리, 마지막 0 패딩)
+  - BuildDate: 2025-09-30 16:13 (날짜시간)
+  - BUILD_DATE: 20250930_1613 (파일명용)
+
+  참고 문서
+
+  📄 CreateNewFile\NSIS_installer\NSIS용_버전명_빌드일시_수정하는_법.txt
+
+> /status 
+  ⎿  Status dialog dismissed
+
+
+
+
