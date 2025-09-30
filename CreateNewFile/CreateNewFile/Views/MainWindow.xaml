@@ -381,7 +381,7 @@
                                 </Grid.RowDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" Content="템플릿 파일:" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" 
+                                <ComboBox Grid.Row="0" Grid.Column="1"
                                          ItemsSource="{Binding TemplatePaths}"
                                          DisplayMemberPath="Value"
                                          SelectedValuePath="Value"
@@ -392,12 +392,17 @@
                                        Command="{Binding BrowseTemplatePathCommand}"
                                        Style="{StaticResource SecondaryButton}"/>
 
+                                <!-- 편집 버튼 -->
+                                <Button Grid.Row="1" Grid.Column="0" Content="편집"
+                                       Command="{Binding OpenTemplateFileCommand}"
+                                       Style="{StaticResource SecondaryButton}"/>
+
                                 <!-- 드래그앤드롭 영역 (템플릿 파일) -->
                                 <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                                        Style="{StaticResource DropArea}"
                                        AllowDrop="True">
-                                    <TextBlock Text="템플릿 파일을 여기에 드래그하세요" 
-                                              FontStyle="Italic" 
+                                    <TextBlock Text="템플릿 파일을 여기에 드래그하세요"
+                                              FontStyle="Italic"
                                               Foreground="Gray"
                                               HorizontalAlignment="Center"/>
                                 </Border>

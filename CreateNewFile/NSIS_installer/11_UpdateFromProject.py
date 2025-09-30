@@ -14,8 +14,8 @@ from pathlib import Path
 # 설정 (필요시 수정)
 # ==========================================
 PRODUCT_NAME = "CreateNewFile"
-PRODUCT_VERSION = "1.0.001"
-BUILD_DATE = "20250905_1344"
+PRODUCT_VERSION = "1.0.002"
+BUILD_DATE = "20250930_1613"
 PROJECT_FILE = "CreateNewFile.csproj"
 
 def print_header():

@@ -399,6 +399,11 @@ namespace CreateNewFile.ViewModels
         public ICommand BrowseTemplatePathCommand { get; }
 
         /// <summary>
+        /// 템플릿 파일 편집기로 열기 명령
+        /// </summary>
+        public ICommand OpenTemplateFileCommand { get; }
+
+        /// <summary>
         /// 설정 폴더 열기 명령
         /// </summary>
         public ICommand OpenSettingsFolderCommand { get; }
@@ -460,6 +465,7 @@ namespace CreateNewFile.ViewModels
             OpenSettingsCommand = new RelayCommand(OpenSettings);
             BrowseOutputPathCommand = new RelayCommand(BrowseOutputPath);
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
+            OpenTemplateFileCommand = new RelayCommand(OpenTemplateFile, CanOpenTemplateFile);
             OpenSettingsFolderCommand = new RelayCommand(OpenSettingsFolder);
 
             // 파일정보 관련 명령 초기화
@@ -1069,6 +1075,50 @@ namespace CreateNewFile.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 SelectedTemplatePath = dialog.FileName;
+            }
+        }
+
+        /// <summary>
+        /// 템플릿 파일을 편집 가능한지 확인합니다.
+        /// </summary>
+        private bool CanOpenTemplateFile()
+        {
+            return !string.IsNullOrWhiteSpace(SelectedTemplatePath)
+                   && File.Exists(SelectedTemplatePath);
+        }
+
+        /// <summary>
+        /// 템플릿 파일을 기본 연결 프로그램으로 엽니다.
+        /// </summary>
+        private void OpenTemplateFile()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedTemplatePath))
+                {
+                    DialogHelper.ShowError("템플릿 파일이 선택되지 않았습니다.");
+                    return;
+                }
+
+                if (!File.Exists(SelectedTemplatePath))
+                {
+                    DialogHelper.ShowError("템플릿 파일을 찾을 수 없습니다.\n\n경로: " + SelectedTemplatePath);
+                    return;
+                }
+
+                // 기본 연결 프로그램으로 파일 열기
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = SelectedTemplatePath,
+                    UseShellExecute = true
+                });
+
+                StatusMessage = $"템플릿 파일을 열었습니다: {Path.GetFileName(SelectedTemplatePath)}";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"템플릿 파일을 열 수 없습니다.\n\n{ex.Message}", "파일 열기 오류");
+                StatusMessage = "템플릿 파일 열기 실패";
             }
         }
 

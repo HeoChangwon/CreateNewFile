@@ -98,10 +98,10 @@ CreateNewFile (CNF)
     D:\Work_Claude\CreateNewFile\Documents
 
   본 문서(Documents 폴더)
-    0905_1326_CNF_Development_note_with_AI.txt
+    20250905_1326_CNF_Development_note_with_AI.txt
     
   chat export하여 저장할 파일명(Documents 폴더)
-    /export .\Documents\0905_1327_CNF_Chat.txt
+    /export .\Documents\20250905_1327_CNF_Chat.txt
         
   Requirements 문서(CNF Documents 폴더 내)
     20250822_0944_CNF_Requirements.md

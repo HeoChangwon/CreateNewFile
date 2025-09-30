@@ -15,8 +15,8 @@ from datetime import datetime
 # 설정 (필요시 수정)
 # ==========================================
 PRODUCT_NAME = "CreateNewFile"
-PRODUCT_VERSION = "1.0.001"
-BUILD_DATE = "20250905_1344"
+PRODUCT_VERSION = "1.0.002"
+BUILD_DATE = "20250930_1613"
 PROJECT_FILE = "CreateNewFile.csproj"
 NSIS_SCRIPT = "CreateNewFile_Installer.nsi"
 NSIS_PATH = r"C:\Program Files (x86)\NSIS\makensis.exe"
