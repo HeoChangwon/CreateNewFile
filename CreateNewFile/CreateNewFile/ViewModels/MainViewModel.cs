@@ -1403,10 +1403,7 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("=== SaveLastSelectedItemsAsync 시작 ===");
                 var settings = await _settingsService.LoadSettingsAsync();
-
-                System.Diagnostics.Debug.WriteLine($"로드된 UI 설정 (SaveLastSelectedItemsAsync): Left={settings.UI.WindowLeft}, Top={settings.UI.WindowTop}");
 
                 // 마지막 선택 정보 업데이트
                 settings.LastSelectedDateTime = SelectedDateTime;
@@ -1422,13 +1419,11 @@ namespace CreateNewFile.ViewModels
                 settings.LastStringReplacements.AddRange(
                     StringReplacements.Select(x => (StringReplacementRule)x.Clone()).ToList());
 
-                System.Diagnostics.Debug.WriteLine($"저장할 UI 설정 (SaveLastSelectedItemsAsync): Left={settings.UI.WindowLeft}, Top={settings.UI.WindowTop}");
                 await _settingsService.SaveSettingsAsync(settings);
-                System.Diagnostics.Debug.WriteLine("=== SaveLastSelectedItemsAsync 완료 ===");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine($"SaveLastSelectedItemsAsync 오류: {ex.Message}");
+                // 저장 실패 시 무시
             }
         }
 

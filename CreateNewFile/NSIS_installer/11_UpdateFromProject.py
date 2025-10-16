@@ -15,7 +15,7 @@ from pathlib import Path
 # ==========================================
 PRODUCT_NAME = "CreateNewFile"
 PRODUCT_VERSION = "1.0.003"
-BUILD_DATE = "20251016_1422"
+BUILD_DATE = "20251016_1750"
 PROJECT_FILE = "CreateNewFile.csproj"
 
 def print_header():

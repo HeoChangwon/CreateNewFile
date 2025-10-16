@@ -16,7 +16,7 @@ from datetime import datetime
 # ==========================================
 PRODUCT_NAME = "CreateNewFile"
 PRODUCT_VERSION = "1.0.003"
-BUILD_DATE = "20251016_1422"
+BUILD_DATE = "20251016_1750"
 NSIS_SCRIPT = "CreateNewFile_Installer.nsi"
 NSIS_PATH = r"C:\Program Files (x86)\NSIS\makensis.exe"
 

@@ -611,7 +611,6 @@ namespace CreateNewFile.Services
             lock (_lockObject)
             {
                 _cachedSettings = null;
-                System.Diagnostics.Debug.WriteLine("SettingsService 캐시가 무효화되었습니다.");
             }
         }
     }

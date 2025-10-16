@@ -44,9 +44,7 @@ public partial class MainWindow : Window
     /// </summary>
     public void PrepareWindow()
     {
-        System.Diagnostics.Debug.WriteLine("=== PrepareWindow 호출됨 ===");
-        System.Diagnostics.Debug.WriteLine("윈도우 위치 복원은 SourceInitialized 이벤트에서 수행됩니다.");
-        System.Diagnostics.Debug.WriteLine("=== PrepareWindow 완료 ===");
+        // 실제 위치 복원은 SourceInitialized 이벤트에서 수행됨
     }
 
     /// <summary>
@@ -57,13 +55,8 @@ public partial class MainWindow : Window
         if (_isWindowPositionRestored)
             return;
 
-        System.Diagnostics.Debug.WriteLine("=== SourceInitialized 이벤트 발생 ===");
-
         RestoreWindowPositionSync();
-
         _isWindowPositionRestored = true;
-        System.Diagnostics.Debug.WriteLine($"복원 후 위치: Left={Left}, Top={Top}, Width={Width}, Height={Height}");
-        System.Diagnostics.Debug.WriteLine("=== SourceInitialized 처리 완료 ===");
     }
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -93,10 +86,6 @@ public partial class MainWindow : Window
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("=== MainWindow_Closing 시작 ===");
-            System.Diagnostics.Debug.WriteLine($"종료 직전 윈도우 위치: Left={Left}, Top={Top}, Width={ActualWidth}, Height={ActualHeight}");
-            System.Diagnostics.Debug.WriteLine($"종료 직전 윈도우 상태: {WindowState}");
-
             // 윈도우 위치를 먼저 저장 (MainViewModel보다 먼저)
             SaveWindowPositionSync();
 
@@ -106,17 +95,14 @@ public partial class MainWindow : Window
                 // SettingsService 캐시 무효화 (SaveWindowPositionSync가 파일을 직접 수정했으므로)
                 // MainViewModel의 SettingsService 캐시를 무효화해야 최신 윈도우 위치를 읽어옴
                 viewModel.ClearSettingsCache();
-                System.Diagnostics.Debug.WriteLine("MainViewModel의 SettingsService 캐시 무효화 완료");
 
                 // Task.Run을 사용하여 별도 스레드에서 실행하고 대기
                 Task.Run(async () => await viewModel.SaveCurrentStateAsync()).Wait(TimeSpan.FromSeconds(5));
             }
-
-            System.Diagnostics.Debug.WriteLine("=== MainWindow_Closing 완료 ===");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"MainWindow_Closing 오류: {ex.Message}");
+            // 종료 시 오류는 무시
         }
     }
 
@@ -138,7 +124,6 @@ public partial class MainWindow : Window
             {
                 Left = (SystemParameters.PrimaryScreenWidth - Width) / 2;
                 Top = (SystemParameters.PrimaryScreenHeight - Height) / 2;
-                System.Diagnostics.Debug.WriteLine($"설정 파일 없음 - 중앙 배치: {Left}, {Top}");
                 return;
             }
 
@@ -150,7 +135,6 @@ public partial class MainWindow : Window
             {
                 Left = (SystemParameters.PrimaryScreenWidth - Width) / 2;
                 Top = (SystemParameters.PrimaryScreenHeight - Height) / 2;
-                System.Diagnostics.Debug.WriteLine($"UI 설정 없음 - 중앙 배치: {Left}, {Top}");
                 return;
             }
 
@@ -173,14 +157,12 @@ public partial class MainWindow : Window
                 {
                     Left = settings.WindowLeft;
                     Top = settings.WindowTop;
-                    System.Diagnostics.Debug.WriteLine($"저장된 위치 적용: {Left}, {Top}");
                 }
                 else
                 {
                     // 유효하지 않은 위치인 경우 화면 중앙에 배치
                     Left = (screenWidth - settings.WindowWidth) / 2;
                     Top = (screenHeight - settings.WindowHeight) / 2;
-                    System.Diagnostics.Debug.WriteLine($"유효하지 않은 위치 - 중앙 배치: {Left}, {Top}");
                 }
 
                 // 유효한 크기인지 확인하고 적용
@@ -189,7 +171,6 @@ public partial class MainWindow : Window
                 {
                     Width = settings.WindowWidth;
                     Height = settings.WindowHeight;
-                    System.Diagnostics.Debug.WriteLine($"저장된 크기 적용: {Width}x{Height}");
                 }
 
                 // 윈도우 상태 복원
@@ -197,7 +178,6 @@ public partial class MainWindow : Window
                     windowState != WindowState.Minimized)
                 {
                     WindowState = windowState;
-                    System.Diagnostics.Debug.WriteLine($"윈도우 상태 복원: {WindowState}");
                 }
             }
             else
@@ -205,12 +185,10 @@ public partial class MainWindow : Window
                 // 처음 실행인 경우 - 화면 중앙에 배치
                 Left = (screenWidth - Width) / 2;
                 Top = (screenHeight - Height) / 2;
-                System.Diagnostics.Debug.WriteLine($"처음 실행 - 중앙 배치: {Left}, {Top}");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"윈도우 위치 복원 실패: {ex.Message}");
             // 실패한 경우 화면 중앙에 배치
             var screenWidth = Math.Max(SystemParameters.PrimaryScreenWidth, 1024);
             var screenHeight = Math.Max(SystemParameters.PrimaryScreenHeight, 768);
@@ -226,52 +204,35 @@ public partial class MainWindow : Window
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("=== SaveWindowPositionSync 시작 ===");
-            System.Diagnostics.Debug.WriteLine($"현재 윈도우 속성: Left={Left}, Top={Top}, ActualWidth={ActualWidth}, ActualHeight={ActualHeight}");
-            System.Diagnostics.Debug.WriteLine($"현재 WindowState: {WindowState}");
-
             // 최소화 상태일 때는 저장하지 않음
             if (WindowState == WindowState.Minimized)
-            {
-                System.Diagnostics.Debug.WriteLine("최소화 상태 - 저장 생략");
                 return;
-            }
 
             // 유효하지 않은 값들 확인
             if (double.IsNaN(Left) || double.IsNaN(Top) ||
                 double.IsNaN(ActualWidth) || double.IsNaN(ActualHeight) ||
                 ActualWidth <= 0 || ActualHeight <= 0)
-            {
-                System.Diagnostics.Debug.WriteLine($"유효하지 않은 윈도우 값 - 저장 생략: Left={Left}, Top={Top}, Width={ActualWidth}, Height={ActualHeight}");
                 return;
-            }
 
             // 설정 파일 경로
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var configDir = System.IO.Path.Combine(localAppData, "CreateNewFile", "config");
             var settingsFilePath = System.IO.Path.Combine(configDir, "appsettings.json");
-            System.Diagnostics.Debug.WriteLine($"설정 파일 경로: {settingsFilePath}");
 
             // 디렉토리 생성
             if (!Directory.Exists(configDir))
-            {
                 Directory.CreateDirectory(configDir);
-                System.Diagnostics.Debug.WriteLine($"설정 디렉토리 생성: {configDir}");
-            }
 
             // 현재 설정 로드
             CreateNewFile.Models.AppSettings appSettings;
             if (File.Exists(settingsFilePath))
             {
                 var json = File.ReadAllText(settingsFilePath);
-                System.Diagnostics.Debug.WriteLine($"기존 설정 파일 로드 (크기: {json.Length} bytes)");
                 appSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateNewFile.Models.AppSettings>(json)
                     ?? new CreateNewFile.Models.AppSettings();
-                System.Diagnostics.Debug.WriteLine($"로드된 UI 설정: Left={appSettings.UI.WindowLeft}, Top={appSettings.UI.WindowTop}");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("설정 파일 없음 - 새로 생성");
                 appSettings = new CreateNewFile.Models.AppSettings();
             }
 
@@ -281,13 +242,11 @@ public partial class MainWindow : Window
             if (WindowState == WindowState.Maximized && RestoreBounds != Rect.Empty)
             {
                 // 최대화 상태일 때는 복원될 때의 크기와 위치 저장
-                System.Diagnostics.Debug.WriteLine($"RestoreBounds: {RestoreBounds}");
                 settings.WindowLeft = RestoreBounds.Left;
                 settings.WindowTop = RestoreBounds.Top;
                 settings.WindowWidth = RestoreBounds.Width;
                 settings.WindowHeight = RestoreBounds.Height;
                 settings.WindowState = "Normal"; // 다음 실행 시 일반 상태로 시작
-                System.Diagnostics.Debug.WriteLine($"최대화 상태 - RestoreBounds 저장: Left={settings.WindowLeft}, Top={settings.WindowTop}, Size={settings.WindowWidth}x{settings.WindowHeight}");
             }
             else
             {
@@ -297,19 +256,15 @@ public partial class MainWindow : Window
                 settings.WindowWidth = ActualWidth;
                 settings.WindowHeight = ActualHeight;
                 settings.WindowState = WindowState.ToString();
-                System.Diagnostics.Debug.WriteLine($"일반 상태 - 현재 위치/크기 저장: Left={settings.WindowLeft}, Top={settings.WindowTop}, Size={settings.WindowWidth}x{settings.WindowHeight}");
             }
 
             // JSON 파일로 저장
             var jsonToSave = Newtonsoft.Json.JsonConvert.SerializeObject(appSettings, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(settingsFilePath, jsonToSave);
-            System.Diagnostics.Debug.WriteLine($"JSON 파일 저장 완료 (크기: {jsonToSave.Length} bytes)");
-            System.Diagnostics.Debug.WriteLine("=== SaveWindowPositionSync 완료 ===");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"윈도우 위치 저장 실패: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+            // 저장 실패 시 무시
         }
     }
 
@@ -478,11 +433,10 @@ public partial class MainWindow : Window
                 if (textBlock != null)
                 {
                     var text = textBlock.Text;
-                    System.Diagnostics.Debug.WriteLine($"드래그 앤 드롭 영역 발견: '{text}'");
-                    
+
                     // 기존 이벤트 핸들러 제거 (중복 등록 방지)
                     RemoveDropHandlers(border);
-                    
+
                     if (text.Contains("폴더"))
                     {
                         // 폴더 드롭 영역
@@ -490,7 +444,6 @@ public partial class MainWindow : Window
                         border.DragOver += FolderDropArea_DragOver;
                         border.DragLeave += DropArea_DragLeave;
                         border.Drop += FolderDropArea_Drop;
-                        System.Diagnostics.Debug.WriteLine("폴더 드롭 이벤트 핸들러 등록됨");
                     }
                     else if (text.Contains("템플릿"))
                     {
@@ -499,7 +452,6 @@ public partial class MainWindow : Window
                         border.DragOver += FileDropArea_DragOver;
                         border.DragLeave += DropArea_DragLeave;
                         border.Drop += FileDropArea_Drop;
-                        System.Diagnostics.Debug.WriteLine("템플릿 파일 드롭 이벤트 핸들러 등록됨");
                     }
                 }
             }
