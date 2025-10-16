@@ -28,6 +28,7 @@ namespace CreateNewFile.ViewModels
         private string _selectedExtension = string.Empty;
         private string _selectedOutputPath = string.Empty;
         private string _selectedTemplatePath = string.Empty;
+        private string _templateFileName = string.Empty;
         private string _generatedFileName = string.Empty;
         private string _fullFilePath = string.Empty;
         private bool _isWorking = false;
@@ -154,9 +155,21 @@ namespace CreateNewFile.ViewModels
             {
                 if (SetProperty(ref _selectedTemplatePath, value))
                 {
+                    TemplateFileName = !string.IsNullOrWhiteSpace(value)
+                        ? Path.GetFileName(value)
+                        : string.Empty;
                     ValidateInput();
                 }
             }
+        }
+
+        /// <summary>
+        /// 템플릿 파일명 (경로에서 추출)
+        /// </summary>
+        public string TemplateFileName
+        {
+            get => _templateFileName;
+            private set => SetProperty(ref _templateFileName, value);
         }
 
         /// <summary>
@@ -408,6 +421,16 @@ namespace CreateNewFile.ViewModels
         /// </summary>
         public ICommand OpenSettingsFolderCommand { get; }
 
+        /// <summary>
+        /// 출력 폴더 열기 명령
+        /// </summary>
+        public ICommand OpenOutputFolderCommand { get; }
+
+        /// <summary>
+        /// 템플릿 폴더 열기 명령
+        /// </summary>
+        public ICommand OpenTemplateFolderCommand { get; }
+
         // 파일정보 관련 명령들
         /// <summary>
         /// 파일정보 불러오기 명령
@@ -467,6 +490,8 @@ namespace CreateNewFile.ViewModels
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
             OpenTemplateFileCommand = new RelayCommand(OpenTemplateFile, CanOpenTemplateFile);
             OpenSettingsFolderCommand = new RelayCommand(OpenSettingsFolder);
+            OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder, CanOpenOutputFolder);
+            OpenTemplateFolderCommand = new RelayCommand(OpenTemplateFolder, CanOpenTemplateFolder);
 
             // 파일정보 관련 명령 초기화
             LoadFileInfoCommand = new RelayCommand(async () => await LoadFileInfoAsync());
@@ -1130,16 +1155,105 @@ namespace CreateNewFile.ViewModels
             try
             {
                 string settingsFolderPath = _settingsService.GetSettingsFolderPath();
-                
+
                 // Windows 탐색기로 폴더 열기
                 System.Diagnostics.Process.Start("explorer.exe", settingsFolderPath);
-                
+
                 StatusMessage = "설정 폴더를 열었습니다.";
             }
             catch (Exception ex)
             {
                 DialogHelper.ShowError($"설정 폴더를 열 수 없습니다: {ex.Message}");
                 StatusMessage = "설정 폴더 열기 실패";
+            }
+        }
+
+        /// <summary>
+        /// 출력 폴더를 열 수 있는지 확인합니다.
+        /// </summary>
+        private bool CanOpenOutputFolder()
+        {
+            return !string.IsNullOrWhiteSpace(SelectedOutputPath) && Directory.Exists(SelectedOutputPath);
+        }
+
+        /// <summary>
+        /// 출력 폴더를 윈도우 탐색기로 엽니다.
+        /// </summary>
+        private void OpenOutputFolder()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedOutputPath))
+                {
+                    DialogHelper.ShowError("출력 폴더가 선택되지 않았습니다.");
+                    return;
+                }
+
+                if (!Directory.Exists(SelectedOutputPath))
+                {
+                    DialogHelper.ShowError($"출력 폴더를 찾을 수 없습니다.\n\n경로: {SelectedOutputPath}");
+                    return;
+                }
+
+                // Windows 탐색기로 폴더 열기
+                System.Diagnostics.Process.Start("explorer.exe", SelectedOutputPath);
+
+                StatusMessage = "출력 폴더를 열었습니다.";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"출력 폴더를 열 수 없습니다.\n\n{ex.Message}", "폴더 열기 오류");
+                StatusMessage = "출력 폴더 열기 실패";
+            }
+        }
+
+        /// <summary>
+        /// 템플릿 폴더를 열 수 있는지 확인합니다.
+        /// </summary>
+        private bool CanOpenTemplateFolder()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedTemplatePath))
+                return false;
+
+            var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+            return !string.IsNullOrWhiteSpace(templateFolder) && Directory.Exists(templateFolder);
+        }
+
+        /// <summary>
+        /// 템플릿 파일이 있는 폴더를 윈도우 탐색기로 엽니다.
+        /// </summary>
+        private void OpenTemplateFolder()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedTemplatePath))
+                {
+                    DialogHelper.ShowError("템플릿 파일 경로가 선택되지 않았습니다.");
+                    return;
+                }
+
+                var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+                if (string.IsNullOrWhiteSpace(templateFolder))
+                {
+                    DialogHelper.ShowError("템플릿 파일 경로가 올바르지 않습니다.");
+                    return;
+                }
+
+                if (!Directory.Exists(templateFolder))
+                {
+                    DialogHelper.ShowError($"템플릿 폴더를 찾을 수 없습니다.\n\n경로: {templateFolder}");
+                    return;
+                }
+
+                // Windows 탐색기로 폴더 열기
+                System.Diagnostics.Process.Start("explorer.exe", templateFolder);
+
+                StatusMessage = "템플릿 폴더를 열었습니다.";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"템플릿 폴더를 열 수 없습니다.\n\n{ex.Message}", "폴더 열기 오류");
+                StatusMessage = "템플릿 폴더 열기 실패";
             }
         }
 
@@ -1289,8 +1403,11 @@ namespace CreateNewFile.ViewModels
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("=== SaveLastSelectedItemsAsync 시작 ===");
                 var settings = await _settingsService.LoadSettingsAsync();
-                
+
+                System.Diagnostics.Debug.WriteLine($"로드된 UI 설정 (SaveLastSelectedItemsAsync): Left={settings.UI.WindowLeft}, Top={settings.UI.WindowTop}");
+
                 // 마지막 선택 정보 업데이트
                 settings.LastSelectedDateTime = SelectedDateTime;
                 settings.LastSelectedAbbreviation = SelectedAbbreviation;
@@ -1299,16 +1416,19 @@ namespace CreateNewFile.ViewModels
                 settings.LastSelectedExtension = SelectedExtension;
                 settings.LastSelectedOutputPath = SelectedOutputPath;
                 settings.LastSelectedTemplatePath = SelectedTemplatePath;
-                
+
                 // 문자열 교체 규칙 저장
                 settings.LastStringReplacements.Clear();
                 settings.LastStringReplacements.AddRange(
                     StringReplacements.Select(x => (StringReplacementRule)x.Clone()).ToList());
 
+                System.Diagnostics.Debug.WriteLine($"저장할 UI 설정 (SaveLastSelectedItemsAsync): Left={settings.UI.WindowLeft}, Top={settings.UI.WindowTop}");
                 await _settingsService.SaveSettingsAsync(settings);
+                System.Diagnostics.Debug.WriteLine("=== SaveLastSelectedItemsAsync 완료 ===");
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"SaveLastSelectedItemsAsync 오류: {ex.Message}");
             }
         }
 
@@ -1318,6 +1438,15 @@ namespace CreateNewFile.ViewModels
         public async Task SaveCurrentStateAsync()
         {
             await SaveLastSelectedItemsAsync();
+        }
+
+        /// <summary>
+        /// SettingsService의 캐시를 무효화합니다.
+        /// 외부에서 설정 파일을 직접 수정한 경우 호출하여 최신 설정을 다시 로드하도록 합니다.
+        /// </summary>
+        public void ClearSettingsCache()
+        {
+            _settingsService.ClearCache();
         }
 
         #region 파일정보 관련 메서드

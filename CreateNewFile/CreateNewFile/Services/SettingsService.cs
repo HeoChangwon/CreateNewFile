@@ -28,21 +28,21 @@ namespace CreateNewFile.Services
         }
 
         /// <summary>
-        /// 기본 설정 파일 경로를 가져옵니다 (사용자별 AppData 폴더).
+        /// 기본 설정 파일 경로를 가져옵니다 (사용자별 LocalAppData 폴더).
         /// </summary>
         /// <returns>기본 설정 파일 경로</returns>
         private static string GetDefaultSettingsFilePath()
         {
-            // 사용자별 설정 폴더: %APPDATA%\CreateNewFile\config
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            // 사용자별 설정 폴더: %LOCALAPPDATA%\CreateNewFile\config
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var configDirectory = Path.Combine(appDataPath, "CreateNewFile", "config");
-            
+
             // 디렉토리가 없으면 생성
             if (!Directory.Exists(configDirectory))
             {
                 Directory.CreateDirectory(configDirectory);
             }
-            
+
             return Path.Combine(configDirectory, "appsettings.json");
         }
 
@@ -52,15 +52,15 @@ namespace CreateNewFile.Services
         /// <returns>설정 폴더의 전체 경로</returns>
         public string GetSettingsFolderPath()
         {
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var configDirectory = Path.Combine(appDataPath, "CreateNewFile", "config");
-            
+
             // 디렉토리가 없으면 생성
             if (!Directory.Exists(configDirectory))
             {
                 Directory.CreateDirectory(configDirectory);
             }
-            
+
             return configDirectory;
         }
 
@@ -599,6 +599,19 @@ namespace CreateNewFile.Services
                 System.Diagnostics.Debug.WriteLine($"체크박스 상태 로드 실패: {ex.Message}");
                 // 기본값 반환
                 return (true, true, true, true);
+            }
+        }
+
+        /// <summary>
+        /// 캐시된 설정을 무효화합니다.
+        /// 외부에서 설정 파일을 직접 수정한 경우 호출하여 최신 설정을 다시 로드하도록 합니다.
+        /// </summary>
+        public void ClearCache()
+        {
+            lock (_lockObject)
+            {
+                _cachedSettings = null;
+                System.Diagnostics.Debug.WriteLine("SettingsService 캐시가 무효화되었습니다.");
             }
         }
     }

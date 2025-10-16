@@ -1,0 +1,190 @@
+2025-10-16(목) 17:26:40 허창원
+  Prompt:
+    CreateNewFile 프로젝트를 수정 중에 있습니다.
+
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\2025\08\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+        └── Project_overview/
+    ```
+
+    Project_overview 폴더의 다음 파일들을 참고하세요.
+    ```
+    20250930_1557_CreateNewFile_Project_overview.md
+    20251016_1714_CNF_Quick_Reference_v02.md
+    ```
+
+    현재 문제는 프로그램을 종료할 때, 화면의 위치를 설정 파일에 저장하는데,
+    나중에 확인해보면 마지막 화면의 위치가 아니라 초기값 100, 100 위치가 저장되어 있습니다.
+
+    이렇게 되니 다음 번 프로그램 실행 시에 항상 초기위치에 화면이 표시되는 문제가 있습니다.
+
+    프로그램 종료시에 화면의 위치를 정확히 저장하게 해주세요.
+
+2025-10-16(목) 17:36:09 허창원
+  Prompt:
+
+    프로그램 종료시 디버그 출력입니다.
+
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Intrinsics.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    === MainWindow_Closing 시작 ===
+    종료 직전 윈도우 위치: Left=2896, Top=664, Width=620, Height=1000
+    종료 직전 윈도우 상태: Normal
+    === SaveWindowPositionSync 시작 ===
+    현재 윈도우 속성: Left=2896, Top=664, ActualWidth=620, ActualHeight=1000
+    현재 WindowState: Normal
+    설정 파일 경로: C:\Users\user\AppData\Local\CreateNewFile\config\appsettings.json
+    기존 설정 파일 로드 (크기: 6192 bytes)
+    로드된 UI 설정: Left=100, Top=100
+    일반 상태 - 현재 위치/크기 저장: Left=2896, Top=664, Size=620x1000
+    JSON 파일 저장 완료 (크기: 6194 bytes)
+    === SaveWindowPositionSync 완료 ===
+    SettingsService 캐시가 무효화되었습니다.
+    SettingsService 캐시 무효화 완료
+    === MainWindow_Closing 완료 ===
+    '[49196] CreateNewFile.exe' 프로그램이 종료되었습니다(코드: 0 (0x0)).
+
+    그리고, "C:\Users\user\AppData\Local\CreateNewFile\config\appsettings.json" 의 파일 일부입니다.
+
+      "UI": {
+        "WindowWidth": 900.0,
+        "WindowHeight": 600.0,
+        "WindowLeft": 100.0,
+        "WindowTop": 100.0,
+        "WindowState": "Normal",
+        "Theme": "Light",
+        "Language": "ko-KR",
+        "AutoSave": true,
+        "RestoreLastSettings": true
+      },
+      
+    프로그램 종료시에 윈도의 위치가 제대로 저장되지 않는 것 같습니다.
+
+    계속해서 이 문제를 극복하지 못하고 있네요. 해결해 주세요.
+
+  Prompt:
+이제야 윈도 창의 위치가 다음 실행시에 제대로 유지됩니다.
+
+디버깅을 위해 추가한 코드를 제거해 주세요.
+
+
+  Prompt:
+
+
+
+  Prompt:
+
+
+
+  Prompt:
+
+
+
+  Prompt:
+
+
+  
+
+
+요약 및 프롬프트 양식 샘플 ------------------------------
+CreateNewFile (CNF)
+
+20251016_1724 : Prompt
+20251016_1725 : Development note
+20251016_1726 : Chat
+20251016_1727 : Work list
+20251016_1728 : Next chat prompt
+
+  Claude 실행위치
+    D:\Work_Claude\2025\08\CreateNewFile
+
+  CNF Documents 폴더
+    D:\Work_Claude\2025\08\CreateNewFile\Documents
+
+  본 문서(Documents 폴더)
+    20251016_1724_TMS_Prompt.txt
+    20251016_1725_CNF_Development_note_with_AI.txt
+    
+  chat export하여 저장할 파일명(Documents 폴더)
+    /export .\Documents\2025\10\20251016_1726_CNF_Chat.txt
+
+        
+  Claude Code 새 Chat Session 시작시 프롬프트:
+      
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\2025\08\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+        └── Project_overview/
+    ```
+    
+    Project_overview 폴더의 다음 파일들을 참고하세요.
+    ```
+    20250930_1557_CreateNewFile_Project_overview.md
+    20251016_1714_CNF_Quick_Reference_v02.md
+    ```
+    
+
+  Claude Code Chat 마무리 프롬프트:
+  
+다음에 나오는 YYYYMMDD_HHMM 은 Powershell 로 시스템의 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+  
+이번 Chat에서 작업한 내용을 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\2025\10\ 폴더에
+YYYYMMDD_HHMM_CNF_Work_list.md 파일로 한글 위주로 정리해 주세요.
+
+그리고 나서, Powershell 로 시스템의 새로운 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+
+새로운 Chat 시작시에 사용할 
+Quick Reference를 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\Project_overview 폴더에
+YYYYMMDD_HHMM_CNF_Quick_Reference_v02.md 파일로 만들어 주세요.
+
+-----  
+  
+  
+이번 Chat에서 작업한 내용을 D:\Work_Claude\2025\08\CreateNewFile\Documents 폴더에 20251016_1727_CNF_Work_list.md 파일로 정리해 주세요.
+
+그리고, 작업 내용을 계속 누적해서 정리해 나가는 20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
+    
+또, 다음 Chat에서 이번 Chat의 맥락을 이어서 작업해 나가기 위한 프롬프트를 다음 Chat 시점을 기준으로 20251016_1728_CNF_Next_chat_prompt.md 파일로 작성해 주세요.
+그리고, 대기해 주세요.
+    
+------------------------------------------------
+
+

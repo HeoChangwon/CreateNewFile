@@ -336,7 +336,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -344,16 +344,21 @@
                                 </Grid.RowDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" Content="출력 폴더:" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" 
+                                <ComboBox Grid.Row="0" Grid.Column="1"
                                          ItemsSource="{Binding OutputPaths}"
                                          DisplayMemberPath="Value"
                                          SelectedValuePath="Value"
                                          SelectedValue="{Binding SelectedOutputPath, Mode=TwoWay}"
                                          IsEditable="True"
                                          Text="{Binding SelectedOutputPath, Mode=TwoWay}"/>
-                                <Button Grid.Row="0" Grid.Column="2" Content="찾아보기"
-                                       Command="{Binding BrowseOutputPathCommand}"
-                                       Style="{StaticResource SecondaryButton}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                    <Button Content="찾아보기"
+                                           Command="{Binding BrowseOutputPathCommand}"
+                                           Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="폴더 열기"
+                                           Command="{Binding OpenOutputFolderCommand}"
+                                           Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
 
                                 <!-- 드래그앤드롭 영역 (출력 폴더) -->
                                 <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
@@ -373,9 +378,10 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
@@ -388,17 +394,31 @@
                                          SelectedValue="{Binding SelectedTemplatePath, Mode=TwoWay}"
                                          IsEditable="True"
                                          Text="{Binding SelectedTemplatePath, Mode=TwoWay}"/>
-                                <Button Grid.Row="0" Grid.Column="2" Content="찾아보기"
-                                       Command="{Binding BrowseTemplatePathCommand}"
-                                       Style="{StaticResource SecondaryButton}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                    <Button Content="찾아보기"
+                                           Command="{Binding BrowseTemplatePathCommand}"
+                                           Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="폴더 열기"
+                                           Command="{Binding OpenTemplateFolderCommand}"
+                                           Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
+
+                                <!-- 파일명 표시 -->
+                                <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                          Text="{Binding TemplateFileName}"
+                                          FontSize="11"
+                                          Foreground="DarkBlue"
+                                          Margin="2,2,0,5"
+                                          TextTrimming="CharacterEllipsis"
+                                          ToolTip="{Binding TemplateFileName}"/>
 
                                 <!-- 편집 버튼 -->
-                                <Button Grid.Row="1" Grid.Column="0" Content="편집"
+                                <Button Grid.Row="2" Grid.Column="0" Content="편집"
                                        Command="{Binding OpenTemplateFileCommand}"
                                        Style="{StaticResource SecondaryButton}"/>
 
                                 <!-- 드래그앤드롭 영역 (템플릿 파일) -->
-                                <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
                                        Style="{StaticResource DropArea}"
                                        AllowDrop="True">
                                     <TextBlock Text="템플릿 파일을 여기에 드래그하세요"
@@ -574,7 +594,7 @@
                            Orientation="Vertical"
                            VerticalAlignment="Center"
                            Margin="10,0,0,0">
-                    <TextBlock Text="v1.0.002"
+                    <TextBlock Text="v1.0.003"
                               FontSize="11"
                               Foreground="Gray"
                               HorizontalAlignment="Right"/>
