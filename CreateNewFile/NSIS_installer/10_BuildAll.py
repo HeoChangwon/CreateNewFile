@@ -16,7 +16,7 @@ from datetime import datetime
 # ==========================================
 PRODUCT_NAME = "CreateNewFile"
 PRODUCT_VERSION = "1.0.003"
-BUILD_DATE = "20251016_1750"
+BUILD_DATE = "20251016_2100"
 PROJECT_FILE = "CreateNewFile.csproj"
 NSIS_SCRIPT = "CreateNewFile_Installer.nsi"
 NSIS_PATH = r"C:\Program Files (x86)\NSIS\makensis.exe"
@@ -200,9 +200,9 @@ def step_6_create_dynamic_nsi():
         elif line.startswith('!define PRODUCT_VERSION '):
             lines[i] = f'!define PRODUCT_VERSION "{nsis_version}"'
     
-    # 임시 NSI 파일 생성
+    # 임시 NSI 파일 생성 (UTF-8 BOM으로 저장하여 NSIS가 UTF-8로 인식하도록 함)
     temp_nsi = Path("temp_installer.nsi")
-    with open(temp_nsi, 'w', encoding='utf-8') as f:
+    with open(temp_nsi, 'w', encoding='utf-8-sig') as f:
         f.write('\n'.join(lines))
     
     print(f"✓ 설치파일명: {setup_filename}")

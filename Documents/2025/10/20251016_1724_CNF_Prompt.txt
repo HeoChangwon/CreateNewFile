@@ -115,28 +115,70 @@
 
     디버깅을 위해 추가한 코드를 제거해 주세요.
 
-
   Prompt:
-다음에 나오는 YYYYMMDD_HHMM 은 Powershell 로 시스템의 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+
+    NSIS 스크립트에서 BrandingText는 다음과 같이 프로그램명, 버전명, 빌드날짜가 표시되도록 해주세요.
+
+    BrandingText "${PRODUCT_NAME} v${PRODUCT_VERSION} (Build: ${DISPLAY_BUILD_DATE})"
+
+2025-10-16(목) 18:15:31 허창원
+  Prompt:
   
-이번 Chat에서 작업한 내용을 
-D:\Work_Claude\2025\08\CreateNewFile\Documents\2025\10\ 폴더에
-YYYYMMDD_HHMM_CNF_Work_list.md 파일로 한글 위주로 정리해 주세요.
+    Installer 생성 중에 다음과 같은 메시지가 나타납니다.
+      
+    ==================================================
+    단계 6: 동적 NSIS 스크립트 생성
+    ==================================================
+    ✓ 설치파일명: CreateNewFile_v1.0.003_Build_20251016_1750_Setup.exe
+    ✓ NSIS 버전: 1.0.3.0
+    ✓ 임시 NSIS 스크립트를 생성했습니다.
 
-그리고 나서, Powershell 로 시스템의 새로운 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+    ==================================================
+    단계 7: NSIS 설치파일 빌드
+    ==================================================
+    오류: NSIS 빌드 실패!
+    오류 메시지: Bad text encoding: temp_installer.nsi:10
+    Error in script "temp_installer.nsi" on line 10 -- aborting creation process
 
-새로운 Chat 시작시에 사용할 
-Quick Reference를 
-D:\Work_Claude\2025\08\CreateNewFile\Documents\Project_overview 폴더에
-YYYYMMDD_HHMM_CNF_Quick_Reference_v03.md 파일로 만들어 주세요.
+    ❌ NSIS 설치파일 빌드에 실패했습니다.
+    계속하려면 Enter 키를 누르세요...
+
+  Prompt:
+    잘 됩니다.
+
+    다음에 나오는 YYYYMMDD_HHMM 은 Powershell 로 시스템의 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+      
+    이번 Chat에서 작업한 내용을 
+    D:\Work_Claude\2025\08\CreateNewFile\Documents\2025\10\ 폴더에
+    YYYYMMDD_HHMM_CNF_Work_list.md 파일로 한글 위주로 정리해 주세요.
+
+    그리고 나서, Powershell 로 시스템의 새로운 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+
+    새로운 Chat 시작시에 사용할 
+    Quick Reference를 
+    D:\Work_Claude\2025\08\CreateNewFile\Documents\Project_overview 폴더에
+    YYYYMMDD_HHMM_CNF_Quick_Reference_v03.md 파일로 만들어 주세요.
+
+
+  
+  Prompt:
+
+
+  
+  Prompt:
+
+
+  
+
+
+
+
 
 
 
   Prompt:
 
 
-
-  Prompt:
 
 
 
@@ -166,7 +208,8 @@ CreateNewFile (CNF)
     20251016_1725_CNF_Development_note_with_AI.txt
     
   chat export하여 저장할 파일명(Documents 폴더)
-    /export .\Documents\2025\10\20251016_1748_CNF_Chat.txt
+    /export .\Documents\2025\10\20251016_1923_CNF_Chat.txt
+    /export .\Documents\2025\10\20251016_1925_CNF_Chat.txt
 
         
   Claude Code 새 Chat Session 시작시 프롬프트:

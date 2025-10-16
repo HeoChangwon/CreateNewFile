@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Height="1000" Width="620"
         WindowStartupLocation="Manual"
-        MinHeight="953" MinWidth="586"
+        MinHeight="980" MinWidth="586"
         ShowInTaskbar="True"
         Icon="pack://application:,,,/Resources/CreateNewFile.ico">
 
@@ -114,7 +114,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
-            <RowDefinition Height="Auto" MinHeight="420.497"/>
+            <RowDefinition Height="Auto" MinHeight="410.6"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -141,7 +141,7 @@
         <TabControl Grid.Row="1" Name="MainTabControl" 
                     Background="White"
                     BorderBrush="LightGray"
-                    BorderThickness="1" Margin="0,0,0,420" Grid.RowSpan="2">
+                    BorderThickness="1" Margin="0,0,0,406" Grid.RowSpan="2">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="FontWeight" Value="SemiBold"/>
@@ -183,7 +183,7 @@
 
             <!-- 파일정보 탭 -->
             <TabItem Header="📄 파일정보" Name="FileInfoTab">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" Height="399">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="430">
                     <StackPanel>
                         <!-- 저장된 파일정보 선택 영역 -->
                         <GroupBox Header="저장된 파일정보" Margin="0,0,0,15">
@@ -195,6 +195,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
@@ -224,6 +225,23 @@
                                         Visibility="{Binding IsEditingFileInfoName, Converter={StaticResource BooleanToVisibilityConverter}}"
                                         BorderBrush="#FF007ACC"
                                         BorderThickness="2"/>
+
+                                <!-- 프로젝트 설정 가져오기/내보내기 버튼 -->
+                                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Orientation="Horizontal"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,10,0,0">
+                                    <Button Content="📥 가져오기"
+                                           Command="{Binding OpenProjectConfigCommand}"
+                                           Style="{StaticResource SecondaryButton}"
+                                           Width="120"
+                                           ToolTip="프로젝트 설정 파일(.cnfjson)을 불러옵니다"/>
+                                    <Button Content="💾 내보내기"
+                                           Command="{Binding SaveProjectConfigCommand}"
+                                           Style="{StaticResource SecondaryButton}"
+                                           Width="120"
+                                           ToolTip="현재 설정을 프로젝트 파일(.cnfjson)로 저장합니다"/>
+                                </StackPanel>
                             </Grid>
                         </GroupBox>
 
@@ -328,7 +346,7 @@
 
             <!-- 경로설정 탭 -->
             <TabItem Header="📁 경로설정" Name="PathSettingsTab">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="430">
                     <StackPanel>
                         <!-- 출력 경로 설정 -->
                         <GroupBox Header="출력 폴더" Margin="0,0,0,15">
@@ -434,7 +452,7 @@
 
             <!-- 문자열 교체 탭 -->
             <TabItem Header="🔄 문자열 교체" Name="StringReplacementTab">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="430">
                     <StackPanel>
                         <GroupBox Header="템플릿 문자열 교체 규칙" Height="326">
                             <Grid>
@@ -537,20 +555,20 @@
             </GroupBox>
 
             <!-- 액션 버튼 -->
-            <StackPanel Orientation="Horizontal" 
-                       HorizontalAlignment="Center" 
+            <StackPanel Orientation="Horizontal"
+                       HorizontalAlignment="Center"
                        Margin="0,10,0,0">
-                <Button Content="파일 생성" 
+                <Button Content="파일 생성"
                        Command="{Binding CreateFileCommand}"
                        IsEnabled="{Binding IsWorking, Converter={StaticResource InvertBooleanConverter}}"
                        Width="120" Height="40"
                        FontSize="14"/>
-                <Button Content="설정 관리" 
+                <Button Content="설정 관리"
                        Command="{Binding OpenSettingsCommand}"
                        Style="{StaticResource SecondaryButton}"
                        Width="120" Height="40"
                        FontSize="14"/>
-                <Button Content="설정 폴더 열기" 
+                <Button Content="설정 폴더 열기"
                        Command="{Binding OpenSettingsFolderCommand}"
                        Style="{StaticResource SecondaryButton}"
                        Width="120" Height="40"

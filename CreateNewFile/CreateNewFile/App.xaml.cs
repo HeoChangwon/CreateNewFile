@@ -5,6 +5,8 @@ using CreateNewFile.ViewModels;
 using CreateNewFile.Views;
 using CreateNewFile.Services;
 using CreateNewFile.Utils;
+using CreateNewFile.Models;
+using System.IO;
 
 namespace CreateNewFile;
 
@@ -14,6 +16,7 @@ namespace CreateNewFile;
 public partial class App : System.Windows.Application
 {
     private IHost? _host;
+    private ProjectConfig? _loadedProjectConfig = null;
 
     /// <summary>
     /// 생성자: 스타일러스/터치 지원 비활성화
@@ -38,6 +41,31 @@ public partial class App : System.Windows.Application
             return;
         }
 
+        // 커맨드 라인 인자 처리 (.cnfjson 파일 로드)
+        if (e.Args.Length > 0)
+        {
+            var projectFilePath = e.Args[0];
+            if (!string.IsNullOrWhiteSpace(projectFilePath) &&
+                File.Exists(projectFilePath) &&
+                projectFilePath.EndsWith(".cnfjson", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    // 프로젝트 설정 파일 로드
+                    var configService = new ProjectConfigService();
+                    _loadedProjectConfig = configService.LoadProjectConfigAsync(projectFilePath).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(
+                        $"프로젝트 설정 파일을 로드할 수 없습니다.\n\n오류: {ex.Message}",
+                        "프로젝트 설정 로드 오류",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
+        }
+
         // 의존성 주입 컨테이너 설정
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
@@ -54,6 +82,7 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<IFileGeneratorService, FileGeneratorService>();
                 services.AddSingleton<ISettingsService, SettingsService>();
                 services.AddSingleton<IFileInfoService, FileInfoService>();
+                services.AddSingleton<IProjectConfigService, ProjectConfigService>();
             })
             .Build();
 
@@ -76,7 +105,16 @@ public partial class App : System.Windows.Application
 
             try
             {
-                await mainViewModel.InitializeAsync();
+                // 프로젝트 설정이 로드된 경우 먼저 적용
+                if (_loadedProjectConfig != null)
+                {
+                    await mainViewModel.LoadProjectConfigAsync(_loadedProjectConfig);
+                }
+                else
+                {
+                    // 일반 초기화
+                    await mainViewModel.InitializeAsync();
+                }
             }
             catch (Exception ex)
             {
