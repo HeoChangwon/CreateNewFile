@@ -20,6 +20,7 @@ namespace CreateNewFile.ViewModels
         private readonly IFileGeneratorService _fileGeneratorService;
         private readonly ISettingsService _settingsService;
         private readonly IFileInfoService _fileInfoService;
+        private readonly IProjectConfigService _projectConfigService;
         
         private DateTime _selectedDateTime;
         private string _selectedAbbreviation = string.Empty;
@@ -28,6 +29,7 @@ namespace CreateNewFile.ViewModels
         private string _selectedExtension = string.Empty;
         private string _selectedOutputPath = string.Empty;
         private string _selectedTemplatePath = string.Empty;
+        private string _templateFileName = string.Empty;
         private string _generatedFileName = string.Empty;
         private string _fullFilePath = string.Empty;
         private bool _isWorking = false;
@@ -154,9 +156,21 @@ namespace CreateNewFile.ViewModels
             {
                 if (SetProperty(ref _selectedTemplatePath, value))
                 {
+                    TemplateFileName = !string.IsNullOrWhiteSpace(value)
+                        ? Path.GetFileName(value)
+                        : string.Empty;
                     ValidateInput();
                 }
             }
+        }
+
+        /// <summary>
+        /// 템플릿 파일명 (경로에서 추출)
+        /// </summary>
+        public string TemplateFileName
+        {
+            get => _templateFileName;
+            private set => SetProperty(ref _templateFileName, value);
         }
 
         /// <summary>
@@ -408,6 +422,16 @@ namespace CreateNewFile.ViewModels
         /// </summary>
         public ICommand OpenSettingsFolderCommand { get; }
 
+        /// <summary>
+        /// 출력 폴더 열기 명령
+        /// </summary>
+        public ICommand OpenOutputFolderCommand { get; }
+
+        /// <summary>
+        /// 템플릿 폴더 열기 명령
+        /// </summary>
+        public ICommand OpenTemplateFolderCommand { get; }
+
         // 파일정보 관련 명령들
         /// <summary>
         /// 파일정보 불러오기 명령
@@ -444,17 +468,29 @@ namespace CreateNewFile.ViewModels
         /// 문자열 교체 규칙 아래로 이동 명령
         /// </summary>
         public ICommand MoveDownStringReplacementCommand { get; }
+
+        // 프로젝트 설정 관련 명령들
+        /// <summary>
+        /// 프로젝트 설정 저장 명령
+        /// </summary>
+        public ICommand SaveProjectConfigCommand { get; }
+
+        /// <summary>
+        /// 프로젝트 설정 열기 명령
+        /// </summary>
+        public ICommand OpenProjectConfigCommand { get; }
         #endregion
 
         #region Constructor
         /// <summary>
         /// MainViewModel의 새 인스턴스를 초기화합니다.
         /// </summary>
-        public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService settingsService, IFileInfoService fileInfoService)
+        public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService settingsService, IFileInfoService fileInfoService, IProjectConfigService projectConfigService)
         {
             _fileGeneratorService = fileGeneratorService ?? throw new ArgumentNullException(nameof(fileGeneratorService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _fileInfoService = fileInfoService ?? throw new ArgumentNullException(nameof(fileInfoService));
+            _projectConfigService = projectConfigService ?? throw new ArgumentNullException(nameof(projectConfigService));
 
             // 기본값 설정 (날짜/시간은 설정 로드 후 적용)
             StatusMessage = "준비";
@@ -467,6 +503,8 @@ namespace CreateNewFile.ViewModels
             BrowseTemplatePathCommand = new RelayCommand(BrowseTemplatePath);
             OpenTemplateFileCommand = new RelayCommand(OpenTemplateFile, CanOpenTemplateFile);
             OpenSettingsFolderCommand = new RelayCommand(OpenSettingsFolder);
+            OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder, CanOpenOutputFolder);
+            OpenTemplateFolderCommand = new RelayCommand(OpenTemplateFolder, CanOpenTemplateFolder);
 
             // 파일정보 관련 명령 초기화
             LoadFileInfoCommand = new RelayCommand(async () => await LoadFileInfoAsync());
@@ -478,6 +516,10 @@ namespace CreateNewFile.ViewModels
             RemoveStringReplacementCommand = new RelayCommand(RemoveStringReplacement);
             MoveUpStringReplacementCommand = new RelayCommand(MoveUpStringReplacement);
             MoveDownStringReplacementCommand = new RelayCommand(MoveDownStringReplacement);
+
+            // 프로젝트 설정 관련 명령 초기화
+            SaveProjectConfigCommand = new RelayCommand(async () => await SaveProjectConfigAsync());
+            OpenProjectConfigCommand = new RelayCommand(async () => await OpenProjectConfigAsync());
 
             // 데이터 로드는 별도로 호출하도록 변경 (화면 표시 전에 완료하기 위해)
         }
@@ -1130,16 +1172,105 @@ namespace CreateNewFile.ViewModels
             try
             {
                 string settingsFolderPath = _settingsService.GetSettingsFolderPath();
-                
+
                 // Windows 탐색기로 폴더 열기
                 System.Diagnostics.Process.Start("explorer.exe", settingsFolderPath);
-                
+
                 StatusMessage = "설정 폴더를 열었습니다.";
             }
             catch (Exception ex)
             {
                 DialogHelper.ShowError($"설정 폴더를 열 수 없습니다: {ex.Message}");
                 StatusMessage = "설정 폴더 열기 실패";
+            }
+        }
+
+        /// <summary>
+        /// 출력 폴더를 열 수 있는지 확인합니다.
+        /// </summary>
+        private bool CanOpenOutputFolder()
+        {
+            return !string.IsNullOrWhiteSpace(SelectedOutputPath) && Directory.Exists(SelectedOutputPath);
+        }
+
+        /// <summary>
+        /// 출력 폴더를 윈도우 탐색기로 엽니다.
+        /// </summary>
+        private void OpenOutputFolder()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedOutputPath))
+                {
+                    DialogHelper.ShowError("출력 폴더가 선택되지 않았습니다.");
+                    return;
+                }
+
+                if (!Directory.Exists(SelectedOutputPath))
+                {
+                    DialogHelper.ShowError($"출력 폴더를 찾을 수 없습니다.\n\n경로: {SelectedOutputPath}");
+                    return;
+                }
+
+                // Windows 탐색기로 폴더 열기
+                System.Diagnostics.Process.Start("explorer.exe", SelectedOutputPath);
+
+                StatusMessage = "출력 폴더를 열었습니다.";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"출력 폴더를 열 수 없습니다.\n\n{ex.Message}", "폴더 열기 오류");
+                StatusMessage = "출력 폴더 열기 실패";
+            }
+        }
+
+        /// <summary>
+        /// 템플릿 폴더를 열 수 있는지 확인합니다.
+        /// </summary>
+        private bool CanOpenTemplateFolder()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedTemplatePath))
+                return false;
+
+            var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+            return !string.IsNullOrWhiteSpace(templateFolder) && Directory.Exists(templateFolder);
+        }
+
+        /// <summary>
+        /// 템플릿 파일이 있는 폴더를 윈도우 탐색기로 엽니다.
+        /// </summary>
+        private void OpenTemplateFolder()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedTemplatePath))
+                {
+                    DialogHelper.ShowError("템플릿 파일 경로가 선택되지 않았습니다.");
+                    return;
+                }
+
+                var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+                if (string.IsNullOrWhiteSpace(templateFolder))
+                {
+                    DialogHelper.ShowError("템플릿 파일 경로가 올바르지 않습니다.");
+                    return;
+                }
+
+                if (!Directory.Exists(templateFolder))
+                {
+                    DialogHelper.ShowError($"템플릿 폴더를 찾을 수 없습니다.\n\n경로: {templateFolder}");
+                    return;
+                }
+
+                // Windows 탐색기로 폴더 열기
+                System.Diagnostics.Process.Start("explorer.exe", templateFolder);
+
+                StatusMessage = "템플릿 폴더를 열었습니다.";
+            }
+            catch (Exception ex)
+            {
+                DialogHelper.ShowError($"템플릿 폴더를 열 수 없습니다.\n\n{ex.Message}", "폴더 열기 오류");
+                StatusMessage = "템플릿 폴더 열기 실패";
             }
         }
 
@@ -1290,7 +1421,7 @@ namespace CreateNewFile.ViewModels
             try
             {
                 var settings = await _settingsService.LoadSettingsAsync();
-                
+
                 // 마지막 선택 정보 업데이트
                 settings.LastSelectedDateTime = SelectedDateTime;
                 settings.LastSelectedAbbreviation = SelectedAbbreviation;
@@ -1299,7 +1430,7 @@ namespace CreateNewFile.ViewModels
                 settings.LastSelectedExtension = SelectedExtension;
                 settings.LastSelectedOutputPath = SelectedOutputPath;
                 settings.LastSelectedTemplatePath = SelectedTemplatePath;
-                
+
                 // 문자열 교체 규칙 저장
                 settings.LastStringReplacements.Clear();
                 settings.LastStringReplacements.AddRange(
@@ -1307,8 +1438,9 @@ namespace CreateNewFile.ViewModels
 
                 await _settingsService.SaveSettingsAsync(settings);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // 저장 실패 시 무시
             }
         }
 
@@ -1318,6 +1450,15 @@ namespace CreateNewFile.ViewModels
         public async Task SaveCurrentStateAsync()
         {
             await SaveLastSelectedItemsAsync();
+        }
+
+        /// <summary>
+        /// SettingsService의 캐시를 무효화합니다.
+        /// 외부에서 설정 파일을 직접 수정한 경우 호출하여 최신 설정을 다시 로드하도록 합니다.
+        /// </summary>
+        public void ClearSettingsCache()
+        {
+            _settingsService.ClearCache();
         }
 
         #region 파일정보 관련 메서드
@@ -1748,6 +1889,203 @@ namespace CreateNewFile.ViewModels
             });
             
             return result;
+        }
+
+        #endregion
+
+        #region 프로젝트 설정 관련 메서드
+
+        /// <summary>
+        /// 프로젝트 설정을 로드하여 UI에 적용합니다.
+        /// </summary>
+        /// <param name="config">로드할 프로젝트 설정</param>
+        public async Task LoadProjectConfigAsync(ProjectConfig config)
+        {
+            try
+            {
+                IsWorking = true;
+                StatusMessage = "프로젝트 설정을 로드하는 중...";
+
+                if (config == null)
+                    throw new ArgumentNullException(nameof(config));
+
+                // 유효성 검사
+                var validation = config.Validate();
+                if (!validation.IsValid)
+                    throw new InvalidOperationException($"프로젝트 설정이 유효하지 않습니다: {validation.ErrorMessage}");
+
+                // 먼저 일반 설정 로드 (Preset 항목들)
+                await LoadDataAsync();
+
+                // 프로젝트 설정 적용
+                var fileInfo = config.FileInfo;
+
+                SelectedDateTime = fileInfo.DateTime;
+                SelectedAbbreviation = fileInfo.Abbreviation;
+                SelectedTitle = fileInfo.Title;
+                SelectedSuffix = fileInfo.Suffix;
+                SelectedExtension = fileInfo.Extension;
+                SelectedOutputPath = config.OutputPath;
+                SelectedTemplatePath = config.TemplatePath;
+
+                // 체크박스 상태 적용
+                IsDateTimeEnabled = fileInfo.IsDateTimeEnabled;
+                IsAbbreviationEnabled = fileInfo.IsAbbreviationEnabled;
+                IsTitleEnabled = fileInfo.IsTitleEnabled;
+                IsSuffixEnabled = fileInfo.IsSuffixEnabled;
+
+                // 문자열 교체 규칙 적용
+                StringReplacements.Clear();
+                foreach (var rule in config.StringReplacements)
+                {
+                    StringReplacements.Add((StringReplacementRule)rule.Clone());
+                }
+
+                StatusMessage = $"프로젝트 '{config.Name}' 로드 완료";
+                // 성공 시 대화상자 표시 안 함
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"프로젝트 설정 로드 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "프로젝트 설정을 로드할 수 없습니다.");
+            }
+            finally
+            {
+                IsWorking = false;
+            }
+        }
+
+        /// <summary>
+        /// 현재 상태를 프로젝트 설정 파일로 저장합니다.
+        /// 템플릿 폴더에 템플릿 파일명.cnfjson 형식으로 자동 저장합니다.
+        /// </summary>
+        private async Task SaveProjectConfigAsync()
+        {
+            try
+            {
+                // 템플릿 파일이 선택되어 있는지 확인
+                if (string.IsNullOrWhiteSpace(SelectedTemplatePath) || !File.Exists(SelectedTemplatePath))
+                {
+                    StatusMessage = "템플릿 파일을 먼저 선택해주세요.";
+                    DialogHelper.ShowError("템플릿 파일이 선택되지 않았습니다.\n프로젝트 설정을 저장하려면 템플릿 파일을 선택해주세요.");
+                    return;
+                }
+
+                IsWorking = true;
+                StatusMessage = "프로젝트 설정을 저장하는 중...";
+
+                // 템플릿 파일명과 폴더 경로 추출
+                var templateFileName = Path.GetFileNameWithoutExtension(SelectedTemplatePath);
+                var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+
+                if (string.IsNullOrWhiteSpace(templateFolder))
+                {
+                    throw new InvalidOperationException("템플릿 폴더 경로를 확인할 수 없습니다.");
+                }
+
+                // .cnfjson 파일 경로 생성
+                var configFilePath = Path.Combine(templateFolder, $"{templateFileName}.cnfjson");
+
+                // 파일이 이미 존재하는 경우 덮어쓰기 확인
+                if (File.Exists(configFilePath))
+                {
+                    var overwrite = System.Windows.MessageBox.Show(
+                        $"'{Path.GetFileName(configFilePath)}' 파일이 이미 존재합니다.\n\n덮어쓰시겠습니까?",
+                        "파일 덮어쓰기 확인",
+                        System.Windows.MessageBoxButton.YesNo,
+                        System.Windows.MessageBoxImage.Question);
+
+                    if (overwrite != System.Windows.MessageBoxResult.Yes)
+                    {
+                        StatusMessage = "프로젝트 설정 저장이 취소되었습니다.";
+                        return;
+                    }
+                }
+
+                // 현재 상태를 프로젝트 설정으로 변환
+                var config = _projectConfigService.CreateProjectConfigFromViewModel(this);
+                config.Name = templateFileName;
+                config.Description = templateFileName; // 템플릿 파일명을 설명으로 사용
+
+                // 프로젝트 설정 저장
+                var success = await _projectConfigService.SaveProjectConfigAsync(config, configFilePath);
+
+                if (success)
+                {
+                    StatusMessage = $"프로젝트 설정 저장 완료: {Path.GetFileName(configFilePath)}";
+                    // 성공 시 대화상자 표시 안 함
+                }
+                else
+                {
+                    StatusMessage = "프로젝트 설정 저장 실패";
+                    DialogHelper.ShowError("프로젝트 설정을 저장할 수 없습니다.");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"프로젝트 설정 저장 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "프로젝트 설정을 저장할 수 없습니다.");
+            }
+            finally
+            {
+                IsWorking = false;
+            }
+        }
+
+        /// <summary>
+        /// 프로젝트 설정 파일을 열어서 로드합니다.
+        /// </summary>
+        private async Task OpenProjectConfigAsync()
+        {
+            try
+            {
+                var openDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "프로젝트 설정 열기",
+                    Filter = "CreateNewFile 프로젝트 파일 (*.cnfjson)|*.cnfjson",
+                    DefaultExt = ".cnfjson",
+                    CheckFileExists = true,
+                    CheckPathExists = true
+                };
+
+                // 템플릿 파일이 선택되어 있으면 템플릿 폴더를 초기 폴더로 설정
+                if (!string.IsNullOrWhiteSpace(SelectedTemplatePath) && File.Exists(SelectedTemplatePath))
+                {
+                    var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+                    if (!string.IsNullOrWhiteSpace(templateFolder) && Directory.Exists(templateFolder))
+                    {
+                        openDialog.InitialDirectory = templateFolder;
+                    }
+                }
+
+                if (openDialog.ShowDialog() != true)
+                    return;
+
+                IsWorking = true;
+                StatusMessage = "프로젝트 설정을 로드하는 중...";
+
+                // 프로젝트 설정 로드
+                var config = await _projectConfigService.LoadProjectConfigAsync(openDialog.FileName);
+
+                if (config != null)
+                {
+                    await LoadProjectConfigAsync(config);
+                }
+                else
+                {
+                    StatusMessage = "프로젝트 설정 로드 실패";
+                    DialogHelper.ShowError("프로젝트 설정을 로드할 수 없습니다.");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"프로젝트 설정 열기 오류: {ex.Message}";
+                DialogHelper.ShowError(ex, "프로젝트 설정을 열 수 없습니다.");
+            }
+            finally
+            {
+                IsWorking = false;
+            }
         }
 
         #endregion

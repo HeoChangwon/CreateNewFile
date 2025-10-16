@@ -7,6 +7,7 @@
 !define PRODUCT_PUBLISHER "HeoChangwon"
 !define PRODUCT_WEB_SITE "https://github.com/HeoChangwon/CreateNewFile"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define DISPLAY_BUILD_DATE "2025-10-16 17:50"  ; Build date (YYYY-MM-DD HH:MM format)
 
 ; Modern UI
 !include "MUI2.nsh"
@@ -30,6 +31,9 @@ Target x86-unicode
 
 ; Compression
 SetCompressor /SOLID lzma
+
+; Branding text (bottom of installer window)
+BrandingText "${PRODUCT_NAME} v${PRODUCT_VERSION} (Build: ${DISPLAY_BUILD_DATE})"
 
 ; Icon settings (using icon from published files)
 !define MUI_ICON "publish\framework-dependent\Resources\CreateNewFile.ico"
@@ -91,7 +95,19 @@ Section "Main Program (Required)" SEC01
   WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
   WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoModify" 1
   WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoRepair" 1
-  
+
+  ; Register .cnfjson file association
+  WriteRegStr HKCR ".cnfjson" "" "CreateNewFile.Project"
+  WriteRegStr HKCR ".cnfjson" "Content Type" "application/json"
+  WriteRegStr HKCR "CreateNewFile.Project" "" "CreateNewFile Project File"
+  WriteRegStr HKCR "CreateNewFile.Project\DefaultIcon" "" "$INSTDIR\Resources\CreateNewFile.ico,0"
+  WriteRegStr HKCR "CreateNewFile.Project\shell" "" "open"
+  WriteRegStr HKCR "CreateNewFile.Project\shell\open" "" "Open with CreateNewFile"
+  WriteRegStr HKCR "CreateNewFile.Project\shell\open\command" "" '"$INSTDIR\CreateNewFile.exe" "%1"'
+
+  ; Notify shell of file association change
+  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
+
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\uninst.exe"
 SectionEnd
@@ -131,13 +147,20 @@ Section Uninstall
   
   ; Remove auto start entry
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}"
-  
+
+  ; Remove .cnfjson file association
+  DeleteRegKey HKCR ".cnfjson"
+  DeleteRegKey HKCR "CreateNewFile.Project"
+
+  ; Notify shell of file association change
+  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
+
   ; Remove registry entries
   DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
-  
+
   ; Ask about user data removal
   MessageBox MB_YESNO "Remove user settings and data files?" IDNO +2
   RMDir /r "$APPDATA\CreateNewFile"
-  
+
   SetAutoClose true
 SectionEnd

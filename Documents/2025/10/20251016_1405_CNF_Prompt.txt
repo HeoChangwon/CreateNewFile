@@ -1,0 +1,571 @@
+2025-10-16(목) 14:14:27 허창원
+  Prompt:
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+    아래 Project_overview 폴더의 20250930_1557_CreateNewFile_Project_overview.md 파일을 참고하세요.
+
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\2025\08\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+        └── Project_overview/
+    ```
+
+    수정할 사항은 "경로설정" 탭 화면에 출력 폴더와 템플릿 파일이 있는 폴더를 윈도 탐색기로 여는 "폴더 열기" 버튼을 각각 추가해 주세요.
+
+2025-10-16(목) 14:27:46 허창원
+  Prompt:
+    설정폴더의 위치를 알려주세요.
+
+
+  Prompt:
+    설정폴더의 위치를 %APPDATA%에서 %LOCALAPPDATA%로 변경해 주세요.
+
+
+  Prompt:
+    프로그램 실행 중에 다음과 같은 폴더와 파일이 생기는 이유는 무엇인가요? 꼭 필요한가요?
+    "C:\Users\user\AppData\Local\CreateNewFile\CreateNewFile_Url_5gm3k5kxu3vf3dexdwkwjgdn1y4jzaan\1.0.3.0\user.config"
+
+
+  Prompt:
+    설정폴더의 위치를 %APPDATA%에서 %LOCALAPPDATA%로 변경한 뒤에 눈에 띄네요. 설정 폴더의 위치를 변경하기 전에도 C:\Users\user\AppData\Local\CreateNewFile\ 폴더에 저장하고 있었던 것인가요? 이전의 파일들을 내가 삭제하였는데, 코드상에 %LOCALAPPDATA% 폴더 내에 생성하도록 되어 있었던 것인가요?
+
+
+  Prompt:
+    "D:\Work_Claude\2025\09\CreateYMDFolder\CreateYMDFolder\CreateYMDFolder.sln" 이 프로젝트는  
+    C:\Users\user\AppData\Local\CreateYMDFolder 폴더에 그런게 안생기는데, 무슨 이유인가요?
+
+  Resutl:
+    ...
+    CreateNewFile도 이 방식으로 변경하시겠습니까?
+
+2025-10-16(목) 14:48:35 허창원
+  Prompt:
+    네, 그렇게 변경해주시고, 다음에 설정파일에 대해 프롬프트를 작성할 때, 이런 사항을 정확하게 제시할 수 있도록 예시도 보여주세요.
+
+2025-10-16(목) 15:21:03 허창원
+  Prompt:
+    방금 제시한 "WPF 프로젝트 설정 파일 요구사항 프롬프트" 내용을 20251016_WPF_Project_Configuration_File_Requirements_Prompt.md 파일로 만들어 주세요.
+  
+2025-10-16(목) 15:25:28 허창원
+  Prompt:
+    프로그램을 실행하면 화면이 나타나지 않습니다. 곧바로 종료된 것 같습니다.
+
+2025-10-16(목) 15:34:00 허창원
+  Prompt:
+    템플릿 파일 전체 경로 밑에 파일명만 따로 표시 해주세요.
+  
+-----------------------------------
+Conversation compact
+
+
+2025-10-16(목) 15:38:06 허창원
+  Prompt:
+    템플릿 파일명을 기울임체 말고 보통체로 해주세요.
+
+2025-10-16(목) 15:45:27 허창원
+  Prompt:
+    실행 후 프로그램 화면이 표시되었다가 곧바로 위치가 변경되는 것이 보입니다. 
+    이전 실행에서의 위치가 미리 적용되어 화면이 표시되게 해주세요.
+
+  
+  Prompt:
+프로그램의 화면 표시 위치가 이전의 정보가 이용되지 않는 것 같습니다.
+이전 실행시의 마지막 위치를 갖고 있다가 다음 실행시에 적용해 주세요.
+
+2025-10-16(목) 15:55:42 허창원
+  Prompt:
+
+    mainWindow.Show(); 함수에서 예외가 발생합니다.
+
+    System.InvalidOperationException
+      HResult=0x80131509
+      메시지=Operation is not valid due to the current state of the object.
+      소스=PresentationCore
+      StackTrace:
+       / System.Windows.Input.StylusWisp.WispLogic.RegisterStylusDeviceCore(StylusDevice stylusDevice)
+
+2025-10-16(목) 15:56:28 허창원
+  Prompt:
+    창 닫기 버튼을 눌렀는데도 프로그램이 종료되지 않습니다.
+
+2025-10-16(목) 16:00:39 허창원
+  Prompt:
+    mainWindow.Show(); 함수에서 예외가 발생합니다.
+
+    System.InvalidOperationException
+      HResult=0x80131509
+      메시지=Operation is not valid due to the current state of the object.
+      소스=PresentationCore
+      StackTrace:
+       / System.Windows.Input.StylusWisp.WispLogic.RegisterStylusDeviceCore(StylusDevice stylusDevice)
+  
+  
+  
+  Prompt:
+    프로그램 실행 후 창의 위치가 바뀝니다.
+
+2025-10-16(목) 16:03:51 허창원
+  Prompt:
+    프로그램 실행 후 창의 위치가 바뀐 후 사라집니다.
+
+----------------------------------
+Conversation compacted
+
+2025-10-16(목) 16:10:34 허창원
+  Prompt:
+
+    // 윈도우를 먼저 표시
+    mainWindow.Show();
+
+    위 코드에서 예외가 발생합니다.
+
+    System.InvalidOperationException
+      HResult=0x80131509
+      메시지=Operation is not valid due to the current state of the object.
+      소스=PresentationCore
+      StackTrace:
+       / System.Windows.Input.StylusWisp.WispLogic.RegisterStylusDeviceCore(StylusDevice stylusDevice)
+
+2025-10-16(목) 16:17:30 허창원
+  Prompt:
+    프로그램을 실행하면 이전 창의 위치가 유지되지 않습니다.
+
+
+
+  
+  Prompt:
+    프로그램을 실행하면 여전히 이전 창의 위치가 유지되지 않습니다.
+
+
+  
+2025-10-16(목) 16:23:33 허창원
+  Prompt:
+
+    실행시에  mainWindow.Show(); 에서 예외가 발생했습니다.
+
+    System.InvalidOperationException
+      HResult=0x80131509
+      메시지=Operation is not valid due to the current state of the object.
+      소스=PresentationCore
+      StackTrace:
+       / System.Windows.Input.StylusWisp.WispLogic.RegisterStylusDeviceCore(StylusDevice stylusDevice)
+
+
+    출력 디버그는 다음과 같습니다.
+
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.21\UIAutomationProvider.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    === PrepareWindow 호출됨 ===
+    설정 파일 경로: C:\Users\user\AppData\Local\CreateNewFile\config\appsettings.json
+    파일 존재 여부: True
+    설정 파일 내용:
+    {
+      "DefaultOutputPath": "D:\\Users\\user\\Documents\\CreateNewFile",
+      "DefaultTemplatePath": "",
+      "Abbreviations": [
+        {
+          "Id": "ba4fc935-95f9-47bb-991e-a300e68f5af2",
+          "Value": "CNF",
+          "IsEnabled": true
+        },
+        {
+          "Id": "d98b8d45-c0c2-4bba-a6bd-d0be1245c328",
+          "Value": "SENS",
+          "IsEnabled": true
+        },
+        {
+          "Id": "dafd9bd2-f80d-4b2f-8e48-51b80984e0ef",
+          "Value": "TMS",
+          "IsEnabled": true
+        },
+        {
+          "Id": "f6198438-fd09-451f-9a4b-8159f02a2e5d",
+          "Value": "NC",
+          "IsEnabled": true
+        },
+        {
+          "Id": "f799f450-b17a-4e45-b5ff-3df8f74671d9",
+          "Value": "SNC",
+          "IsEnabled": true
+        },
+        {
+          "Id": "b30d9769-200c-40fe-a19b-7c1737220101",
+          "Value": "TMS_F",
+          "IsEnabled": true
+        },
+        {
+          "Id": "31c21665-be66-40e2-952f-dc346533f6ce",
+          "Value": "CSI",
+          "IsEnabled": true
+        },
+        {
+          "Id": "4a1c76e6-46b5-400c-a1fa-ecdf94d68dfc",
+          "Value": "CYMDF",
+          "IsEnabled": true
+        },
+        {
+          "Id": "556dd95a-0270-433b-a952-9230a1b103d9",
+          "Value": "FlexPower_TMS",
+          "IsEnabled": true
+        },
+        {
+          "Id": "06c381d1-9e9f-45ff-8d89-c6688a9fae76",
+          "Value": "MmfWpf",
+          "IsEnabled": true
+        }
+      ],
+      "Titles": [
+        {
+          "Id": "08a3f9c1-8255-4612-8d63-a933a4563a0d",
+          "Value": "Development_note_with_AI",
+          "IsEnabled": true
+        },
+        {
+          "Id": "f5f52ee0-673c-407b-a467-af0e0acfe037",
+          "Value": "Chat",
+          "IsEnabled": true
+        },
+        {
+          "Id": "73e9ab31-8b21-4145-bd10-e48e437f6781",
+          "Value": "Simple_requirements",
+          "IsEnabled": true
+        },
+        {
+          "Id": "452b0b25-c900-4fbc-a434-8e6aba8089cc",
+          "Value": "New_chat_prompt_template",
+          "IsEnabled": true
+        },
+        {
+          "Id": "6fc007e1-d494-42e9-b899-b6bfad016867",
+          "Value": "Work_list",
+          "IsEnabled": true
+        },
+        {
+          "Id": "084ffad1-ad61-4748-a101-623668b744ea",
+          "Value": "Design",
+          "IsEnabled": true
+        },
+        {
+          "Id": "17b23557-49be-4f00-a26c-e4a9caec16b8",
+          "Value": "Task_list",
+          "IsEnabled": true
+        },
+        {
+          "Id": "da6ae38e-efcf-4dd2-ae61-a64a7b509ed8",
+          "Value": "Prompt",
+          "IsEnabled": true
+        }
+      ],
+      "Suffixes": [
+        {
+          "Id": "f9158b10-b4d0-4030-9e2c-5abadefb3b78",
+          "Value": "v1.0",
+          "IsEnabled": true
+        },
+        {
+          "Id": "878da6d1-3d3f-43b0-8279-210e8a1e7fad",
+          "Value": "draft",
+          "IsEnabled": true
+        },
+        {
+          "Id": "860d2f5a-7601-422f-83ff-fc496e8e55cc",
+          "Value": "final",
+          "IsEnabled": true
+        },
+        {
+          "Id": "aae3a84a-f735-45e0-8a76-056a37ae05ac",
+          "Value": "review",
+          "IsEnabled": true
+        },
+        {
+          "Id": "aef3d142-da31-4e23-b7a6-7c31ee1289f2",
+          "Value": "backup",
+          "IsEnabled": true
+        }
+      ],
+      "Extensions": [
+        {
+          "Id": "f32e1793-75cb-42b8-89f9-c0c449c099c1",
+          "Value": ".txt",
+          "IsEnabled": true
+        }
+      ],
+      "OutputPaths": [
+        {
+          "Id": "6b183504-3937-484f-9b6e-2f4d4058fb05",
+          "Value": "D:\\Users\\user\\Documents\\CreateNewFile",
+          "IsEnabled": true
+        }
+      ],
+      "TemplatePaths": [],
+      "UI": {
+        "WindowWidth": 900.0,
+        "WindowHeight": 600.0,
+        "WindowLeft": 100.0,
+        "WindowTop": 100.0,
+        "WindowState": "Normal",
+        "Theme": "Light",
+        "Language": "ko-KR",
+        "AutoSave": true,
+        "RestoreLastSettings": true
+      },
+      "Advanced": {
+        "MaxFileNameLength": 200,
+        "CreateBackup": false,
+        "LogLevel": "Information",
+        "LogFilePath": "",
+        "EnablePerformanceMonitoring": false,
+        "CheckForUpdates": true,
+        "CollectUsageStatistics": true
+      },
+      "LastSelectedAbbreviation": "CNF",
+      "LastSelectedTitle": "Prompt",
+      "LastSelectedSuffix": "draft",
+      "LastSelectedExtension": ".txt",
+      "LastSelectedOutputPath": "D:\\Work_Claude\\2025\\08\\CreateNewFile\\Documents\\2025\\10",
+      "LastSelectedTemplatePath": "D:\\Work_Claude\\2025\\08\\CreateNewFile\\Documents\\Template\\20251016_1400_CNF_Template_Prompt.txt",
+      "LastSelectedDateTime": "2025-10-16T14:05:29.0982945+09:00",
+      "IsDateTimeEnabled": true,
+      "IsAbbreviationEnabled": true,
+      "IsTitleEnabled": true,
+      "IsSuffixEnabled": false,
+      "LastStringReplacements": [
+        {
+          "Id": "6ea866f1-a5f5-48ac-9a8d-53487e1aa7be",
+          "SearchText": "20250904_2004",
+          "ReplaceText": "YYYYMMDD_HHMM",
+          "IsEnabled": true,
+          "IsCaseSensitive": false,
+          "UseRegex": false,
+          "UseDynamicReplacement": true,
+          "Description": "Prompt",
+          "CreatedAt": "2025-10-16T16:19:08.1330867+09:00"
+        },
+        {
+          "Id": "bb4095b1-92ad-47ac-8271-8eb2ac2f0a6a",
+          "SearchText": "20250904_2005",
+          "ReplaceText": "YYYYMMDD_HHMM+1",
+          "IsEnabled": true,
+          "IsCaseSensitive": false,
+          "UseRegex": false,
+          "UseDynamicReplacement": true,
+          "Description": "Development note",
+          "CreatedAt": "2025-10-16T16:19:08.1330949+09:00"
+        },
+        {
+          "Id": "c14b9092-621e-4284-a610-7950f846755e",
+          "SearchText": "20250904_2006",
+          "ReplaceText": "YYYYMMDD_HHMM+2",
+          "IsEnabled": true,
+          "IsCaseSensitive": false,
+          "UseRegex": false,
+          "UseDynamicReplacement": true,
+          "Description": "Chat",
+          "CreatedAt": "2025-10-16T16:19:08.1330978+09:00"
+        },
+        {
+          "Id": "78bf615b-88a2-4534-a90a-9930a2ac1af0",
+          "SearchText": "20250904_2007",
+          "ReplaceText": "YYYYMMDD_HHMM+3",
+          "IsEnabled": true,
+          "IsCaseSensitive": false,
+          "UseRegex": false,
+          "UseDynamicReplacement": true,
+          "Description": "Work list",
+          "CreatedAt": "2025-10-16T16:19:08.1330991+09:00"
+        },
+        {
+          "Id": "27d82ecb-7aca-41c9-9e3c-f79127b3e510",
+          "SearchText": "20250904_2008",
+          "ReplaceText": "YYYYMMDD_HHMM+4",
+          "IsEnabled": true,
+          "IsCaseSensitive": false,
+          "UseRegex": false,
+          "UseDynamicReplacement": true,
+          "Description": "Next chat prompt",
+          "CreatedAt": "2025-10-16T16:19:08.1331005+09:00"
+        }
+      ]
+    }
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile\bin\x64\Debug\net8.0-windows\Newtonsoft.Json.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Serialization.Formatters.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Linq.Expressions.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Numerics.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Serialization.Primitives.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Data.Common.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Reflection.Emit.ILGeneration.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Reflection.Emit.Lightweight.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Reflection.Primitives.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'Anonymously Hosted DynamicMethods Assembly'을(를) 로드했습니다. 
+    저장된 위치 적용: 100, 100
+    윈도우 상태 복원: Normal
+    복원 후 위치: Left=100, Top=100, Width=620, Height=1000
+    === PrepareWindow 완료 ===
+    예외 발생: 'System.InvalidOperationException'(PresentationCore.dll)
+    Operation is not valid due to the current state of the object.
+
+    '[14588] CreateNewFile.exe' 프로그램이 종료되었습니다(코드: 4294967295 (0xffffffff)).
+      
+      
+  Prompt:
+
+    프로그램을 두번 실행했다가 종료했는데, 첫번째 실행후 종료할 때의 위치가 저장되는데, 두번째 실행시에 그 위치로 복원되지 않습니다.
+
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Reflection.Primitives.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'Anonymously Hosted DynamicMethods Assembly'을(를) 로드했습니다. 
+    저장된 위치 적용: 100, 100
+    윈도우 상태 복원: Normal
+    복원 후 위치: Left=100, Top=100, Width=620, Height=1000
+    === PrepareWindow 완료 ===
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.21\ko\PresentationCore.resources.dll'을(를) 로드했습니다. 모듈이 기호 없이 빌드되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.21\PresentationFramework-SystemXml.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'c:\program files\microsoft visual studio\2022\professional\common7\ide\commonextensions\microsoft\xamldiagnostics\Core\x64\Microsoft.VisualStudio.DesignTools.WpfTap.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Threading.Tasks.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Serialization.Json.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Private.DataContractSerialization.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Runtime.Serialization.Xml.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Resources.ResourceManager.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\8.0.21\PresentationFramework-SystemData.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.IO.FileSystem.DriveInfo.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    'CreateNewFile.exe'(CoreCLR: clrhost): 'C:\Program Files\dotnet\shared\Microsoft.NETCore.App\8.0.21\System.Diagnostics.StackTrace.dll'을(를) 로드했습니다. 포함/제외 설정으로 기호 로드가 비활성화되었습니다.
+    일반 상태 - 현재 위치/크기 저장: 1717, 473, 620x1000
+    UI Settings 저장 완료
+    '[46192] CreateNewFile.exe' 프로그램이 종료되었습니다(코드: 0 (0x0)).
+
+-------------------------------------------------------------
+Conversation compacted
+  
+  
+  Prompt:
+
+
+  
+
+
+
+
+
+
+  
+  Prompt:
+  
+여전히 프로그램의 위치가 유지되지 않는데, 
+이 문제는 다음 Chat에서 수정하겠습니다.
+  
+다음에 나오는 YYYYMMDD_HHMM 은 Powershell 로 시스템의 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+  
+이번 Chat에서 작업한 내용을 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\2025\10\ 폴더에
+YYYYMMDD_HHMM_CNF_Work_list.md 파일로 한글 위주로 정리해 주세요.
+
+그리고 나서, Powershell 로 시스템의 새로운 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+
+새로운 Chat 시작시에 사용할 
+Quick Reference를 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\Project_overview 폴더에
+YYYYMMDD_HHMM_CNF_Quick_Reference_v01.md 파일로 만들어 주세요.
+  
+  Prompt:
+
+
+  
+
+
+요약 및 프롬프트 양식 샘플 ------------------------------
+CreateNewFile (CNF)
+
+20251016_1405 : Prompt
+20251016_1406 : Development note
+20251016_1407 : Chat
+20251016_1408 : Work list
+20251016_1409 : Next chat prompt
+
+  Claude 실행위치
+    D:\Work_Claude\2025\08\CreateNewFile
+
+  CNF Documents 폴더
+    D:\Work_Claude\2025\08\CreateNewFile\Documents
+
+  본 문서(Documents 폴더)
+    20251016_1405_TMS_Prompt.txt
+    20251016_1406_CNF_Development_note_with_AI.txt
+    
+  chat export하여 저장할 파일명(Documents 폴더)
+    /export .\Documents\2025\10\20251016_1536_CNF_Chat.txt
+    /export .\Documents\2025\10\20251016_1605_CNF_Chat.txt
+    /export .\Documents\2025\10\20251016_1634_CNF_Chat.txt
+    
+    /export .\Documents\2025\10\20251016_1644_CNF_Chat.txt
+
+        
+  Claude Code 새 Chat Session 시작시 프롬프트:
+      
+    개발관련 폴더와 문서는 다음과 같습니다.
+
+    아래 Project_overview 폴더의 20250930_1557_CreateNewFile_Project_overview.md 파일을 참고하세요.
+    
+    프로젝트 폴더 구조는 다음과 같습니다.
+    ```
+    D:\Work_Claude\2025\08\CreateNewFile\
+    ├── CreateNewFile/
+    │   ├── .git/                    ✅ Git 저장소
+    │   ├── .gitignore              ✅ Git 무시 파일
+    │   ├── src/
+    │   │   └── CreateNewFile/
+    │   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+    │   │       ├── App.xaml         ✅ 애플리케이션 정의
+    │   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+    │   │       ├── Views/           ✅ XAML 뷰 파일들
+    │   │       ├── ViewModels/      ✅ ViewModel 클래스들
+    │   │       ├── Models/          ✅ 모델 클래스들
+    │   │       ├── Services/        ✅ 서비스 폴더 (예정)
+    │   │       ├── Utils/           ✅ 유틸리티 클래스들
+    │   │       └── Resources/       ✅ 리소스 폴더
+    │   └── config/                  ✅ 설정 파일 폴더
+    └── Documents/                   ✅ 문서 폴더
+        └── Project_overview/
+    ```
+
+  Claude Code Chat 마무리 프롬프트:
+  
+다음에 나오는 YYYYMMDD_HHMM 은 Powershell 로 시스템의 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+  
+이번 Chat에서 작업한 내용을 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\2025\10\ 폴더에
+YYYYMMDD_HHMM_CNF_Work_list.md 파일로 한글 위주로 정리해 주세요.
+
+그리고 나서, Powershell 로 시스템의 새로운 현재 일시를 갖고와서 다음 파일명에 조합해 주세요.
+
+새로운 Chat 시작시에 사용할 
+Quick Reference를 
+D:\Work_Claude\2025\08\CreateNewFile\Documents\Project_overview 폴더에
+YYYYMMDD_HHMM_CNF_Quick_Reference_v01.md 파일로 만들어 주세요.
+
+-----  
+  
+  
+이번 Chat에서 작업한 내용을 D:\Work_Claude\2025\08\CreateNewFile\Documents 폴더에 20251016_1408_CNF_Work_list.md 파일로 정리해 주세요.
+
+그리고, 작업 내용을 계속 누적해서 정리해 나가는 20250825_1328_CNF_Work_list_total.md 파일에도 업데이트해주세요.    
+    
+또, 다음 Chat에서 이번 Chat의 맥락을 이어서 작업해 나가기 위한 프롬프트를 다음 Chat 시점을 기준으로 20251016_1409_CNF_Next_chat_prompt.md 파일로 작성해 주세요.
+그리고, 대기해 주세요.
+    
+------------------------------------------------
+
+

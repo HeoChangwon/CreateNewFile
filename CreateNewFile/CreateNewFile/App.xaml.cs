@@ -5,6 +5,8 @@ using CreateNewFile.ViewModels;
 using CreateNewFile.Views;
 using CreateNewFile.Services;
 using CreateNewFile.Utils;
+using CreateNewFile.Models;
+using System.IO;
 
 namespace CreateNewFile;
 
@@ -14,6 +16,16 @@ namespace CreateNewFile;
 public partial class App : System.Windows.Application
 {
     private IHost? _host;
+    private ProjectConfig? _loadedProjectConfig = null;
+
+    /// <summary>
+    /// 생성자: 스타일러스/터치 지원 비활성화
+    /// </summary>
+    public App()
+    {
+        // WPF의 스타일러스 및 터치 지원 비활성화 (윈도우 위치 복원 시 충돌 방지)
+        AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.DisableStylusAndTouchSupport", true);
+    }
 
     /// <summary>
     /// 애플리케이션 시작 시 호출됩니다.
@@ -27,6 +39,31 @@ public partial class App : System.Windows.Application
             RuntimeChecker.ShowRuntimeInstallGuide();
             Shutdown(1);
             return;
+        }
+
+        // 커맨드 라인 인자 처리 (.cnfjson 파일 로드)
+        if (e.Args.Length > 0)
+        {
+            var projectFilePath = e.Args[0];
+            if (!string.IsNullOrWhiteSpace(projectFilePath) &&
+                File.Exists(projectFilePath) &&
+                projectFilePath.EndsWith(".cnfjson", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    // 프로젝트 설정 파일 로드
+                    var configService = new ProjectConfigService();
+                    _loadedProjectConfig = configService.LoadProjectConfigAsync(projectFilePath).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(
+                        $"프로젝트 설정 파일을 로드할 수 없습니다.\n\n오류: {ex.Message}",
+                        "프로젝트 설정 로드 오류",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
         }
 
         // 의존성 주입 컨테이너 설정
@@ -45,34 +82,46 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<IFileGeneratorService, FileGeneratorService>();
                 services.AddSingleton<ISettingsService, SettingsService>();
                 services.AddSingleton<IFileInfoService, FileInfoService>();
+                services.AddSingleton<IProjectConfigService, ProjectConfigService>();
             })
             .Build();
 
-        // 메인 윈도우 표시
+        // 메인 윈도우 생성
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
         mainWindow.DataContext = mainViewModel;
-        
-        // 윈도우를 먼저 표시
-        mainWindow.Show();
-        
-        // 윈도우가 표시된 후 잠시 대기 후 초기화
-        var timer = new System.Windows.Threading.DispatcherTimer();
-        timer.Interval = TimeSpan.FromMilliseconds(100); // 100ms 후 실행
-        timer.Tick += async (sender, e) =>
+
+        // Dispatcher를 사용하여 윈도우 표시 지연 (Stylus 초기화 문제 회피)
+        Dispatcher.BeginInvoke(new Action(async () =>
         {
-            timer.Stop();
+            // 윈도우 표시 전에 위치 복원
+            mainWindow.PrepareWindow();
+
+            // 윈도우 표시
+            mainWindow.Show();
+
+            // 잠시 대기 후 초기화
+            await Task.Delay(100);
+
             try
             {
-                await mainViewModel.InitializeAsync();
+                // 프로젝트 설정이 로드된 경우 먼저 적용
+                if (_loadedProjectConfig != null)
+                {
+                    await mainViewModel.LoadProjectConfigAsync(_loadedProjectConfig);
+                }
+                else
+                {
+                    // 일반 초기화
+                    await mainViewModel.InitializeAsync();
+                }
             }
             catch (Exception ex)
             {
                 // 오류가 발생해도 사용자가 알 수 있도록 상태 메시지 표시
                 mainViewModel.StatusMessage = $"초기화 오류: {ex.Message}";
             }
-        };
-        timer.Start();
+        }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
 
         base.OnStartup(e);
     }

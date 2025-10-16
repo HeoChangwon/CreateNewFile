@@ -1,0 +1,81 @@
+
+ ▐▛███▜▌   Claude Code v2.0.2
+▝▜█████▛▘  Sonnet 4.5 · Claude Max
+  ▘▘ ▝▝    D:\Work_Claude\2025\08\CreateNewFile
+
+> CreateNewFile의 설정 정보, 파일 정보는 어디에 저장되나요?
+
+개발관련 폴더와 문서는 다음과 같습니다.
+
+아래 Project_overview 폴더의 20250930_1557_CreateNewFile_Project_overview.md 파일을 참고하세요.
+
+프로젝트 폴더 구조는 다음과 같습니다.
+```
+D:\Work_Claude\2025\08\CreateNewFile\
+├── CreateNewFile/
+│   ├── .git/                    ✅ Git 저장소
+│   ├── .gitignore              ✅ Git 무시 파일
+│   ├── src/
+│   │   └── CreateNewFile/
+│   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+│   │       ├── App.xaml         ✅ 애플리케이션 정의
+│   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+│   │       ├── Views/           ✅ XAML 뷰 파일들
+│   │       ├── ViewModels/      ✅ ViewModel 클래스들
+│   │       ├── Models/          ✅ 모델 클래스들
+│   │       ├── Services/        ✅ 서비스 폴더 (예정)
+│   │       ├── Utils/           ✅ 유틸리티 클래스들
+│   │       └── Resources/       ✅ 리소스 폴더
+│   └── config/                  ✅ 설정 파일 폴더
+└── Documents/                   ✅ 문서 폴더
+    └── Project_overview/
+``` 
+
+● 프로젝트 개요 문서를 확인하여 설정 정보와 파일 정보의 저장 위치를 파악하겠습니다.
+
+● Read(Documents\Project_overview\20250930_1557_CreateNewFile_Project_overview.md)
+  ⎿  Read 411 lines (ctrl+o to expand)
+
+● Search(pattern: "**/Services/*.cs", path: "CreateNewFile\src\CreateNewFile")
+  ⎿  Error searching files
+
+● Search(pattern: "**/Models/*.cs", path: "CreateNewFile\src\CreateNewFile")
+  ⎿  Error searching files
+
+● Search(pattern: "**/Services/*.cs", path: "D:\Work_Claude\2025\08\CreateNewFile")
+  ⎿  Found 7 files (ctrl+o to expand)
+
+● Read(CreateNewFile\src\CreateNewFile\Services\SettingsService.cs)
+  ⎿  Error reading file
+
+● Read(CreateNewFile\CreateNewFile\Services\SettingsService.cs)
+  ⎿  Read 605 lines (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\Services\FileInfoService.cs)
+  ⎿  Read 658 lines (ctrl+o to expand)
+  ⎿  CreateNewFile\CreateNewFile\CLAUDE.md
+
+● CreateNewFile의 데이터는 사용자별 AppData 폴더에 저장됩니다:
+
+  설정 정보 (AppSettings)
+
+  위치: %APPDATA%\CreateNewFile\config\appsettings.json
+  - 예시: C:\Users\<사용자명>\AppData\Roaming\CreateNewFile\config\appsettings.json
+  - 내용: 체크박스 상태, 마지막 선택값, Preset 항목 (약어, 제목, 접미어, 확장자 등)
+  - 관리: SettingsService.cs:34-47
+
+  파일 정보 (FileInfo)
+
+  위치: %APPDATA%\CreateNewFile\data\fileinfos.json
+  - 예시: C:\Users\<사용자명>\AppData\Roaming\CreateNewFile\data\fileinfos.json
+  - 내용: 파일 생성 이력, 메타데이터, 태그, 사용 통계
+  - 관리: FileInfoService.cs:29-40
+
+  기본 템플릿 파일 (읽기 전용)
+
+  위치: {설치폴더}\config\appsettings.default.json
+  - 첫 실행 시 이 파일에서 초기 설정을 로드하여 사용자 설정 파일 생성
+
+
+
+

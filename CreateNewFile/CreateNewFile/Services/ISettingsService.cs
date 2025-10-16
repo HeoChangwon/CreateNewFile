@@ -116,6 +116,12 @@ namespace CreateNewFile.Services
         /// </summary>
         /// <returns>설정 폴더의 전체 경로</returns>
         string GetSettingsFolderPath();
+
+        /// <summary>
+        /// 캐시된 설정을 무효화합니다.
+        /// 외부에서 설정 파일을 직접 수정한 경우 호출하여 최신 설정을 다시 로드하도록 합니다.
+        /// </summary>
+        void ClearCache();
     }
 
     /// <summary>

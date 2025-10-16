@@ -1,11 +1,9 @@
 [
-  {"from": "<BuildDate>2025-09-30 16:13</BuildDate>",     "to": "<BuildDate>2025-09-30 18:07</BuildDate>"},
-  {"from": "DisplayVersion\" Value=\"1.0.001\"",          "to": "DisplayVersion\" Value=\"1.0.002\""},
-  {"from": ">1.0.1.0<",                                   "to": ">1.0.2.0<"},
-  {"from": ">1.0.001<",                                   "to": ">1.0.002<"},
-  {"from": "<TextBlock Text=\"v1.0.001\"",                "to": "<TextBlock Text=\"v1.0.002\""},
+  {"from": ">1.0.2.0<",             "to": ">1.0.3.0<"},
+  {"from": ">1.0.002<",             "to": ">1.0.003<"},
+  {"from": "1.0.002\"",             "to": "1.0.003\""},
   
-  {"from": "PRODUCT_VERSION = \"1.0.001\"",               "to": "PRODUCT_VERSION = \"1.0.002\""},
-  {"from": "BUILD_DATE = \"20250930_1613\"",              "to": "BUILD_DATE = \"20250930_1807\""}
+  {"from": "2025-10-16 17:50",      "to": "2025-10-16 21:00"},
+  {"from": "\"20251016_1750\"",     "to": "\"20251016_2100\""}
   
 ]

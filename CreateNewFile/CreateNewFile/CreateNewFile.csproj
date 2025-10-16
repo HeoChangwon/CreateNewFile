@@ -17,10 +17,10 @@
     <PlatformTarget>x64</PlatformTarget>
     
     <!-- 버전 정보 -->
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
-    <AssemblyInformationalVersion>1.0.002</AssemblyInformationalVersion>
-    <Version>1.0.002</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyInformationalVersion>1.0.003</AssemblyInformationalVersion>
+    <Version>1.0.003</Version>
     <!-- 확실한 버전 표시를 위한 추가 속성 -->
     <Product>CreateNewFile</Product>
     <AssemblyTitle>CreateNewFile - 파일 생성 도구</AssemblyTitle>
@@ -29,12 +29,12 @@
     <AssemblyCopyright>Copyright © 2025 HeoChangwon</AssemblyCopyright>
     
     <!-- 빌드 날짜 수동 지정 -->
-    <BuildDate>2025-09-30 18:07</BuildDate>
+    <BuildDate>2025-10-16 21:00</BuildDate>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyMetadata Include="DisplayVersion" Value="1.0.002" />
+    <AssemblyMetadata Include="DisplayVersion" Value="1.0.003" />
     <AssemblyMetadata Include="BuildDate" Value="$(BuildDate)" />
   </ItemGroup>
 

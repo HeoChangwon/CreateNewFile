@@ -1,0 +1,1227 @@
+
+ ▐▛███▜▌   Claude Code v2.0.19
+▝▜█████▛▘  Sonnet 4.5 · Claude Max
+  ▘▘ ▝▝    D:\Work_Claude\2025\08\CreateNewFile
+
+> CreateNewFile 프로젝트를 수정하고 있습니다.
+
+파일 정보, 출력폴더, 템플릿 파일, 템플릿 문자열 교체 규칙 정보만 별도의 파일로 저장하고, 불러올 수 있는 기능이 
+필요합니다.
+별도 저장하는 파일 포맷은 json, 확장자는 .cnfjson 으로 하고,
+각 프로젝트마다 해당 프로젝트에 이용할 이 .cnfjson 파일을 저장해 두고, 
+CreateNewFile을 연결 프로그램으로 지정하여 바로 실행할 수 있도록 하려고 합니다.
+
+개발관련 폴더와 문서는 다음과 같습니다.
+
+프로젝트 폴더 구조는 다음과 같습니다.
+```
+D:\Work_Claude\2025\08\CreateNewFile\
+├── CreateNewFile/
+│   ├── .git/                    ✅ Git 저장소
+│   ├── .gitignore              ✅ Git 무시 파일
+│   ├── src/
+│   │   └── CreateNewFile/
+│   │       ├── CreateNewFile.csproj  ✅ 프로젝트 파일
+│   │       ├── App.xaml         ✅ 애플리케이션 정의
+│   │       ├── App.xaml.cs      ✅ DI 컨테이너 설정
+│   │       ├── Views/           ✅ XAML 뷰 파일들
+│   │       ├── ViewModels/      ✅ ViewModel 클래스들
+│   │       ├── Models/          ✅ 모델 클래스들
+│   │       ├── Services/        ✅ 서비스 폴더 (예정)
+│   │       ├── Utils/           ✅ 유틸리티 클래스들
+│   │       └── Resources/       ✅ 리소스 폴더
+│   └── config/                  ✅ 설정 파일 폴더
+└── Documents/                   ✅ 문서 폴더
+    └── Project_overview/
+```
+
+Project_overview 폴더의 다음 파일들을 참고하세요.
+```
+20250930_1557_CreateNewFile_Project_overview.md
+20251016_1921_CNF_Quick_Reference_v03.md
+``` 
+
+● 프로젝트 문서들을 먼저 확인하여 현재 구조를 파악하겠습니다.
+
+● Read(Documents\Project_overview\20250930_1557_CreateNewFile_Project_overview.md)
+  ⎿  Read 411 lines
+
+● Read(Documents\Project_overview\20251016_1921_CNF_Quick_Reference_v03.md)
+  ⎿  Read 633 lines
+
+● 프로젝트 문서를 확인했습니다. 요구사항을 정리하면:
+
+  1. 파일 정보, 출력폴더, 템플릿 파일, 템플릿 문자열 교체 규칙을 .cnfjson 파일로 저장
+  2. 각 프로젝트마다 .cnfjson 파일을 저장하고, 더블클릭으로 실행 가능
+
+  이 기능을 구현하기 위해 먼저 현재 코드 구조를 파악하겠습니다.
+
+● Read(CreateNewFile\src\CreateNewFile\Models\AppSettings.cs)
+  ⎿  Error reading file
+
+● Read(CreateNewFile\src\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Error reading file
+
+● Read(CreateNewFile\src\CreateNewFile\App.xaml.cs)
+  ⎿  Error reading file
+
+● 프로젝트 파일들을 찾아보겠습니다.
+
+● Search(pattern: "**/AppSettings.cs")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Search(pattern: "**/MainViewModel.cs")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Search(pattern: "**/App.xaml.cs")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\Models\AppSettings.cs)
+  ⎿  Read 385 lines
+
+● Read(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Read 1880 lines
+
+● Read(CreateNewFile\CreateNewFile\App.xaml.cs)
+  ⎿  Read 118 lines
+
+● 현재 코드 구조를 파악했습니다. 요구사항을 분석하여 작업 계획을 세우겠습니다.
+
+● .cnfjson 파일 기능 구현 계획
+
+  다음과 같은 구조로 구현하겠습니다:
+
+  1. ProjectConfig 모델 클래스
+
+  - 파일 정보, 출력폴더, 템플릿 파일, 문자열 교체 규칙을 포함
+  - JSON 직렬화/역직렬화 지원
+
+  2. ProjectConfigService
+
+  - .cnfjson 파일 저장/로드 기능
+  - 유효성 검증
+
+  3. 커맨드 라인 지원
+
+  - .cnfjson 파일 경로를 인자로 받아 실행
+  - 해당 설정으로 자동 초기화
+
+  4. UI 메뉴 추가
+
+  - "프로젝트 설정 저장" 메뉴
+  - "프로젝트 설정 열기" 메뉴
+
+  5. Windows 파일 연결
+
+  - NSIS 인스톨러에서 .cnfjson 파일 연결 등록
+
+  첫 번째 작업을 시작하겠습니다.
+
+● Search(pattern: "**/StringReplacementRule.cs")
+  ⎿  Found 0 files 
+
+● Search(pattern: "**/Models/*.cs")
+  ⎿  Found 6 files (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\Models\FileInfo.cs)
+  ⎿  Read 609 lines
+
+● Search(pattern: "class StringReplacementRule")
+  ⎿  Found 4 files (ctrl+o to expand)
+
+● 좋습니다. StringReplacementRule 클래스를 찾았습니다. 이제 ProjectConfig 모델 클래스를 생성하겠습니다.
+
+● Write(CreateNewFile\CreateNewFile\Models\ProjectConfig.cs)
+  ⎿  Wrote 1 lines to CreateNewFile\CreateNewFile\Models\ProjectConfig.cs
+     using System.ComponentModel;
+     namespace CreateNewFile.Models
+     {
+         /// <summary>
+         /// 프로젝트 설정을 나타내는 모델 클래스
+         /// .cnfjson 파일로 저장/로드됩니다.
+         /// </summary>
+         public class ProjectConfig : ICloneable
+         {
+
+● Write(CreateNewFile\CreateNewFile\Services\IProjectConfigService.cs)
+  ⎿  Wrote 1 lines to CreateNewFile\CreateNewFile\Services\IProjectConfigService.cs
+     using CreateNewFile.Models;
+     namespace CreateNewFile.Services
+     {
+         /// <summary>
+         /// 프로젝트 설정 파일 관리 서비스 인터페이스
+         /// </summary>
+         public interface IProjectConfigService
+         {
+             /// <summary>
+
+● Write(CreateNewFile\CreateNewFile\Services\ProjectConfigService.cs)
+  ⎿  Wrote 1 lines to CreateNewFile\CreateNewFile\Services\ProjectConfigService.cs
+     using System.IO;
+     using System.Text;
+     using System.Text.Json;
+     using System.Text.Json.Serialization;
+     using CreateNewFile.Models;
+     using CreateNewFile.ViewModels;
+     namespace CreateNewFile.Services
+     {
+         /// <summary>
+
+● Update(CreateNewFile\CreateNewFile\App.xaml.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\App.xaml.cs with 38 additions and 1 removal                   
+        5    using CreateNewFile.Views;
+        6    using CreateNewFile.Services;
+        7    using CreateNewFile.Utils;
+        8 +  using CreateNewFile.Models;
+        9    
+       10    namespace CreateNewFile;
+       11    
+     ...
+       14    public partial class App : System.Windows.Application
+       15    {
+       16        private IHost? _host;
+       17 +      private ProjectConfig? _loadedProjectConfig = null;
+       18    
+       19        /// <summary>
+       20        /// 생성자: 스타일러스/터치 지원 비활성화
+     ...
+       38                return;
+       39            }
+       40    
+       41 +          // 커맨드 라인 인자 처리 (.cnfjson 파일 로드)
+       42 +          if (e.Args.Length > 0)
+       43 +          {
+       44 +              var projectFilePath = e.Args[0];
+       45 +              if (!string.IsNullOrWhiteSpace(projectFilePath) &&
+       46 +                  File.Exists(projectFilePath) &&
+       47 +                  projectFilePath.EndsWith(".cnfjson", StringComparison.OrdinalIgnoreCase))
+       48 +              {
+       49 +                  try
+       50 +                  {
+       51 +                      // 프로젝트 설정 파일 로드
+       52 +                      var configService = new ProjectConfigService();
+       53 +                      _loadedProjectConfig = 
+          + configService.LoadProjectConfigAsync(projectFilePath).GetAwaiter().GetResult();
+       54 +                  }
+       55 +                  catch (Exception ex)
+       56 +                  {
+       57 +                      MessageBox.Show(
+       58 +                          $"프로젝트 설정 파일을 로드할 수 없습니다.\n\n오류: {ex.Message}",
+       59 +                          "프로젝트 설정 로드 오류",
+       60 +                          MessageBoxButton.OK,
+       61 +                          MessageBoxImage.Error);
+       62 +                  }
+       63 +              }
+       64 +          }
+       65 +  
+       66            // 의존성 주입 컨테이너 설정
+       67            _host = Host.CreateDefaultBuilder()
+       68                .ConfigureServices((context, services) =>
+     ...
+       54                    services.AddSingleton<IFileGeneratorService, FileGeneratorService>();
+       55                    services.AddSingleton<ISettingsService, SettingsService>();
+       56                    services.AddSingleton<IFileInfoService, FileInfoService>();
+       57 +                  services.AddSingleton<IProjectConfigService, ProjectConfigService>();
+       58                })
+       59                .Build();
+       60    
+     ...
+       76    
+       77                try
+       78                {
+       79 -                  await mainViewModel.InitializeAsync();
+       79 +                  // 프로젝트 설정이 로드된 경우 먼저 적용
+       80 +                  if (_loadedProjectConfig != null)
+       81 +                  {
+       82 +                      await mainViewModel.LoadProjectConfigAsync(_loadedProjectConfig);
+       83 +                  }
+       84 +                  else
+       85 +                  {
+       86 +                      // 일반 초기화
+       87 +                      await mainViewModel.InitializeAsync();
+       88 +                  }
+       89                }
+       90                catch (Exception ex)
+       91                {
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 1 addition
+       20            private readonly IFileGeneratorService _fileGeneratorService;
+       21            private readonly ISettingsService _settingsService;
+       22            private readonly IFileInfoService _fileInfoService;
+       23 +          private readonly IProjectConfigService _projectConfigService;
+       24            
+       25            private DateTime _selectedDateTime;
+       26            private string _selectedAbbreviation = string.Empty;
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 2 additions and 1 removal         
+       474            /// <summary>
+       475            /// MainViewModel의 새 인스턴스를 초기화합니다.
+       476            /// </summary>
+       477 -          public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService 
+           -  settingsService, IFileInfoService fileInfoService)
+       477 +          public MainViewModel(IFileGeneratorService fileGeneratorService, ISettingsService 
+           +  settingsService, IFileInfoService fileInfoService, IProjectConfigService projectConfigService)
+       478            {
+       479                _fileGeneratorService = fileGeneratorService ?? throw new 
+             ArgumentNullException(nameof(fileGeneratorService));
+       480                _settingsService = settingsService ?? throw new 
+             ArgumentNullException(nameof(settingsService));
+       481                _fileInfoService = fileInfoService ?? throw new 
+             ArgumentNullException(nameof(fileInfoService));
+       482 +              _projectConfigService = projectConfigService ?? throw new 
+           + ArgumentNullException(nameof(projectConfigService));
+       483    
+       484                // 기본값 설정 (날짜/시간은 설정 로드 후 적용)
+       485                StatusMessage = "준비";
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 11 additions
+       468            /// 문자열 교체 규칙 아래로 이동 명령
+       469            /// </summary>
+       470            public ICommand MoveDownStringReplacementCommand { get; }
+       471 +  
+       472 +          // 프로젝트 설정 관련 명령들
+       473 +          /// <summary>
+       474 +          /// 프로젝트 설정 저장 명령
+       475 +          /// </summary>
+       476 +          public ICommand SaveProjectConfigCommand { get; }
+       477 +  
+       478 +          /// <summary>
+       479 +          /// 프로젝트 설정 열기 명령
+       480 +          /// </summary>
+       481 +          public ICommand OpenProjectConfigCommand { get; }
+       482            #endregion
+       483    
+       484            #region Constructor
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 4 additions                    
+       517                MoveUpStringReplacementCommand = new RelayCommand(MoveUpStringReplacement);
+       518                MoveDownStringReplacementCommand = new RelayCommand(MoveDownStringReplacement);
+       519    
+       520 +              // 프로젝트 설정 관련 명령 초기화
+       521 +              SaveProjectConfigCommand = new RelayCommand(async () => await 
+           + SaveProjectConfigAsync());
+       522 +              OpenProjectConfigCommand = new RelayCommand(async () => await 
+           + OpenProjectConfigAsync());
+       523 +  
+       524                // 데이터 로드는 별도로 호출하도록 변경 (화면 표시 전에 완료하기 위해)
+       525            }
+       526    
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 193 additions                     
+       1892            }
+       1893    
+       1894            #endregion
+       1895 +  
+       1896 +          #region 프로젝트 설정 관련 메서드
+       1897 +  
+       1898 +          /// <summary>
+       1899 +          /// 프로젝트 설정을 로드하여 UI에 적용합니다.
+       1900 +          /// </summary>
+       1901 +          /// <param name="config">로드할 프로젝트 설정</param>
+       1902 +          public async Task LoadProjectConfigAsync(ProjectConfig config)
+       1903 +          {
+       1904 +              try
+       1905 +              {
+       1906 +                  IsWorking = true;
+       1907 +                  StatusMessage = "프로젝트 설정을 로드하는 중...";
+       1908 +  
+       1909 +                  if (config == null)
+       1910 +                      throw new ArgumentNullException(nameof(config));
+       1911 +  
+       1912 +                  // 유효성 검사
+       1913 +                  var validation = config.Validate();
+       1914 +                  if (!validation.IsValid)
+       1915 +                      throw new InvalidOperationException($"프로젝트 설정이 유효하지 않습니다: 
+            + {validation.ErrorMessage}");
+       1916 +  
+       1917 +                  // 먼저 일반 설정 로드 (Preset 항목들)
+       1918 +                  await LoadDataAsync();
+       1919 +  
+       1920 +                  // 프로젝트 설정 적용
+       1921 +                  var fileInfo = config.FileInfo;
+       1922 +  
+       1923 +                  SelectedDateTime = fileInfo.DateTime;
+       1924 +                  SelectedAbbreviation = fileInfo.Abbreviation;
+       1925 +                  SelectedTitle = fileInfo.Title;
+       1926 +                  SelectedSuffix = fileInfo.Suffix;
+       1927 +                  SelectedExtension = fileInfo.Extension;
+       1928 +                  SelectedOutputPath = config.OutputPath;
+       1929 +                  SelectedTemplatePath = config.TemplatePath;
+       1930 +  
+       1931 +                  // 체크박스 상태 적용
+       1932 +                  IsDateTimeEnabled = fileInfo.IsDateTimeEnabled;
+       1933 +                  IsAbbreviationEnabled = fileInfo.IsAbbreviationEnabled;
+       1934 +                  IsTitleEnabled = fileInfo.IsTitleEnabled;
+       1935 +                  IsSuffixEnabled = fileInfo.IsSuffixEnabled;
+       1936 +  
+       1937 +                  // 문자열 교체 규칙 적용
+       1938 +                  StringReplacements.Clear();
+       1939 +                  foreach (var rule in config.StringReplacements)
+       1940 +                  {
+       1941 +                      StringReplacements.Add((StringReplacementRule)rule.Clone());
+       1942 +                  }
+       1943 +  
+       1944 +                  StatusMessage = $"프로젝트 '{config.Name}' 로드 완료";
+       1945 +  
+       1946 +                  DialogHelper.ShowInfo(
+       1947 +                      $"프로젝트 설정이 로드되었습니다.\n\n프로젝트: {config.Name}\n설명: 
+            + {(string.IsNullOrWhiteSpace(config.Description) ? "(없음)" : config.Description)}",
+       1948 +                      "프로젝트 설정 로드");
+       1949 +              }
+       1950 +              catch (Exception ex)
+       1951 +              {
+       1952 +                  StatusMessage = $"프로젝트 설정 로드 오류: {ex.Message}";
+       1953 +                  DialogHelper.ShowError(ex, "프로젝트 설정을 로드할 수 없습니다.");
+       1954 +              }
+       1955 +              finally
+       1956 +              {
+       1957 +                  IsWorking = false;
+       1958 +              }
+       1959 +          }
+       1960 +  
+       1961 +          /// <summary>
+       1962 +          /// 현재 상태를 프로젝트 설정 파일로 저장합니다.
+       1963 +          /// </summary>
+       1964 +          private async Task SaveProjectConfigAsync()
+       1965 +          {
+       1966 +              try
+       1967 +              {
+       1968 +                  // 프로젝트 이름 입력 받기
+       1969 +                  string defaultName = string.IsNullOrWhiteSpace(SelectedTitle)
+       1970 +                      ? "Unnamed_Project"
+       1971 +                      : SelectedTitle;
+       1972 +  
+       1973 +                  var result = DialogHelper.ShowInputDialog(
+       1974 +                      "프로젝트 설정 저장",
+       1975 +                      "프로젝트 이름을 입력하세요:",
+       1976 +                      defaultName);
+       1977 +  
+       1978 +                  if (!result.IsConfirmed || string.IsNullOrWhiteSpace(result.InputText))
+       1979 +                      return;
+       1980 +  
+       1981 +                  var projectName = result.InputText.Trim();
+       1982 +  
+       1983 +                  // 저장 위치 선택
+       1984 +                  var saveDialog = new Microsoft.Win32.SaveFileDialog
+       1985 +                  {
+       1986 +                      Title = "프로젝트 설정 저장",
+       1987 +                      Filter = "CreateNewFile 프로젝트 파일 (*.cnfjson)|*.cnfjson",
+       1988 +                      FileName = projectName,
+       1989 +                      DefaultExt = ".cnfjson",
+       1990 +                      AddExtension = true
+       1991 +                  };
+       1992 +  
+       1993 +                  if (saveDialog.ShowDialog() != true)
+       1994 +                      return;
+       1995 +  
+       1996 +                  IsWorking = true;
+       1997 +                  StatusMessage = "프로젝트 설정을 저장하는 중...";
+       1998 +  
+       1999 +                  // 현재 상태를 프로젝트 설정으로 변환
+       2000 +                  var config = _projectConfigService.CreateProjectConfigFromViewModel(this);
+       2001 +                  config.Name = projectName;
+       2002 +  
+       2003 +                  // 설명 입력 받기 (선택사항)
+       2004 +                  var descResult = DialogHelper.ShowInputDialog(
+       2005 +                      "프로젝트 설명",
+       2006 +                      "프로젝트 설명을 입력하세요 (선택사항):",
+       2007 +                      "");
+       2008 +  
+       2009 +                  if (descResult.IsConfirmed)
+       2010 +                  {
+       2011 +                      config.Description = descResult.InputText;
+       2012 +                  }
+       2013 +  
+       2014 +                  // 프로젝트 설정 저장
+       2015 +                  var success = await _projectConfigService.SaveProjectConfigAsync(config, 
+            + saveDialog.FileName);
+       2016 +  
+       2017 +                  if (success)
+       2018 +                  {
+       2019 +                      StatusMessage = $"프로젝트 '{projectName}' 저장 완료";
+       2020 +                      DialogHelper.ShowInfo(
+       2021 +                          $"프로젝트 설정이 저장되었습니다.\n\n파일: {saveDialog.FileName}",
+       2022 +                          "프로젝트 설정 저장 완료");
+       2023 +                  }
+       2024 +                  else
+       2025 +                  {
+       2026 +                      StatusMessage = "프로젝트 설정 저장 실패";
+       2027 +                      DialogHelper.ShowError("프로젝트 설정을 저장할 수 없습니다.");
+       2028 +                  }
+       2029 +              }
+       2030 +              catch (Exception ex)
+       2031 +              {
+       2032 +                  StatusMessage = $"프로젝트 설정 저장 오류: {ex.Message}";
+       2033 +                  DialogHelper.ShowError(ex, "프로젝트 설정을 저장할 수 없습니다.");
+       2034 +              }
+       2035 +              finally
+       2036 +              {
+       2037 +                  IsWorking = false;
+       2038 +              }
+       2039 +          }
+       2040 +  
+       2041 +          /// <summary>
+       2042 +          /// 프로젝트 설정 파일을 열어서 로드합니다.
+       2043 +          /// </summary>
+       2044 +          private async Task OpenProjectConfigAsync()
+       2045 +          {
+       2046 +              try
+       2047 +              {
+       2048 +                  var openDialog = new Microsoft.Win32.OpenFileDialog
+       2049 +                  {
+       2050 +                      Title = "프로젝트 설정 열기",
+       2051 +                      Filter = "CreateNewFile 프로젝트 파일 (*.cnfjson)|*.cnfjson",
+       2052 +                      DefaultExt = ".cnfjson",
+       2053 +                      CheckFileExists = true,
+       2054 +                      CheckPathExists = true
+       2055 +                  };
+       2056 +  
+       2057 +                  if (openDialog.ShowDialog() != true)
+       2058 +                      return;
+       2059 +  
+       2060 +                  IsWorking = true;
+       2061 +                  StatusMessage = "프로젝트 설정을 로드하는 중...";
+       2062 +  
+       2063 +                  // 프로젝트 설정 로드
+       2064 +                  var config = await 
+            + _projectConfigService.LoadProjectConfigAsync(openDialog.FileName);
+       2065 +  
+       2066 +                  if (config != null)
+       2067 +                  {
+       2068 +                      await LoadProjectConfigAsync(config);
+       2069 +                  }
+       2070 +                  else
+       2071 +                  {
+       2072 +                      StatusMessage = "프로젝트 설정 로드 실패";
+       2073 +                      DialogHelper.ShowError("프로젝트 설정을 로드할 수 없습니다.");
+       2074 +                  }
+       2075 +              }
+       2076 +              catch (Exception ex)
+       2077 +              {
+       2078 +                  StatusMessage = $"프로젝트 설정 열기 오류: {ex.Message}";
+       2079 +                  DialogHelper.ShowError(ex, "프로젝트 설정을 열 수 없습니다.");
+       2080 +              }
+       2081 +              finally
+       2082 +              {
+       2083 +                  IsWorking = false;
+       2084 +              }
+       2085 +          }
+       2086 +  
+       2087            #endregion
+       2088 +          #endregion
+       2089        }
+       2090    }
+       2091   \ No newline at end of file
+
+● MainViewModel 수정이 완료되었습니다. 이제 빌드하여 컴파일 오류가 없는지 확인하겠습니다.
+
+● Bash(cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile" && dotnet build 2>&1 | head -100)
+  ⎿    복원할 프로젝트를 확인하는 중...                                                                            
+       D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile\CreateNewFile.csproj을(를) 919밀리초 동안
+     복원했습니다.
+     D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile\Utils\DialogHelper.cs(98,73): warning CS8625:
+     … +150 lines (ctrl+o to expand)
+
+● 컴파일 오류가 발생했습니다. using 문을 추가하여 수정하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\Models\ProjectConfig.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\Models\ProjectConfig.cs with 1 addition
+       1    using System.ComponentModel;
+       2 +  using System.IO;
+       3    
+       4    namespace CreateNewFile.Models
+       5    {
+
+● Update(CreateNewFile\CreateNewFile\App.xaml.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\App.xaml.cs with 1 addition
+        6    using CreateNewFile.Services;
+        7    using CreateNewFile.Utils;
+        8    using CreateNewFile.Models;
+        9 +  using System.IO;
+       10    
+       11    namespace CreateNewFile;
+       12    
+
+● Update(CreateNewFile\CreateNewFile\App.xaml.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\App.xaml.cs with 1 addition and 1 removal                     
+       57                    }
+       58                    catch (Exception ex)
+       59                    {
+       60 -                      MessageBox.Show(
+       60 +                      System.Windows.MessageBox.Show(
+       61                            $"프로젝트 설정 파일을 로드할 수 없습니다.\n\n오류: {ex.Message}",
+       62                            "프로젝트 설정 로드 오류",
+       63                            MessageBoxButton.OK,
+
+● Bash(cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile" && dotnet build 2>&1 | grep -E "(error|경과
+       시간|Build succeeded)")
+  ⎿  경과 시간: 00:00:07.21
+
+● 빌드가 성공했습니다! 이제 남은 작업을 계속 진행하겠습니다.
+
+● 진행 상황 요약
+
+  현재까지 .cnfjson 파일 기능 구현의 핵심 부분이 완료되었습니다:
+
+  ✅ 완료된 작업
+
+  1. ProjectConfig 모델 클래스 - 파일 정보, 출력폴더, 템플릿, 문자열 교체 규칙을 포함하는 데이터 모델
+  2. ProjectConfigService - .cnfjson 파일 저장/로드 서비스
+  3. App.xaml.cs 수정 - 커맨드 라인 인자로 .cnfjson 파일 경로 받아서 자동 로드
+  4. MainViewModel 확장 - 프로젝트 설정 저장/열기 명령 및 로직 구현
+  5. 빌드 성공 - 컴파일 오류 수정 완료
+
+  🔄 남은 작업
+
+  1. MainWindow UI 수정 - 프로젝트 설정 저장/열기 메뉴 버튼 추가
+  2. NSIS 인스톨러 수정 - .cnfjson 파일을 CreateNewFile과 연결
+  3. 기능 테스트 - 실제 파일 저장/로드 및 더블클릭 실행 테스트
+
+  계속 진행하시겠습니까? 남은 작업을 완료하면 .cnfjson 파일을 더블클릭하여 바로 CreateNewFile을 실행할 수 있게
+  됩니다.
+
+> 네, 계속 진행해 주세요. 
+
+● 네, 계속 진행하겠습니다. MainWindow에 프로젝트 설정 메뉴를 추가하겠습니다.
+
+● Search(pattern: "**/MainWindow.xaml")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Read(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Read 100 lines
+
+● MainWindow.xaml 파일을 확인했습니다. 액션 버튼 영역에 프로젝트 설정 메뉴를 추가하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 37 additions and 17 removals  
+       537                </GroupBox>
+       538    
+       539                <!-- 액션 버튼 -->
+       540 -              <StackPanel Orientation="Horizontal" 
+       541 -                         HorizontalAlignment="Center" 
+       540 +              <StackPanel Orientation="Vertical"
+       541 +                         HorizontalAlignment="Center"
+       542                           Margin="0,10,0,0">
+       543 -                  <Button Content="파일 생성" 
+       544 -                         Command="{Binding CreateFileCommand}"
+       545 -                         IsEnabled="{Binding IsWorking, Converter={StaticResource 
+           - InvertBooleanConverter}}"
+       546 -                         Width="120" Height="40"
+       547 -                         FontSize="14"/>
+       548 -                  <Button Content="설정 관리" 
+       549 -                         Command="{Binding OpenSettingsCommand}"
+       550 -                         Style="{StaticResource SecondaryButton}"
+       551 -                         Width="120" Height="40"
+       552 -                         FontSize="14"/>
+       553 -                  <Button Content="설정 폴더 열기" 
+       554 -                         Command="{Binding OpenSettingsFolderCommand}"
+       555 -                         Style="{StaticResource SecondaryButton}"
+       556 -                         Width="120" Height="40"
+       557 -                         FontSize="14"/>
+       543 +                  <!-- 프로젝트 설정 버튼 -->
+       544 +                  <StackPanel Orientation="Horizontal"
+       545 +                             HorizontalAlignment="Center"
+       546 +                             Margin="0,0,0,10">
+       547 +                      <Button Content="📥 프로젝트 설정 열기"
+       548 +                             Command="{Binding OpenProjectConfigCommand}"
+       549 +                             Style="{StaticResource SecondaryButton}"
+       550 +                             Width="160" Height="40"
+       551 +                             FontSize="14"/>
+       552 +                      <Button Content="💾 프로젝트 설정 저장"
+       553 +                             Command="{Binding SaveProjectConfigCommand}"
+       554 +                             Style="{StaticResource SecondaryButton}"
+       555 +                             Width="160" Height="40"
+       556 +                             FontSize="14"/>
+       557 +                  </StackPanel>
+       558 +  
+       559 +                  <!-- 기본 액션 버튼 -->
+       560 +                  <StackPanel Orientation="Horizontal"
+       561 +                             HorizontalAlignment="Center">
+       562 +                      <Button Content="파일 생성"
+       563 +                             Command="{Binding CreateFileCommand}"
+       564 +                             IsEnabled="{Binding IsWorking, Converter={StaticResource 
+           + InvertBooleanConverter}}"
+       565 +                             Width="120" Height="40"
+       566 +                             FontSize="14"/>
+       567 +                      <Button Content="설정 관리"
+       568 +                             Command="{Binding OpenSettingsCommand}"
+       569 +                             Style="{StaticResource SecondaryButton}"
+       570 +                             Width="120" Height="40"
+       571 +                             FontSize="14"/>
+       572 +                      <Button Content="설정 폴더 열기"
+       573 +                             Command="{Binding OpenSettingsFolderCommand}"
+       574 +                             Style="{StaticResource SecondaryButton}"
+       575 +                             Width="120" Height="40"
+       576 +                             FontSize="14"/>
+       577 +                  </StackPanel>
+       578                </StackPanel>
+       579            </StackPanel>
+       580    
+
+● Search(pattern: "**/CreateNewFile_Installer.nsi")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Read(CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi)
+  ⎿  Read 147 lines
+
+● NSIS 스크립트에 .cnfjson 파일 연결을 추가하겠습니다.
+
+● Update(CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi)
+  ⎿  Updated CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi with 13 additions and 1 removal           
+        95      WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
+        96      WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoModify" 1
+        97      WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoRepair" 1
+        98 -    
+        98 +  
+        99 +    ; Register .cnfjson file association
+       100 +    WriteRegStr HKCR ".cnfjson" "" "CreateNewFile.Project"
+       101 +    WriteRegStr HKCR ".cnfjson" "Content Type" "application/json"
+       102 +    WriteRegStr HKCR "CreateNewFile.Project" "" "CreateNewFile Project File"
+       103 +    WriteRegStr HKCR "CreateNewFile.Project\DefaultIcon" "" "$INSTDIR\Resources\CreateNewFile.ico,0"
+       104 +    WriteRegStr HKCR "CreateNewFile.Project\shell" "" "open"
+       105 +    WriteRegStr HKCR "CreateNewFile.Project\shell\open" "" "Open with CreateNewFile"
+       106 +    WriteRegStr HKCR "CreateNewFile.Project\shell\open\command" "" '"$INSTDIR\CreateNewFile.exe" 
+           + "%1"'
+       107 +  
+       108 +    ; Notify shell of file association change
+       109 +    System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
+       110 +  
+       111      ; Create uninstaller
+       112      WriteUninstaller "$INSTDIR\uninst.exe"
+       113    SectionEnd
+
+● Update(CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi)
+  ⎿  Updated CreateNewFile\NSIS_installer\CreateNewFile_Installer.nsi with 10 additions and 3 removals
+       147      
+       148      ; Remove auto start entry
+       149      DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}"
+       150 -    
+       150 +  
+       151 +    ; Remove .cnfjson file association
+       152 +    DeleteRegKey HKCR ".cnfjson"
+       153 +    DeleteRegKey HKCR "CreateNewFile.Project"
+       154 +  
+       155 +    ; Notify shell of file association change
+       156 +    System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
+       157 +  
+       158      ; Remove registry entries
+       159      DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
+       160 -    
+       160 +  
+       161      ; Ask about user data removal
+       162      MessageBox MB_YESNO "Remove user settings and data files?" IDNO +2
+       163      RMDir /r "$APPDATA\CreateNewFile"
+       164 -    
+       164 +  
+       165      SetAutoClose true
+       166    SectionEnd
+       167   \ No newline at end of file
+
+● Bash(cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile" && dotnet build 2>&1 | grep -E "(error|경과
+       시간|Build succeeded)")
+  ⎿  경과 시간: 00:00:16.66
+
+● 완벽합니다! 빌드가 성공했습니다. 이제 구현이 완료되었습니다.
+
+  🎉 .cnfjson 파일 기능 구현 완료
+
+  ✅ 완료된 작업
+
+  1. ProjectConfig 모델 - 파일 정보, 출력폴더, 템플릿, 문자열 교체 규칙을 포함
+  2. ProjectConfigService - .cnfjson 파일 저장/로드 기능
+  3. 커맨드 라인 지원 - .cnfjson 파일을 인자로 받아 자동 로드
+  4. UI 메뉴 추가 - "프로젝트 설정 열기/저장" 버튼
+  5. NSIS 파일 연결 - .cnfjson을 CreateNewFile과 연결
+  6. 빌드 성공 - 모든 컴파일 오류 해결
+
+  📋 테스트 방법
+
+  1. 애플리케이션 실행 및 테스트
+
+  cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile"
+  dotnet run
+
+  2. 프로젝트 설정 저장 테스트
+
+  1. CreateNewFile 실행
+  2. 파일 정보 입력 (날짜/시간, 약어, 제목, 확장자 등)
+  3. 출력 폴더, 템플릿 파일 선택
+  4. 문자열 교체 규칙 추가 (선택사항)
+  5. "💾 프로젝트 설정 저장" 버튼 클릭
+  6. 프로젝트 이름 입력 (예: "MyProject")
+  7. 저장 위치 선택하고 저장
+  8. MyProject.cnfjson 파일 생성 확인
+
+  3. 프로젝트 설정 열기 테스트
+
+  1. "📥 프로젝트 설정 열기" 버튼 클릭
+  2. 저장한 .cnfjson 파일 선택
+  3. 모든 설정이 자동으로 로드되는지 확인
+
+  4. 더블클릭 실행 테스트 (인스톨러 설치 후)
+
+  # NSIS 인스톨러 빌드
+  cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\NSIS_installer"
+  python 10_BuildAll.py
+
+  인스톨러 설치 후:
+  1. .cnfjson 파일을 더블클릭
+  2. CreateNewFile이 자동으로 실행되고 설정이 로드되는지 확인
+
+  📄 .cnfjson 파일 구조 예시
+
+  {
+    "version": "1.0",
+    "name": "MyProject",
+    "description": "프로젝트 설명",
+    "fileInfo": {
+      "dateTime": "2025-10-16T19:30:00",
+      "abbreviation": "CNF",
+      "title": "Document",
+      "suffix": "v1",
+      "extension": ".txt",
+      "isDateTimeEnabled": true,
+      "isAbbreviationEnabled": true,
+      "isTitleEnabled": true,
+      "isSuffixEnabled": true
+    },
+    "outputPath": "D:\\Output",
+    "templatePath": "D:\\Templates\\template.txt",
+    "stringReplacements": [
+      {
+        "id": "...",
+        "searchText": "{DATE}",
+        "replaceText": "YYYYMMDD_HHMM",
+        "isEnabled": true,
+        "isCaseSensitive": false,
+        "useRegex": false,
+        "useDynamicReplacement": true,
+        "description": "날짜 치환"
+      }
+    ],
+    "createdAt": "2025-10-16T19:30:00",
+    "modifiedAt": "2025-10-16T19:30:00"
+  }
+
+  🔑 주요 특징
+
+  1. 각 프로젝트별 설정 관리 - 프로젝트마다 고유한 .cnfjson 파일
+  2. 더블클릭 실행 - 파일 연결로 바로 실행 가능
+  3. 완전한 설정 저장 - 파일 정보, 경로, 문자열 교체 규칙 모두 포함
+  4. 사용자 친화적 - 직관적인 UI 메뉴
+
+  구현이 완료되었습니다! 테스트해보시고 문제가 있으면 말씀해주세요.
+
+> .cnfjson 파일로 저장하고, 불러오는 버튼의 명칭을 
+"프로젝트 설정 열기" ---> "가져오기",
+"프로젝트 설정 저장" ---> "내보내기" 로 하고,
+위치는 저장된 파일정보 영역으로 적절히 배치해 주세요. 
+
+● 알겠습니다. 버튼 명칭을 변경하고 "저장된 파일정보" 영역으로 이동하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 18 additions                              
+       197                                    <Grid.RowDefinitions>
+       198                                        <RowDefinition Height="Auto"/>
+       199                                        <RowDefinition Height="Auto"/>
+       200 +                                      <RowDefinition Height="Auto"/>
+       201                                    </Grid.RowDefinitions>
+       202    
+       203                                    <ComboBox Grid.Row="0" Grid.Column="0"
+     ...
+       224                                            Visibility="{Binding IsEditingFileInfoName, 
+             Converter={StaticResource BooleanToVisibilityConverter}}"
+       225                                            BorderBrush="#FF007ACC"
+       226                                            BorderThickness="2"/>
+       227 +  
+       228 +                                  <!-- 프로젝트 설정 가져오기/내보내기 버튼 -->
+       229 +                                  <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+       230 +                                             Orientation="Horizontal"
+       231 +                                             HorizontalAlignment="Center"
+       232 +                                             Margin="0,10,0,0">
+       233 +                                      <Button Content="📥 가져오기"
+       234 +                                             Command="{Binding OpenProjectConfigCommand}"
+       235 +                                             Style="{StaticResource SecondaryButton}"
+       236 +                                             Width="120"
+       237 +                                             ToolTip="프로젝트 설정 파일(.cnfjson)을 불러옵니다"/>
+       238 +                                      <Button Content="💾 내보내기"
+       239 +                                             Command="{Binding SaveProjectConfigCommand}"
+       240 +                                             Style="{StaticResource SecondaryButton}"
+       241 +                                             Width="120"
+       242 +                                             ToolTip="현재 설정을 프로젝트 파일(.cnfjson)로 
+           + 저장합니다"/>
+       243 +                                  </StackPanel>
+       244                                </Grid>
+       245                            </GroupBox>
+       246    
+
+● 이제 하단의 기존 프로젝트 설정 버튼을 제거하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 16 additions and 36 removals  
+       555                </GroupBox>
+       556    
+       557                <!-- 액션 버튼 -->
+       558 -              <StackPanel Orientation="Vertical"
+       558 +              <StackPanel Orientation="Horizontal"
+       559                           HorizontalAlignment="Center"
+       560                           Margin="0,10,0,0">
+       561 -                  <!-- 프로젝트 설정 버튼 -->
+       562 -                  <StackPanel Orientation="Horizontal"
+       563 -                             HorizontalAlignment="Center"
+       564 -                             Margin="0,0,0,10">
+       565 -                      <Button Content="📥 프로젝트 설정 열기"
+       566 -                             Command="{Binding OpenProjectConfigCommand}"
+       567 -                             Style="{StaticResource SecondaryButton}"
+       568 -                             Width="160" Height="40"
+       569 -                             FontSize="14"/>
+       570 -                      <Button Content="💾 프로젝트 설정 저장"
+       571 -                             Command="{Binding SaveProjectConfigCommand}"
+       572 -                             Style="{StaticResource SecondaryButton}"
+       573 -                             Width="160" Height="40"
+       574 -                             FontSize="14"/>
+       575 -                  </StackPanel>
+       576 -  
+       577 -                  <!-- 기본 액션 버튼 -->
+       578 -                  <StackPanel Orientation="Horizontal"
+       579 -                             HorizontalAlignment="Center">
+       580 -                      <Button Content="파일 생성"
+       581 -                             Command="{Binding CreateFileCommand}"
+       582 -                             IsEnabled="{Binding IsWorking, Converter={StaticResource 
+           - InvertBooleanConverter}}"
+       583 -                             Width="120" Height="40"
+       584 -                             FontSize="14"/>
+       585 -                      <Button Content="설정 관리"
+       586 -                             Command="{Binding OpenSettingsCommand}"
+       587 -                             Style="{StaticResource SecondaryButton}"
+       588 -                             Width="120" Height="40"
+       589 -                             FontSize="14"/>
+       590 -                      <Button Content="설정 폴더 열기"
+       591 -                             Command="{Binding OpenSettingsFolderCommand}"
+       592 -                             Style="{StaticResource SecondaryButton}"
+       593 -                             Width="120" Height="40"
+       594 -                             FontSize="14"/>
+       595 -                  </StackPanel>
+       561 +                  <Button Content="파일 생성"
+       562 +                         Command="{Binding CreateFileCommand}"
+       563 +                         IsEnabled="{Binding IsWorking, Converter={StaticResource 
+           + InvertBooleanConverter}}"
+       564 +                         Width="120" Height="40"
+       565 +                         FontSize="14"/>
+       566 +                  <Button Content="설정 관리"
+       567 +                         Command="{Binding OpenSettingsCommand}"
+       568 +                         Style="{StaticResource SecondaryButton}"
+       569 +                         Width="120" Height="40"
+       570 +                         FontSize="14"/>
+       571 +                  <Button Content="설정 폴더 열기"
+       572 +                         Command="{Binding OpenSettingsFolderCommand}"
+       573 +                         Style="{StaticResource SecondaryButton}"
+       574 +                         Width="120" Height="40"
+       575 +                         FontSize="14"/>
+       576                </StackPanel>
+       577            </StackPanel>
+       578    
+
+● Bash(cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile" && dotnet build 2>&1 | grep -E "(error|경과
+       시간|Build succeeded)")
+  ⎿  경과 시간: 00:00:07.11
+
+● 완료되었습니다! 버튼 명칭을 변경하고 "저장된 파일정보" 영역으로 이동했습니다.
+
+  ✅ 변경 사항
+
+  1. 버튼 명칭 변경
+
+  - "프로젝트 설정 열기" → "📥 가져오기"
+  - "프로젝트 설정 저장" → "💾 내보내기"
+
+  2. 버튼 위치 변경
+
+  - 이전: 하단 액션 버튼 영역
+  - 변경: "저장된 파일정보" GroupBox 안으로 이동
+  - 위치: "불러오기", "저장", "관리" 버튼 아래에 배치
+
+  3. UI 구성
+
+  [저장된 파일정보]
+  ┌─────────────────────────────────────┐
+  │ [콤보박스] [불러오기] [저장] [관리] │
+  │                                     │
+  │    [📥 가져오기]  [💾 내보내기]     │
+  └─────────────────────────────────────┘
+
+  4. 툴팁 추가
+
+  - 가져오기: "프로젝트 설정 파일(.cnfjson)을 불러옵니다"
+  - 내보내기: "현재 설정을 프로젝트 파일(.cnfjson)로 저장합니다"
+
+  5. 빌드 확인
+
+  ✅ 빌드 성공 (7.11초)
+
+  이제 사용자는 "저장된 파일정보" 영역에서 일반 파일정보와 프로젝트 설정(.cnfjson) 관리를 한 곳에서 할 수 있습니다!
+
+> /context 
+  ⎿  Context Usage
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛀ ⛁   claude-sonnet-4-5-20250929 · 155k/200k tokens (78%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ 
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ System prompt: 2.2k tokens (1.1%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ System tools: 13.3k tokens (6.7%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ Custom agents: 1.3k tokens (0.6%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛶ ⛶ ⛶ ⛶   ⛁ Messages: 93.2k tokens (46.6%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛶ Free space: 45k (22.5%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛝ ⛝ ⛝   ⛝ Autocompact buffer: 45.0k tokens (22.5%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ 
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ 
+
+     Custom agents · /agents
+     └ script-specialist (User): 300 tokens
+     └ python-expert (User): 296 tokens
+     └ nsis-installer-expert (User): 264 tokens
+     └ csharp-coding-expert (User): 428 tokens
+
+     SlashCommand Tool · 0 commands
+     └ Total: 998 tokens
+
+> "가져오기"를 했을 때, "프로젝트 설정 로드"라는 창은 표시하지 않도록 해주세요.
+실패했을 때만 표시해 주세요.
+
+"내보내기" 했을 때, "프로젝트 설정 저장" 대화상자도 표시하지 말고, 
+템플릿 폴더에 템플릿 파일명과 같은 이름으로 하고 확장자만 .cfnjson으로 저장해 주세요.
+같은 이름과 확장자가 있는 파일이 있을 때나 실패했을 때만 알려주세요.
+"프로젝트 설명" 입력 대화상자도 생략하고, 템플릿 파일명으로 설명을 대신해 주세요.
+"프로젝트 설정 저장 완료" 대화상자도 표시하지 않아도 되겠습니다. 실패했을 때만 알려주세요. 
+
+● 알겠습니다. 가져오기/내보내기 기능을 더 간편하게 수정하겠습니다.
+
+● Read(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Read 130 lines
+
+● 알겠습니다. 가져오기/내보내기 기능을 간소화하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 1 addition and 4 removals    
+       1942                    }
+       1943    
+       1944                    StatusMessage = $"프로젝트 '{config.Name}' 로드 완료";
+       1945 -  
+       1946 -                  DialogHelper.ShowInfo(
+       1947 -                      $"프로젝트 설정이 로드되었습니다.\n\n프로젝트: {config.Name}\n설명: 
+            - {(string.IsNullOrWhiteSpace(config.Description) ? "(없음)" : config.Description)}",
+       1948 -                      "프로젝트 설정 로드");
+       1945 +                  // 성공 시 대화상자 표시 안 함
+       1946                }
+       1947                catch (Exception ex)
+       1948                {
+
+● Update(CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs)
+  ⎿  Updated CreateNewFile\CreateNewFile\ViewModels\MainViewModel.cs with 37 additions and 40 removals            
+       1957    
+       1958            /// <summary>
+       1959            /// 현재 상태를 프로젝트 설정 파일로 저장합니다.
+       1960 +          /// 템플릿 폴더에 템플릿 파일명.cnfjson 형식으로 자동 저장합니다.
+       1961            /// </summary>
+       1962            private async Task SaveProjectConfigAsync()
+       1963            {
+       1964                try
+       1965                {
+       1966 -                  // 프로젝트 이름 입력 받기
+       1967 -                  string defaultName = string.IsNullOrWhiteSpace(SelectedTitle)
+       1968 -                      ? "Unnamed_Project"
+       1969 -                      : SelectedTitle;
+       1970 -  
+       1971 -                  var result = DialogHelper.ShowInputDialog(
+       1972 -                      "프로젝트 설정 저장",
+       1973 -                      "프로젝트 이름을 입력하세요:",
+       1974 -                      defaultName);
+       1975 -  
+       1976 -                  if (!result.IsConfirmed || string.IsNullOrWhiteSpace(result.InputText))
+       1977 -                      return;
+       1978 -  
+       1979 -                  var projectName = result.InputText.Trim();
+       1980 -  
+       1981 -                  // 저장 위치 선택
+       1982 -                  var saveDialog = new Microsoft.Win32.SaveFileDialog
+       1966 +                  // 템플릿 파일이 선택되어 있는지 확인
+       1967 +                  if (string.IsNullOrWhiteSpace(SelectedTemplatePath) || 
+            + !File.Exists(SelectedTemplatePath))
+       1968                    {
+       1969 -                      Title = "프로젝트 설정 저장",
+       1970 -                      Filter = "CreateNewFile 프로젝트 파일 (*.cnfjson)|*.cnfjson",
+       1971 -                      FileName = projectName,
+       1972 -                      DefaultExt = ".cnfjson",
+       1973 -                      AddExtension = true
+       1974 -                  };
+       1975 -  
+       1976 -                  if (saveDialog.ShowDialog() != true)
+       1969 +                      StatusMessage = "템플릿 파일을 먼저 선택해주세요.";
+       1970 +                      DialogHelper.ShowError("템플릿 파일이 선택되지 않았습니다.\n프로젝트 설정을 
+            + 저장하려면 템플릿 파일을 선택해주세요.");
+       1971                        return;
+       1972 +                  }
+       1973    
+       1974                    IsWorking = true;
+       1975                    StatusMessage = "프로젝트 설정을 저장하는 중...";
+       1976    
+       1977 -                  // 현재 상태를 프로젝트 설정으로 변환
+       1978 -                  var config = _projectConfigService.CreateProjectConfigFromViewModel(this);
+       1979 -                  config.Name = projectName;
+       1977 +                  // 템플릿 파일명과 폴더 경로 추출
+       1978 +                  var templateFileName = Path.GetFileNameWithoutExtension(SelectedTemplatePath);
+       1979 +                  var templateFolder = Path.GetDirectoryName(SelectedTemplatePath);
+       1980    
+       1981 -                  // 설명 입력 받기 (선택사항)
+       1982 -                  var descResult = DialogHelper.ShowInputDialog(
+       1983 -                      "프로젝트 설명",
+       1984 -                      "프로젝트 설명을 입력하세요 (선택사항):",
+       1985 -                      "");
+       1981 +                  if (string.IsNullOrWhiteSpace(templateFolder))
+       1982 +                  {
+       1983 +                      throw new InvalidOperationException("템플릿 폴더 경로를 확인할 수 없습니다.");
+       1984 +                  }
+       1985    
+       1986 -                  if (descResult.IsConfirmed)
+       1986 +                  // .cnfjson 파일 경로 생성
+       1987 +                  var configFilePath = Path.Combine(templateFolder, $"{templateFileName}.cnfjson");
+       1988 +  
+       1989 +                  // 파일이 이미 존재하는 경우 덮어쓰기 확인
+       1990 +                  if (File.Exists(configFilePath))
+       1991                    {
+       1992 -                      config.Description = descResult.InputText;
+       1992 +                      var overwrite = System.Windows.MessageBox.Show(
+       1993 +                          $"'{Path.GetFileName(configFilePath)}' 파일이 이미 
+            + 존재합니다.\n\n덮어쓰시겠습니까?",
+       1994 +                          "파일 덮어쓰기 확인",
+       1995 +                          System.Windows.MessageBoxButton.YesNo,
+       1996 +                          System.Windows.MessageBoxImage.Question);
+       1997 +  
+       1998 +                      if (overwrite != System.Windows.MessageBoxResult.Yes)
+       1999 +                      {
+       2000 +                          StatusMessage = "프로젝트 설정 저장이 취소되었습니다.";
+       2001 +                          return;
+       2002 +                      }
+       2003                    }
+       2004    
+       2005 +                  // 현재 상태를 프로젝트 설정으로 변환
+       2006 +                  var config = _projectConfigService.CreateProjectConfigFromViewModel(this);
+       2007 +                  config.Name = templateFileName;
+       2008 +                  config.Description = templateFileName; // 템플릿 파일명을 설명으로 사용
+       2009 +  
+       2010                    // 프로젝트 설정 저장
+       2011 -                  var success = await _projectConfigService.SaveProjectConfigAsync(config, 
+            -  saveDialog.FileName);
+       2011 +                  var success = await _projectConfigService.SaveProjectConfigAsync(config, 
+            +  configFilePath);
+       2012    
+       2013                    if (success)
+       2014                    {
+       2015 -                      StatusMessage = $"프로젝트 '{projectName}' 저장 완료";
+       2016 -                      DialogHelper.ShowInfo(
+       2017 -                          $"프로젝트 설정이 저장되었습니다.\n\n파일: {saveDialog.FileName}",
+       2018 -                          "프로젝트 설정 저장 완료");
+       2015 +                      StatusMessage = $"프로젝트 설정 저장 완료: {Path.GetFileName(configFilePath)}";
+       2016 +                      // 성공 시 대화상자 표시 안 함
+       2017                    }
+       2018                    else
+       2019                    {
+
+● Bash(cd "D:\Work_Claude\2025\08\CreateNewFile\CreateNewFile\CreateNewFile" && dotnet build 2>&1 | grep -E "(error|경과
+       시간|Build succeeded)")
+  ⎿  경과 시간: 00:00:05.87
+
+● 완료되었습니다! 가져오기/내보내기 기능을 간소화했습니다.
+
+  ✅ 변경 사항
+
+  1. 가져오기 (📥) 기능
+
+  - ✅ 성공 시 "프로젝트 설정 로드" 대화상자 제거
+  - ✅ 상태 표시줄에만 메시지 표시: "프로젝트 '{프로젝트명}' 로드 완료"
+  - ✅ 실패 시에만 오류 대화상자 표시
+
+  2. 내보내기 (💾) 기능
+
+  - ✅ 모든 대화상자 제거
+    - 프로젝트 이름 입력 대화상자 제거
+    - 프로젝트 설명 입력 대화상자 제거
+    - 파일 저장 위치 선택 대화상자 제거
+    - 성공 확인 대화상자 제거
+  - ✅ 자동 저장 방식
+    - 템플릿 파일명을 기반으로 자동으로 이름 생성
+    - 템플릿 폴더에 {템플릿파일명}.cnfjson 형식으로 저장
+    - 프로젝트 이름 = 템플릿 파일명
+    - 프로젝트 설명 = 템플릿 파일명
+  - ✅ 덮어쓰기 확인
+    - 같은 이름의 .cnfjson 파일이 있을 때만 확인 대화상자 표시
+  - ✅ 메시지 표시
+    - 성공 시: 상태 표시줄에만 "프로젝트 설정 저장 완료: {파일명}" 표시
+    - 실패 시: 오류 대화상자 표시
+    - 템플릿 파일이 없을 때: 오류 대화상자로 안내
+
+  3. 사용 예시
+
+  템플릿 파일: D:\Templates\MyTemplate.txt
+
+  내보내기 버튼 클릭 시:
+  1. 자동으로 D:\Templates\MyTemplate.cnfjson 생성
+  2. MyTemplate.cnfjson이 이미 있으면 → 덮어쓰기 확인만 표시
+  3. 저장 성공 → 상태바에 "프로젝트 설정 저장 완료: MyTemplate.cnfjson"
+
+  더블클릭으로 실행:
+  - MyTemplate.cnfjson 더블클릭 → CreateNewFile 실행 → 모든 설정 자동 로드
+
+  4. 빌드 확인
+
+  ✅ 빌드 성공 (5.87초)
+
+  이제 더욱 간편하게 프로젝트 설정을 저장하고 불러올 수 있습니다!
+
+> 파일정보, 경로설정, 문자열교체 탭 영역 높이가 최소 400 pixel이 되도록 지정해 주세요. 
+
+● 알겠습니다. 각 탭 영역의 ScrollViewer에 최소 높이를 400 픽셀로 설정하겠습니다.
+
+● Read(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Read 260 lines
+
+● 알겠습니다. 각 탭의 ScrollViewer에 최소 높이 400픽셀을 설정하겠습니다.
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 1 addition and 1 removal                
+       183    
+       184                <!-- 파일정보 탭 -->
+       185                <TabItem Header="📄 파일정보" Name="FileInfoTab">
+       186 -                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" Height="441">
+       186 +                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="400">
+       187                        <StackPanel>
+       188                            <!-- 저장된 파일정보 선택 영역 -->
+       189                            <GroupBox Header="저장된 파일정보" Margin="0,0,0,15">
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 1 addition and 1 removal                
+       346    
+       347                <!-- 경로설정 탭 -->
+       348                <TabItem Header="📁 경로설정" Name="PathSettingsTab">
+       349 -                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+       349 +                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="400">
+       350                        <StackPanel>
+       351                            <!-- 출력 경로 설정 -->
+       352                            <GroupBox Header="출력 폴더" Margin="0,0,0,15">
+
+● Update(CreateNewFile\CreateNewFile\Views\MainWindow.xaml)
+  ⎿  Updated CreateNewFile\CreateNewFile\Views\MainWindow.xaml with 1 addition and 1 removal                
+       452    
+       453                <!-- 문자열 교체 탭 -->
+       454                <TabItem Header="🔄 문자열 교체" Name="StringReplacementTab">
+       455 -                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
+       455 +                  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15" MinHeight="400">
+       456                        <StackPanel>
+       457                            <GroupBox Header="템플릿 문자열 교체 규칙" Height="326">
+       458                                <Grid>
+
+
+

@@ -422,17 +422,27 @@ namespace CreateNewFile.Utils
         {
             try
             {
+                // 먼저 폴더가 존재하는지 확인
+                if (!Directory.Exists(folderPath))
+                {
+                    return ValidationResult.CreateFailure("폴더가 존재하지 않습니다. 폴더를 생성하거나 유효한 경로를 지정해주세요.");
+                }
+
                 var testFile = Path.Combine(folderPath, $"test_write_permission_{Guid.NewGuid()}.tmp");
-                
+
                 // 임시 파일 생성 및 삭제로 권한 확인
                 File.WriteAllText(testFile, "test");
                 File.Delete(testFile);
-                
+
                 return ValidationResult.CreateSuccess();
             }
             catch (UnauthorizedAccessException)
             {
                 return ValidationResult.CreateFailure("해당 폴더에 파일을 생성할 권한이 없습니다.");
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return ValidationResult.CreateFailure("폴더를 찾을 수 없습니다. 경로를 확인해주세요.");
             }
             catch (Exception ex)
             {
